@@ -1,6 +1,6 @@
 ---
 name: small-loop-method
-version: 0.2.0
+version: 0.2.1
 description: Small-loop method for planning and supervising reliable GO/cell work. Use when the user asks to design, refine, dispatch, QC, or review WLflow/WellLinkflow work; split GO nodes into small cells; assign model levels; route worker tasks; enforce terminal worker dispatch, same-method worker reply, QC-before-next-cell routing, supervisor-owned blocker repair, and default Owner authorization; handle repeated failures; or apply Loop Engineering style supervisor/planner/checker/router execution. Formerly wlflow-loop-construction.
 ---
 
@@ -75,26 +75,44 @@ Do not run a worker task against a whole GO when a cell can be selected.
 
 ## Model Levels
 
-Use the requested level as a planning label. If the current surface cannot
-actually switch model parameters, record the requested level and use the
-strongest available equivalent.
+The supervisor model and worker model are independent. The supervisor may use
+the Owner-selected current model, including `gpt-5.6-sol`. `WLflow worker` is
+locked to `gpt-5.5` and must not inherit or be migrated to a 5.6 model.
 
-- `5.4中`: routine read-only checks, counts, simple document edits, indexing.
-- `5.4高`: multi-document consistency, schemas, checklists, moderate ambiguity.
-- `5.5高`: cross-system contracts, runtime design, old-LC boundaries, security.
-- `5.5超高`: installs, incident debugging, irreversible risk, repeated failure.
+Every direct worker dispatch must explicitly set `model: gpt-5.5` and select
+exactly one of these reasoning levels:
+
+- `5.5中` / `medium`: routine read-only checks, counts, simple document edits,
+  indexing, and low-ambiguity bounded work.
+- `5.5高` / `high`: multi-document consistency, cross-system contracts,
+  runtime design, old-LC boundaries, security-sensitive checks, and moderate
+  ambiguity.
+- `5.5极高` / `xhigh`: installs, incident debugging, irreversible risk,
+  repeated failure, and difficult blocker repair.
+
+Do not dispatch `WLflow worker` with `gpt-5.6-sol`, another 5.6 variant,
+`gpt-5.4`, inherited model settings, or any reasoning level outside
+`medium` / `high` / `xhigh`.
+
+Legacy cell labels remain readable and map at dispatch time:
+
+- `5.4中` -> `gpt-5.5` + `medium`
+- `5.4高` -> `gpt-5.5` + `high`
+- `5.5高` -> `gpt-5.5` + `high`
+- `5.5超高` -> `gpt-5.5` + `xhigh`
 
 Risk shortcuts:
 
 - Docker, Kubernetes, publishing, account, credential, or old-LC write risk:
-  start at `5.5高` or `5.5超高`.
+  start at `5.5高` or `5.5极高`.
 - Repeated failure on the same cell: raise model level and split smaller.
 
 ## Failure Escalation
 
 - First failure: keep level only if the cause is missing input or mechanical.
 - Second failure: raise one level and split the cell smaller.
-- Third failure: use `5.5超高` or route `blocked` / `owner-decision`.
+- Third failure: use `5.5极高` (`xhigh`) or route `blocked` /
+  `owner-decision`.
 
 Never loop indefinitely on the same failing cell.
 
