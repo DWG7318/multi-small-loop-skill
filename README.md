@@ -1,23 +1,27 @@
-# small-loop-method
+# Multi Small Loop Skill
 
-Project-neutral method skill for constructing and operating supervisor-worker
-Loops with small cells, evidence-based QC, blocker repair, and routing.
+A Codex skill for running large projects as multiple independent small loops.
 
-Current version: `0.2.3`
+Each loop uses two working roles:
 
-## Files
+```text
+Checker <-> Worker
+```
 
-- `SKILL.md`: skill instructions.
-- `VERSION`: release version.
-- `agents/openai.yaml`: agent metadata.
+One Supervisor splits the project, launches multiple pairs, periodically acts
+as Overseer (`监工`), wakes stalled Checkers, and performs final acceptance.
 
-## Boundary
+## Roles
 
-The supervisor owns judgment, diagnostics, blocker repair, QC, and routing.
-The designated worker executes one bounded cell at a time. Project names,
-paths, models, infrastructure, and safety boundaries are supplied by the
-active Loop or project and are not embedded in this method.
+- Supervisor: project planning, decomposition, periodic oversight, blocker
+  resolution, and final acceptance.
+- Checker: one stream's CELL planning, validation, bounded direct repair,
+  routing, and final queue. After repairing a Worker mistake, the Checker
+  explains the fix inside the next formal CELL assignment.
+- Worker: one bounded CELL at a time with append-only evidence.
 
-Version `0.2.3` makes worker-caused QC repair supervisor-owned. After repairing
-and verifying the current cell, the supervisor sends one combined repair update
-and next-cell assignment instead of returning the correction to the worker.
+Install the `multi-small-loop-skill` folder under your Codex skills directory,
+then invoke `$multi-small-loop-skill` when a project should run through several
+parallel Checker/Worker loops.
+
+Current version: `1.0.0`.

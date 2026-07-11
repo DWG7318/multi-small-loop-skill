@@ -1,4 +1,4 @@
 interface:
-  display_name: "Small-loop Method"
-  short_description: "Reliable supervisor-worker GO/cell loops"
-  default_prompt: "Use $small-loop-method to design or operate a project-neutral supervisor-worker Loop with small cells and evidence-based QC."
+  display_name: "Multi Small Loop"
+  short_description: "Oversee parallel Checker-Worker loops"
+  default_prompt: "Use $multi-small-loop-skill to split this project into independent Checker-Worker small loops, supervise them periodically, wake stalled Checkers, and continue until every planned CELL is accepted."

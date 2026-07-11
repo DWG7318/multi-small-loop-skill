@@ -1,284 +1,306 @@
 ---
-name: small-loop-method
-description: Project-neutral small-loop method for designing and running reliable supervisor-worker Loops. Use only when constructing or operating a Loop with GO/cell slicing, worker dispatch, evidence-based QC, repair routing, progress replies, and failure escalation. Do not trigger it merely because a particular project or repository is in scope.
+name: multi-small-loop-skill
+description: Run large projects as multiple independent small loops under one supervising thread. Use when work must be split into disjoint streams, each with one Checker and one Worker, while one Supervisor plans, periodically oversees progress, wakes stalled Checkers, and performs final acceptance. Also use for GO/CELL planning, concurrent checker-worker pairs, anti-early-stop supervision, completion queues, and reliable cross-thread receipts.
 ---
 
-# Small-loop Method
+# Multi Small Loop Skill
 
-Use this skill to keep Loop work small, checkable, and reliable.
-
-The supervising thread acts as supervisor, planner, checker, and router. The
-designated worker executes one bounded cell at a time and returns evidence.
-
-## Applicability
-
-This is a Loop-construction method, not a project policy. Apply it only when a
-supervisor-worker Loop is being designed or operated. Project names,
-repositories, directories, tools, asset boundaries, infrastructure rules,
-credentials, model locks, and release policies must come from the active
-project or the Owner; this skill must not invent or permanently embed them.
-
-## Supervisor And Worker Boundary
-
-The supervisor must not degrade into a passive messenger. The supervisor owns
-judgment, diagnosis, repair routing, QC, and next-step decisions.
-
-Default split:
-
-- The designated worker executes normal bounded construction cells.
-- The supervisor designs the cell, sends the task, checks evidence, records
-  decisions, and routes the next step.
-- The supervisor directly repairs worker-caused QC defects, abnormal
-  diagnostics, and blockers that are within tool reach and do not require
-  Owner hands-on action.
-
-### Supervisor-Owned QC Repair
-
-When a worker delivery fails QC because the worker made an error, the
-supervisor must repair it directly. Do not return the same correction to the
-worker.
-
-1. Keep the current cell and `X/Y` unchanged.
-2. Back up or preserve the pre-repair state, make the minimum correction, and
-   rerun the relevant acceptance checks.
-3. Record the original worker task, QC defects, supervisor changes, checks, and
-   final route in durable evidence.
-4. After the repair passes, include a concise `supervisor repair update` in the
-   next new-cell task package, then assign that next cell in the same message.
-   Do not send a separate update-only message.
-5. The combined update plus next-cell dispatch is still a direct worker
-   dispatch and must be the final action of the supervisor turn.
-
-If the supervisor cannot safely perform the repair with available tools and
-authority, route `blocked` or `owner-decision` as appropriate. Do not transfer
-the worker's correction back to that worker merely because the supervisor is
-blocked.
-
-When a worker reports `blocked`:
-
-1. Diagnose the blocker as supervisor.
-2. If the supervisor can safely fix or narrow the blocker, do it directly with
-   backup, minimum change, evidence, and verification.
-3. If the blocker is cleared, route the next normal construction cell back to
-   the designated worker; do not continue locally as the executor unless that next
-   cell is itself another blocker repair.
-4. If the blocker cannot be solved without Owner hands-on action, ask the
-   Owner only for that hands-on action.
-
-Within the authority granted by the active Loop, the supervisor should not stop
-to ask for generic permission. Ask the Owner only when the
-action requires their manual work or private external input, such as restarting
-hardware, changing cables, scanning a code, logging in, entering a one-time
-code, visually confirming a UI, providing unknown credentials, or making a
-business/content choice that cannot be inferred from project rules.
-
-Loop authority never overrides the active project's safety and ownership
-boundaries.
-
-## Source Of Truth
-
-Use the active Loop specification, GO map, cell registry, model policy, and
-matching cell plan supplied by the current project as authoritative. This skill
-does not define their filenames or locations. Do not copy a whole plan into a
-worker prompt; read and send only what the current cell needs.
-
-## Cell Rule
-
-Before dispatching or doing work:
-
-1. Identify one GO.
-2. Identify one exact cell.
-3. Confirm the cell has one primary outcome.
-4. Confirm the cell has concrete work, acceptance standard, model level, and
-   escalation rule.
-5. If the cell is still broad, split it before dispatch.
-
-Do not run a worker task against a whole GO when a cell can be selected.
-
-## Model Levels
-
-The supervisor model and worker model are independent. Use the model family and
-allowed reasoning tiers declared by the active Loop; do not hardcode a project
-model in this method. Every direct dispatch must explicitly select the worker
-model/profile required by that Loop and one appropriate reasoning level:
-
-- `medium`: routine read-only checks, counts, simple document edits,
-  indexing, and low-ambiguity bounded work.
-- `high`: multi-document consistency, cross-system contracts, runtime design,
-  project boundaries, security-sensitive checks, and moderate
-  ambiguity.
-- `xhigh`: installs, incident debugging, irreversible risk,
-  repeated failure, and difficult blocker repair.
-
-Risk shortcuts:
-
-- Infrastructure, publishing, account, credential, or protected-asset write
-  risk: start at `high` or `xhigh`.
-- Repeated failure on the same cell: raise model level and split smaller.
-
-## Failure Escalation
-
-- First worker-caused failure: the supervisor repairs the current cell and
-  records the defect. Missing input or a mechanical mistake need not raise the
-  next worker model level.
-- Second worker-caused failure: the supervisor still repairs directly, raises
-  the next new-cell worker level, and splits that next cell smaller.
-- Third worker-caused failure: the supervisor still owns the correction; use
-  the highest allowed worker level for the next new cell or route `blocked` /
-  `owner-decision` when continued delegation is not reliable.
-
-Never loop the same correction back to the worker. Failure history changes the
-design and model of future new-cell assignments; it does not transfer QC repair
-ownership away from the supervisor.
-
-## Worker Task Package
-
-Before sending work to the designated worker, include:
-
-- task id
-- GO id and cell id
-- source supervisor thread id or exact return target
-- requested model level
-- objective
-- allowed scope
-- forbidden scope
-- inputs
-- expected output
-- evidence path or evidence format
-- acceptance standard
-- stop condition
-- failure route
-- exact worker completion text when progress numbering is active, such as
-  `完成X/Y，请检验`
-
-Before dispatch, validate the return route:
-
-- The delegation envelope `source_thread_id` and the task package's source
-  supervisor/checker thread id must be identical.
-- The source supervisor/checker thread id must not equal the destination worker
-  thread id.
-- If either check fails, do not dispatch. Correct the route first.
-
-Direct worker dispatch is terminal. If the supervisor sends a direct thread
-message to the designated worker, that send must be the final action of the
-supervisor turn. After sending, the supervisor does not wait, poll, inspect the
-worker thread, run follow-up commands, or continue other work in the same turn.
-
-Worker completion replies mean only "ready for checking"; they do not mean
-accepted.
-
-## Worker Reply Protocol
-
-Every cell must end with a worker reply to the supervisor/checker.
-
-For normal cell completion, the supervisor must include the exact current
-ordinal and executable-cell total in the worker task package. The completion
-reply must use:
+Use one Supervisor to organize and oversee multiple independent small loops.
 
 ```text
-完成X/Y，请检验
+                         +-> Checker A <-> Worker A
+Owner -> Supervisor -----+-> Checker B <-> Worker B
+                         +-> Checker C <-> Worker C
 ```
 
-Rules:
+Each small loop is one stable `Checker <-> Worker` pair. The three external
+roles are always Supervisor, Checker, and Worker.
 
-1. `X` is the current executable cell's fixed ordinal assigned by the
-   supervisor.
-2. `Y` is the authoritative executable-cell total from the cell plan; parent GO
-   headings and non-executing grouping headings do not count.
-3. The supervisor must write the exact `X/Y` into every worker task package.
-   The worker must not guess, calculate, or modify the numbers.
-4. Rework, repair, or QC closeout for the same current cell keeps the same
-   `X/Y`.
-5. `X/Y` increments only after supervisor QC accepts the current cell and the
-   supervisor dispatches the next cell.
-6. If the plan changes, only the supervisor recalculates `Y`; the worker must
-   not change it locally.
-7. The same-thread return message and the worker's own final visible reply must
-   use the exact same completion text supplied by the task, including `X/Y`
-   exactly.
-8. Before returning, the worker must verify that the return target is not its
-   own worker thread. If the delegation envelope and textual return target
-   disagree, or the return target equals the worker thread, do not self-send;
-   reply `blocked: return target mismatch` with durable evidence.
+## Role Contract
 
-If direct thread messaging is available, the worker must send the same pure
-completion text back to the source supervisor/checker thread by the same
-thread messaging method used for dispatch. The worker then ends its own visible
-reply with exactly that same text.
+### Supervisor
 
-If the worker cannot send that same-method return message, the cell is not a
-normal completion. The worker must write the delivery evidence to the agreed
-path and reply `blocked: direct return unavailable`.
+The Supervisor owns the whole project, not the middle of ordinary cell work.
 
-For blocked work, do not use the completion phrase. Reply with:
+- Translate Owner intent into the overall solution and acceptance target.
+- Split the project into mutually independent streams.
+- Produce or approve each stream's solution, GO map, and CELL plan.
+- Create one stable Checker/Worker pair for each stream.
+- Maintain the supervisor board and final result queue.
+- Act as the mandatory Overseer (`监工`) through periodic quick inspections.
+- Resolve plan defects, Owner decisions, shared-resource conflicts, and genuine
+  blockers that a Checker cannot resolve inside its fixed plan.
+- Perform final local acceptance after a Checker writes a passed result.
+
+The Supervisor must not be the normal relay for Checker/Worker messages and
+must not silently take over a Worker's cell.
+
+### Checker
+
+One Checker controls exactly one small loop.
+
+- Read the complete fixed plan for its stream.
+- Select and package one fixed CELL at a time.
+- Send formal tasks and rework directly to its paired Worker.
+- Inspect files, diffs, tests, scans, method logs, and boundaries locally.
+- Directly repair a Worker-caused defect when the repair is bounded, safe, and
+  within the current CELL and the Checker's available authority.
+- Route `NEXT`, `REDO`, `COMPLETE`, `BLOCKED`, or `PLAN_DEFECT`.
+- Send the next CELL after accepting the current CELL.
+- Write the stream's final passed or blocked queue record.
+
+The Checker may internally perform planning and routing, but it remains one
+external role. It must not change GO/CELL scope or acceptance rules after
+launch; plan defects go to the Supervisor.
+
+## Checker Direct Repair Rule
+
+When a Worker makes a concrete implementation or evidence mistake, the Checker
+may fix it directly instead of returning the same simple correction to the
+Worker.
+
+Use direct Checker repair only when:
+
+- The defect is inside the current CELL's allowed scope.
+- The expected correction is unambiguous and small enough to inspect fully.
+- The Checker has the tools, permissions, and evidence needed to repair safely.
+- The repair does not change the GO/CELL objective, acceptance standard,
+  architecture ownership, or Owner decision.
+- The repair does not require private credentials, manual Owner action, or an
+  unauthorized external side effect.
+
+The Checker must:
+
+1. Preserve the Worker's original delivery and record the detected defect.
+2. Make the minimum correction inside the current CELL.
+3. Run the same focused and regression checks required for Worker delivery.
+4. Record files changed, commands, results, and the route in Checker evidence;
+   never rewrite the Worker's append-only method history.
+5. Accept the current CELL only after the repaired result passes locally.
+6. Send the next formal CELL directly to the Worker.
+7. Include a concise `Checker repair update` in that same next-task message:
+   previous CELL, defect, Checker fix, and verification result.
+
+The combined repair update and next CELL assignment must be one message whose
+first line is the next `Formal task:` heading. Do not send a separate status
+message and then leave the Worker without work.
+
+If direct repair is unsafe, broad, ambiguous, outside the CELL, or changes the
+plan, the Checker must use formal rework or escalate to the Supervisor instead.
+If the repaired CELL was the final CELL, the Checker writes the final queue
+instead of inventing another task.
+
+### Worker
+
+One Worker belongs to exactly one Checker.
+
+- Execute only a formal task or formal rework from its controlling Checker.
+- Work on one CELL at a time and only within the allowed scope.
+- Preserve unrelated changes made by other loops or the Owner.
+- Maintain append-only method evidence.
+- Run required checks and return evidence to the Checker.
+- Never self-select the next CELL and never declare its own work accepted.
+
+## Small Loop Protocol
+
+The normal path is direct:
 
 ```text
-blocked: <short reason>
+Checker -> Worker -> Checker -> Worker -> ... -> final queue
 ```
 
-and include the evidence, missing input, or safety reason.
+Worker tasks must start with one of:
 
-## Checker And Router
+```text
+Formal task: GO-01/CELL-01.01/R01
+Formal rework: GO-01/CELL-01.01/R02
+```
 
-Check evidence, not completion claims.
+Messages without one of these headings are discussion, not executable work.
 
-After a worker reply, QC is mandatory. The supervisor must compare the delivery
-against the task objective, allowed scope, forbidden scope, evidence
-requirement, and acceptance standard before treating the cell as done.
+After finishing a CELL, the Worker must directly send the controlling Checker:
 
-Choose exactly one route:
+```text
+完成，请检验
+```
 
-- `passed`
-- `rework`
-- `continue`
+The Worker's final visible reply must also be exactly `完成，请检验`. This
+receipt means only "ready for validation". The Checker must still verify the
+delivery before routing the next CELL.
+
+Do not actively wait or continuously poll after sending a task or receipt.
+Direct delivery should activate the receiving thread.
+
+## GO And CELL
+
+Use GO for a phase and CELL for the smallest inspectable work package.
+
+- GO: `GO-01`, `GO-02`.
+- CELL: `CELL-01.01`, `CELL-01.02`, `CELL-02.01`.
+- Round: `GO-01/CELL-01.01/R01`.
+- Never renumber after launch.
+
+Before launching a stream, provide:
+
+1. A solution file with objective, boundaries, architecture, risks, and
+   acceptance.
+2. A GO file with all phases and dependencies.
+3. A CELL index plus one detailed CELL file per GO.
+
+Every CELL must define objective, inputs, allowed scope, forbidden scope,
+outputs, checks, evidence, dependencies, and completion criteria.
+
+## Multi-Loop Decomposition
+
+Use multiple small loops only when streams are materially independent.
+
+For every stream:
+
+- Assign a unique module/stream owner.
+- Assign one Checker and one Worker.
+- Use distinct method logs and final queue names.
+- Define disjoint write scopes or explicit shared-file coordination.
+- Define cross-stream contracts as refs/events/interfaces rather than shared
+  informal assumptions.
+- Keep one stream's completion evidence separate from every other stream.
+
+Do not launch parallel loops that edit the same authoritative files without a
+declared serialization or merge policy. If a shared dependency blocks several
+loops, the Supervisor resolves it once and then wakes affected Checkers.
+
+The number of CELLs does not need to be equal between streams. Allocate CELLs
+according to complexity, risk, dependencies, and evidence burden.
+
+## Mandatory Overseer Rule (`监工`)
+
+The Supervisor must periodically perform a quick inspection while any stream
+has unfinished CELLs. This prevents a Checker or Worker from ending a turn and
+silently abandoning the loop.
+
+### Cadence
+
+- Use the Owner's requested interval.
+- If no interval is provided, use one hour.
+- Prefer a heartbeat attached to the current supervising thread when the host
+  supports it.
+- Do not create detached conversations or duplicate loops merely to monitor.
+- A check is a short inspection pass, not active waiting or continuous polling.
+
+### Quick Inspection
+
+For every unfinished stream, inspect only what is needed:
+
+1. Supervisor board state and planned CELL total.
+2. Passed/blocked final queue records.
+3. Checker and Worker thread status and latest turn.
+4. Latest formal task, formal rework, or completion receipt.
+5. Method-log/artifact timestamp when thread state is ambiguous.
+
+Classify the stream as:
+
+- `active_worker`
+- `active_checker`
+- `waiting_for_worker_delivery`
+- `waiting_for_checker_validation`
 - `blocked`
-- `owner-decision`
+- `stalled`
+- `complete`
 
-If QC is `passed` and work remains, prepare the next exact GO/cell task and
-dispatch it only as the final action of the supervisor turn.
+### Wake Rule
 
-If QC is `rework`, the supervisor performs the correction directly inside the
-same cell and `X/Y`, then reruns QC. The supervisor must not dispatch that
-correction back to the worker.
+If the stream is not complete and neither role is genuinely active, notify the
+Checker to continue. Do not tell the Worker to self-select work.
 
-After supervisor repair passes, prepare the next exact GO/cell task. Include a
-concise repair update naming the previous cell, defect, supervisor fix, and
-verification result, then dispatch the next cell in that same message as the
-final action of the supervisor turn.
+Use the observed situation:
 
-If QC is `blocked` or `owner-decision`, do not invent the next task. Record the
-blocker or ask the Owner.
+- Worker delivered but Checker stopped: tell Checker to validate and route.
+- Checker accepted but did not send the next CELL: tell Checker to resume
+  planner/router duty and send the next formal task.
+- Worker ended without delivery: tell Checker to inspect the partial work and
+  issue a bounded formal rework.
+- Receipt was lost: tell Checker to inspect Worker artifacts and perform a
+  one-time routing repair.
+- A blocked record exists: Supervisor resolves the plan/Owner/shared-resource
+  decision, then tells Checker how to resume.
+- A role is active: do not interrupt it.
+- A passed queue exists and final acceptance succeeds: stop monitoring that
+  stream.
 
-Use `owner-decision` for unresolved Owner choices. Do not silently assume them.
+A wake message must be concise, name the current CELL, cite the observed stop,
+and require the Checker to send or validate exactly one next action. It must
+not become a replacement task package for the Worker.
 
-If QC is `blocked` because of a local infrastructure/runtime/tooling issue that
-the supervisor can inspect or fix, the supervisor should repair or narrow it
-directly before asking the Owner. After a supervisor repair, send the next
-normal construction cell to the designated worker as the final action.
+### Overseer Record
 
-## Formal Blocker Closure
+Update the supervisor board after each check:
 
-A cell may intentionally produce formal blocked evidence when its acceptance
-standard is to prove that continuing would be unsafe, unsupported, or missing
-required external proof. If QC accepts that blocked evidence:
+```md
+| Stream | Checker | Worker | State | Current CELL | Final queue | Next signal |
+|---|---|---|---|---|---|---|
+```
 
-- record the blocker as the current route state;
-- preserve the worker's progress ordinal for the blocked cell;
-- do not dispatch the nominal next cell;
-- do not turn a blocked gate into `passed` just to keep the loop moving;
-- list the exact missing evidence, Owner/manual action, or external proof
-  needed;
-- route only to a blocker-repair cell, Owner/manual input, or a future task
-  explicitly allowed by the blocked evidence.
+Report active streams, repaired streams, blockers, and the next expected signal
+to the Owner in a compact status update.
 
-If accepted evidence says future cells are not unblocked, the supervisor must
-treat that as authoritative until a later accepted repair/proof cell changes
-it. A worker completion phrase means "ready for checking", not "accepted"; the
-supervisor's QC route is the only route state.
+## Evidence And Queue
 
-## Safety
+Use project-local coordination paths unless the project defines others:
 
-- Inherit safety, filesystem, infrastructure, asset, and approval boundaries
-  from the active project; do not define project-specific exceptions here.
-- Do not put credentials, cookies, tokens, or private account material in logs.
-- A Loop method never broadens the authority granted by the Owner or project.
+```text
+coordination/
+  plans/
+  checker-messages/
+  worker-method-logs/
+  supervisor-board.md
+```
+
+Method logs are append-only. Rotate to a new numbered shard before 999 lines or
+when an old shard must be sealed; never rewrite history to make evidence look
+clean. Every new shard cites the prior shard and its hash.
+
+Only the Checker writes a final stream record:
+
+```text
+LE_YYYYMMDD-HHMMSS_<stream>_<plan-version>_<result>.md
+```
+
+Valid results are `passed`, `blocked`, `plan-defect`, `owner-decision`, and
+`stopped`. A stream is complete only after the passed record exists and the
+Supervisor's final audit accepts it.
+
+No generated planning, log, queue, or coordination Markdown file may exceed
+999 lines. Split rather than remove necessary detail.
+
+## Recovery Rules
+
+- Delayed thread registration: confirm a returned thread ID with `read_thread`
+  before creating a replacement; temporary list/title failure does not prove
+  creation failed.
+- Duplicate Checker: choose one controlling Checker, stop/archive the other,
+  and ensure the Worker executes each CELL once.
+- Thread `systemError`: Checker inspects partial outputs and issues the same
+  CELL as a bounded rework; do not discard valid work.
+- Damaged method log: seal it, authorize a new shard, preserve the incident,
+  and revalidate current artifacts without fabricating history.
+- Dynamic shared data: distinguish legitimate external drift from writes by
+  the current CELL through short-window semantic and writer-attribution checks;
+  do not chase perpetual fixed hashes.
+- Repeated same defect: Checker follows the fixed retry policy and escalates a
+  real plan defect or blocker to the Supervisor.
+
+## Launch Checklist
+
+Before launching multiple loops, the Supervisor confirms:
+
+- Each stream has complete solution/GO/CELL plans.
+- Ownership and write scopes do not collide.
+- Every Checker/Worker pair and receipt target is correct.
+- Method-log and final-queue paths are unique.
+- Tests, scans, safety boundaries, and external-action gates are explicit.
+- The supervisor board lists every stream.
+- The Overseer interval and wake route are configured.
+- No stream relies on another stream's passed record as its own evidence.
+
+Then send each full stream plan to its Checker. The Checker sends the first
+formal CELL to its Worker. The Supervisor begins periodic oversight and remains
+outside ordinary Checker/Worker traffic.
