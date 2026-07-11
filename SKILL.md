@@ -179,12 +179,49 @@ silently abandoning the loop.
 
 ### Cadence
 
-- Use the Owner's requested interval.
-- If no interval is provided, use one hour.
-- Prefer a heartbeat attached to the current supervising thread when the host
-  supports it.
-- Do not create detached conversations or duplicate loops merely to monitor.
+- Starting this skill requires creating one recurring Overseer task for the
+  current Supervisor thread. Monitoring is not optional while any loop remains
+  unfinished.
+- Select exactly one interval: 15, 30, or 60 minutes.
+- Use 15 minutes for small projects with few loops and short/light CELLs.
+- Use 30 minutes for medium projects or mixed CELL sizes.
+- Use 60 minutes for large projects, many loops, or long/heavy CELLs.
+- Larger projects and larger CELL capacity use the longer interval because
+  normal work needs more time before a useful inspection.
+- If the Owner explicitly selects one of the three intervals, use it.
+- Create a heartbeat attached to the existing Supervisor thread. The heartbeat
+  may wake only that Supervisor; it must never create a new conversation,
+  detached task, worktree task, replacement loop, Checker, or Worker.
+- Record the heartbeat name/id and selected interval on the supervisor board.
 - A check is a short inspection pass, not active waiting or continuous polling.
+
+### Recurring Task Lifecycle
+
+At skill start:
+
+1. Estimate project size from loop count, total remaining CELLs, average CELL
+   duration, evidence burden, and shared-resource risk.
+2. Select 15, 30, or 60 minutes using the cadence rules.
+3. Create one same-thread heartbeat whose task is the Quick Inspection and Wake
+   Rule below.
+4. Confirm the heartbeat is active before considering multi-loop supervision
+   started.
+
+At every heartbeat:
+
+1. Wake the existing Supervisor in the same conversation.
+2. Inspect all unfinished loops once.
+3. Wake only stalled Checkers as required.
+4. Update the supervisor board and report a compact status.
+5. End the turn; do not wait for another interval.
+
+When every planned loop has a passed queue and the Supervisor's final audit has
+accepted every result, delete or disable the heartbeat in that same Supervisor
+turn. Record that monitoring ended. Do not leave an orphan periodic task and do
+not let the completion check create a new conversation.
+
+If the environment cannot create a same-thread heartbeat, report the missing
+capability explicitly. Do not substitute a detached cron job or new task.
 
 ### Quick Inspection
 
@@ -298,7 +335,9 @@ Before launching multiple loops, the Supervisor confirms:
 - Method-log and final-queue paths are unique.
 - Tests, scans, safety boundaries, and external-action gates are explicit.
 - The supervisor board lists every stream.
-- The Overseer interval and wake route are configured.
+- The 15/30/60-minute Overseer interval is selected from project/CELL size.
+- The same-thread heartbeat is active, recorded on the board, and configured to
+  remove itself after all loops pass Supervisor acceptance.
 - No stream relies on another stream's passed record as its own evidence.
 
 Then send each full stream plan to its Checker. The Checker sends the first

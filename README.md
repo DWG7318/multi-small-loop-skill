@@ -11,6 +11,11 @@ Checker <-> Worker
 One Supervisor splits the project, launches multiple pairs, periodically acts
 as Overseer (`监工`), wakes stalled Checkers, and performs final acceptance.
 
+Starting the skill also creates a heartbeat attached to the same Supervisor
+conversation. Its interval is selected from 15, 30, or 60 minutes according to
+project size and CELL duration. It never creates a new conversation, and it is
+removed automatically after every loop passes Supervisor acceptance.
+
 ## Roles
 
 - Supervisor: project planning, decomposition, periodic oversight, blocker
@@ -24,4 +29,4 @@ Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.0.0`.
+Current version: `1.1.0`.
