@@ -3,7 +3,7 @@
 Project-neutral method skill for constructing and operating supervisor-worker
 Loops with small cells, evidence-based QC, blocker repair, and routing.
 
-Current version: `0.2.2`
+Current version: `0.2.3`
 
 ## Files
 
@@ -18,6 +18,6 @@ The designated worker executes one bounded cell at a time. Project names,
 paths, models, infrastructure, and safety boundaries are supplied by the
 active Loop or project and are not embedded in this method.
 
-Version `0.2.2` also records formal blocker closure: accepted blocked evidence
-stops the route until a repair, Owner/manual input, or accepted external proof
-explicitly reopens it.
+Version `0.2.3` makes worker-caused QC repair supervisor-owned. After repairing
+and verifying the current cell, the supervisor sends one combined repair update
+and next-cell assignment instead of returning the correction to the worker.

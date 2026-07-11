@@ -28,8 +28,31 @@ Default split:
 - The designated worker executes normal bounded construction cells.
 - The supervisor designs the cell, sends the task, checks evidence, records
   decisions, and routes the next step.
-- The supervisor directly handles abnormal diagnostics and blocker repairs that
-  are within tool reach and do not require Owner hands-on action.
+- The supervisor directly repairs worker-caused QC defects, abnormal
+  diagnostics, and blockers that are within tool reach and do not require
+  Owner hands-on action.
+
+### Supervisor-Owned QC Repair
+
+When a worker delivery fails QC because the worker made an error, the
+supervisor must repair it directly. Do not return the same correction to the
+worker.
+
+1. Keep the current cell and `X/Y` unchanged.
+2. Back up or preserve the pre-repair state, make the minimum correction, and
+   rerun the relevant acceptance checks.
+3. Record the original worker task, QC defects, supervisor changes, checks, and
+   final route in durable evidence.
+4. After the repair passes, include a concise `supervisor repair update` in the
+   next new-cell task package, then assign that next cell in the same message.
+   Do not send a separate update-only message.
+5. The combined update plus next-cell dispatch is still a direct worker
+   dispatch and must be the final action of the supervisor turn.
+
+If the supervisor cannot safely perform the repair with available tools and
+authority, route `blocked` or `owner-decision` as appropriate. Do not transfer
+the worker's correction back to that worker merely because the supervisor is
+blocked.
 
 When a worker reports `blocked`:
 
@@ -95,12 +118,18 @@ Risk shortcuts:
 
 ## Failure Escalation
 
-- First failure: keep level only if the cause is missing input or mechanical.
-- Second failure: raise one level and split the cell smaller.
-- Third failure: use `xhigh` or route `blocked` /
-  `owner-decision`.
+- First worker-caused failure: the supervisor repairs the current cell and
+  records the defect. Missing input or a mechanical mistake need not raise the
+  next worker model level.
+- Second worker-caused failure: the supervisor still repairs directly, raises
+  the next new-cell worker level, and splits that next cell smaller.
+- Third worker-caused failure: the supervisor still owns the correction; use
+  the highest allowed worker level for the next new cell or route `blocked` /
+  `owner-decision` when continued delegation is not reliable.
 
-Never loop indefinitely on the same failing cell.
+Never loop the same correction back to the worker. Failure history changes the
+design and model of future new-cell assignments; it does not transfer QC repair
+ownership away from the supervisor.
 
 ## Worker Task Package
 
@@ -208,9 +237,14 @@ Choose exactly one route:
 If QC is `passed` and work remains, prepare the next exact GO/cell task and
 dispatch it only as the final action of the supervisor turn.
 
-If QC is `rework`, dispatch a correction task to the worker as the final action
-of the supervisor turn. Include the QC defects, required fix, unchanged scope,
-and acceptance standard.
+If QC is `rework`, the supervisor performs the correction directly inside the
+same cell and `X/Y`, then reruns QC. The supervisor must not dispatch that
+correction back to the worker.
+
+After supervisor repair passes, prepare the next exact GO/cell task. Include a
+concise repair update naming the previous cell, defect, supervisor fix, and
+verification result, then dispatch the next cell in that same message as the
+final action of the supervisor turn.
 
 If QC is `blocked` or `owner-decision`, do not invent the next task. Record the
 blocker or ask the Owner.
