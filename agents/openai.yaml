@@ -1,4 +1,4 @@
 interface:
   display_name: "Small-loop Method"
-  short_description: "Micro-cell terminal worker loop"
-  default_prompt: "Use $small-loop-method for WLflow GO/cell work: QC replies, then continue or rework."
+  short_description: "Reliable supervisor-worker GO/cell loops"
+  default_prompt: "Use $small-loop-method to design or operate a project-neutral supervisor-worker Loop with small cells and evidence-based QC."

@@ -1,15 +1,22 @@
 ---
 name: small-loop-method
-version: 0.2.1
-description: Small-loop method for planning and supervising reliable GO/cell work. Use when the user asks to design, refine, dispatch, QC, or review WLflow/WellLinkflow work; split GO nodes into small cells; assign model levels; route worker tasks; enforce terminal worker dispatch, same-method worker reply, QC-before-next-cell routing, supervisor-owned blocker repair, and default Owner authorization; handle repeated failures; or apply Loop Engineering style supervisor/planner/checker/router execution. Formerly wlflow-loop-construction.
+description: Project-neutral small-loop method for designing and running reliable supervisor-worker Loops. Use only when constructing or operating a Loop with GO/cell slicing, worker dispatch, evidence-based QC, repair routing, progress replies, and failure escalation. Do not trigger it merely because a particular project or repository is in scope.
 ---
 
 # Small-loop Method
 
-Use this skill to keep WLflow work small, checkable, and reliable.
+Use this skill to keep Loop work small, checkable, and reliable.
 
-The main thread acts as supervisor, planner, checker, and router. `WLflow worker`
-executes one bounded cell at a time and returns evidence.
+The supervising thread acts as supervisor, planner, checker, and router. The
+designated worker executes one bounded cell at a time and returns evidence.
+
+## Applicability
+
+This is a Loop-construction method, not a project policy. Apply it only when a
+supervisor-worker Loop is being designed or operated. Project names,
+repositories, directories, tools, asset boundaries, infrastructure rules,
+credentials, model locks, and release policies must come from the active
+project or the Owner; this skill must not invent or permanently embed them.
 
 ## Supervisor And Worker Boundary
 
@@ -18,7 +25,7 @@ judgment, diagnosis, repair routing, QC, and next-step decisions.
 
 Default split:
 
-- `WLflow worker` executes normal bounded construction cells.
+- The designated worker executes normal bounded construction cells.
 - The supervisor designs the cell, sends the task, checks evidence, records
   decisions, and routes the next step.
 - The supervisor directly handles abnormal diagnostics and blocker repairs that
@@ -30,35 +37,27 @@ When a worker reports `blocked`:
 2. If the supervisor can safely fix or narrow the blocker, do it directly with
    backup, minimum change, evidence, and verification.
 3. If the blocker is cleared, route the next normal construction cell back to
-   `WLflow worker`; do not continue locally as the executor unless that next
+   the designated worker; do not continue locally as the executor unless that next
    cell is itself another blocker repair.
 4. If the blocker cannot be solved without Owner hands-on action, ask the
    Owner only for that hands-on action.
 
-Owner authorization is assumed for WLflow-scoped supervisor decisions and
-repairs. Do not stop to ask for generic permission. Ask the Owner only when the
+Within the authority granted by the active Loop, the supervisor should not stop
+to ask for generic permission. Ask the Owner only when the
 action requires their manual work or private external input, such as restarting
 hardware, changing cables, scanning a code, logging in, entering a one-time
 code, visually confirming a UI, providing unknown credentials, or making a
 business/content choice that cannot be inferred from project rules.
 
-Default authorization does not override hard safety boundaries. Do not read
-secrets, mutate old LC assets, restore Docker, clean Docker, touch sessions or
-SQLite, or disturb Codex sidebar/app state unless the relevant current rule and
-Owner instruction explicitly allow that exact action.
+Loop authority never overrides the active project's safety and ownership
+boundaries.
 
 ## Source Of Truth
 
-When working in `C:\WellLinkflow`, use these project files as authoritative:
-
-- `docs/MASTER_PLAN.md`
-- `docs/CONSTRUCTION_GO_MAP.md`
-- `docs/CELL_PLAN_INDEX.md`
-- `docs/CELL_GRANULARITY_MODEL_POLICY.md`
-- the matching `docs/go-cells/*_CELL_PLAN.md`
-
-Do not copy the whole plan into the prompt. Read only the current GO/cell plan
-needed for the task.
+Use the active Loop specification, GO map, cell registry, model policy, and
+matching cell plan supplied by the current project as authoritative. This skill
+does not define their filenames or locations. Do not copy a whole plan into a
+worker prompt; read and send only what the current cell needs.
 
 ## Cell Rule
 
@@ -75,50 +74,37 @@ Do not run a worker task against a whole GO when a cell can be selected.
 
 ## Model Levels
 
-The supervisor model and worker model are independent. The supervisor may use
-the Owner-selected current model, including `gpt-5.6-sol`. `WLflow worker` is
-locked to `gpt-5.5` and must not inherit or be migrated to a 5.6 model.
+The supervisor model and worker model are independent. Use the model family and
+allowed reasoning tiers declared by the active Loop; do not hardcode a project
+model in this method. Every direct dispatch must explicitly select the worker
+model/profile required by that Loop and one appropriate reasoning level:
 
-Every direct worker dispatch must explicitly set `model: gpt-5.5` and select
-exactly one of these reasoning levels:
-
-- `5.5中` / `medium`: routine read-only checks, counts, simple document edits,
+- `medium`: routine read-only checks, counts, simple document edits,
   indexing, and low-ambiguity bounded work.
-- `5.5高` / `high`: multi-document consistency, cross-system contracts,
-  runtime design, old-LC boundaries, security-sensitive checks, and moderate
+- `high`: multi-document consistency, cross-system contracts, runtime design,
+  project boundaries, security-sensitive checks, and moderate
   ambiguity.
-- `5.5极高` / `xhigh`: installs, incident debugging, irreversible risk,
+- `xhigh`: installs, incident debugging, irreversible risk,
   repeated failure, and difficult blocker repair.
-
-Do not dispatch `WLflow worker` with `gpt-5.6-sol`, another 5.6 variant,
-`gpt-5.4`, inherited model settings, or any reasoning level outside
-`medium` / `high` / `xhigh`.
-
-Legacy cell labels remain readable and map at dispatch time:
-
-- `5.4中` -> `gpt-5.5` + `medium`
-- `5.4高` -> `gpt-5.5` + `high`
-- `5.5高` -> `gpt-5.5` + `high`
-- `5.5超高` -> `gpt-5.5` + `xhigh`
 
 Risk shortcuts:
 
-- Docker, Kubernetes, publishing, account, credential, or old-LC write risk:
-  start at `5.5高` or `5.5极高`.
+- Infrastructure, publishing, account, credential, or protected-asset write
+  risk: start at `high` or `xhigh`.
 - Repeated failure on the same cell: raise model level and split smaller.
 
 ## Failure Escalation
 
 - First failure: keep level only if the cause is missing input or mechanical.
 - Second failure: raise one level and split the cell smaller.
-- Third failure: use `5.5极高` (`xhigh`) or route `blocked` /
+- Third failure: use `xhigh` or route `blocked` /
   `owner-decision`.
 
 Never loop indefinitely on the same failing cell.
 
 ## Worker Task Package
 
-Before sending work to `WLflow worker`, include:
+Before sending work to the designated worker, include:
 
 - task id
 - GO id and cell id
@@ -133,32 +119,63 @@ Before sending work to `WLflow worker`, include:
 - acceptance standard
 - stop condition
 - failure route
+- exact worker completion text when progress numbering is active, such as
+  `完成X/Y，请检验`
+
+Before dispatch, validate the return route:
+
+- The delegation envelope `source_thread_id` and the task package's source
+  supervisor/checker thread id must be identical.
+- The source supervisor/checker thread id must not equal the destination worker
+  thread id.
+- If either check fails, do not dispatch. Correct the route first.
 
 Direct worker dispatch is terminal. If the supervisor sends a direct thread
-message to `WLflow worker`, that send must be the final action of the
+message to the designated worker, that send must be the final action of the
 supervisor turn. After sending, the supervisor does not wait, poll, inspect the
 worker thread, run follow-up commands, or continue other work in the same turn.
 
-Worker final phrase `完成，请检验` means only "ready for checking"; it does not
-mean accepted.
+Worker completion replies mean only "ready for checking"; they do not mean
+accepted.
 
 ## Worker Reply Protocol
 
 Every cell must end with a worker reply to the supervisor/checker.
 
-Normal completion:
+For normal cell completion, the supervisor must include the exact current
+ordinal and executable-cell total in the worker task package. The completion
+reply must use:
 
 ```text
-完成，请检验
+完成X/Y，请检验
 ```
 
-The worker must also provide or reference the delivery evidence before using
-that phrase.
+Rules:
+
+1. `X` is the current executable cell's fixed ordinal assigned by the
+   supervisor.
+2. `Y` is the authoritative executable-cell total from the cell plan; parent GO
+   headings and non-executing grouping headings do not count.
+3. The supervisor must write the exact `X/Y` into every worker task package.
+   The worker must not guess, calculate, or modify the numbers.
+4. Rework, repair, or QC closeout for the same current cell keeps the same
+   `X/Y`.
+5. `X/Y` increments only after supervisor QC accepts the current cell and the
+   supervisor dispatches the next cell.
+6. If the plan changes, only the supervisor recalculates `Y`; the worker must
+   not change it locally.
+7. The same-thread return message and the worker's own final visible reply must
+   use the exact same completion text supplied by the task, including `X/Y`
+   exactly.
+8. Before returning, the worker must verify that the return target is not its
+   own worker thread. If the delegation envelope and textual return target
+   disagree, or the return target equals the worker thread, do not self-send;
+   reply `blocked: return target mismatch` with durable evidence.
 
 If direct thread messaging is available, the worker must send the same pure
-text `完成，请检验` back to the source supervisor/checker thread by the same
+completion text back to the source supervisor/checker thread by the same
 thread messaging method used for dispatch. The worker then ends its own visible
-reply with exactly `完成，请检验`.
+reply with exactly that same text.
 
 If the worker cannot send that same-method return message, the cell is not a
 normal completion. The worker must write the delivery evidence to the agreed
@@ -203,14 +220,31 @@ Use `owner-decision` for unresolved Owner choices. Do not silently assume them.
 If QC is `blocked` because of a local infrastructure/runtime/tooling issue that
 the supervisor can inspect or fix, the supervisor should repair or narrow it
 directly before asking the Owner. After a supervisor repair, send the next
-normal construction cell to `WLflow worker` as the final action.
+normal construction cell to the designated worker as the final action.
+
+## Formal Blocker Closure
+
+A cell may intentionally produce formal blocked evidence when its acceptance
+standard is to prove that continuing would be unsafe, unsupported, or missing
+required external proof. If QC accepts that blocked evidence:
+
+- record the blocker as the current route state;
+- preserve the worker's progress ordinal for the blocked cell;
+- do not dispatch the nominal next cell;
+- do not turn a blocked gate into `passed` just to keep the loop moving;
+- list the exact missing evidence, Owner/manual action, or external proof
+  needed;
+- route only to a blocker-repair cell, Owner/manual input, or a future task
+  explicitly allowed by the blocked evidence.
+
+If accepted evidence says future cells are not unblocked, the supervisor must
+treat that as authoritative until a later accepted repair/proof cell changes
+it. A worker completion phrase means "ready for checking", not "accepted"; the
+supervisor's QC route is the only route state.
 
 ## Safety
 
-- Keep every Markdown file at or below 999 lines; split files, do not compress
-  useful content.
-- Do not install or clean Docker without fresh Owner approval.
-- Do not silently mutate old LCFlow assets, sessions, SQLite, or sidebar state.
-- Do not copy large media into WLflow; record paths, hashes, manifests, and
-  evidence instead.
+- Inherit safety, filesystem, infrastructure, asset, and approval boundaries
+  from the active project; do not define project-specific exceptions here.
 - Do not put credentials, cookies, tokens, or private account material in logs.
+- A Loop method never broadens the authority granted by the Owner or project.
