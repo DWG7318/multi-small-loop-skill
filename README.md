@@ -51,9 +51,8 @@ Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.2.4`.
+Current version: `1.2.5`.
 
-Version `1.2.4` requires the Supervisor to prove multiple Workers are necessary,
-acceptance-independent, and immediately startable. Otherwise use SLK. New
-projects receive fresh Checker/Worker roles; only explicit upgrades or
-continuations of the same project identity and evidence chain may reuse them.
+Version `1.2.5` adds CELL-level Worker model planning: Workers use only 5.6
+Terra or Sol at `medium` or higher, while Supervisor and Checkers are
+recommended to use 5.6 Sol at `xhigh`.

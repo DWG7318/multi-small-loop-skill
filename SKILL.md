@@ -77,6 +77,25 @@ continuation of the same project identity, objective lineage, coordination
 records, and evidence chain. A renamed, copied, adjacent, or merely similar
 project is new and must receive fresh roles.
 
+## Model Policy
+
+Use `gpt-5.6-sol` with `xhigh` reasoning for the Supervisor and every Checker.
+This is the recommended controlling-role configuration.
+
+Workers may use only:
+
+- `gpt-5.6-terra` with `medium` reasoning or higher;
+- `gpt-5.6-sol` with `medium` reasoning or higher.
+
+During planning, assign a Worker model and reasoning level to every CELL based
+on its difficulty, risk, and validation burden. Record the assignment in the
+CELL plan before launch.
+
+The Supervisor or controlling Checker may raise or lower a Worker's model or
+reasoning level as execution evidence changes the difficulty estimate. Record
+the change before dispatch or rework. Never go below `medium`, use a model
+outside the two allowed 5.6 Worker models, or fall back to 5.5/5.4-era models.
+
 ## Role Contract
 
 ### Supervisor
@@ -279,6 +298,7 @@ Every CELL must define:
 - focused checks and broader regression;
 - evidence and append-only method log;
 - dependencies;
+- Worker model and reasoning assignment;
 - completion criteria.
 
 Size CELLs by implementation risk, cross-owner impact, and evidence burden.
@@ -518,6 +538,7 @@ Before launching multiple loops, the Supervisor confirms:
 - Every Checker/Worker pair and receipt target is correct.
 - Method-log and final-queue paths are unique.
 - Tests, scans, safety boundaries, and external-action gates are explicit.
+- Every CELL declares an allowed Worker model and reasoning level.
 - The supervisor board lists every Worker and its persistent Checker.
 - The 15/30/60-minute Overseer interval is selected from project/CELL size.
 - The same-thread heartbeat is active, recorded on the board, and configured to
