@@ -14,22 +14,22 @@ Each loop uses two working roles:
 Checker <-> Worker
 ```
 
-One Supervisor splits the project into independent Blocks, launches one fixed
-pair per Block, periodically acts
+One Supervisor splits the project into independent Workers, pairs each Worker
+with one fixed Checker, periodically acts
 as Overseer (`监工`), wakes stalled Checkers, and performs final acceptance.
 
 ```text
-Project -> Block -> persistent Checker/Worker -> one or more GO -> CELL
+Project -> persistent Checker/Worker -> one or more GO -> CELL
 ```
 
-The Block count determines the Worker count. GO and CELL counts never create
-Workers, stages, waves, or replacement threads. A Worker remains assigned to
-its Block across every dependency-authorized GO and executes one CELL at a
-time.
+Worker count comes from independently acceptable work units that can all start
+together. GO and CELL counts never create Workers, stages, waves, or
+replacement threads. A Worker remains assigned across every
+dependency-authorized GO and executes one CELL at a time.
 
 Every Worker created in one MSLK must be able to receive its first CELL
 immediately. If one Worker must wait for another Worker's future output, they
-are not independent parallel Blocks: merge the dependent work, finish the
+are not independent parallel Workers: merge the dependent work, finish the
 shared prerequisite first, or launch the dependent loop later. MSLK never
 pre-creates idle Workers for future GO dependencies.
 
@@ -51,8 +51,8 @@ Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.2.1`.
+Current version: `1.2.2`.
 
-Version `1.2.1` makes launch-time independence a hard gate: every Worker must
-be dependency-ready at launch, cross-Worker waiting is a plan defect, and
-future dependent Workers must not be pre-created.
+Version `1.2.2` makes Worker the only decomposition unit. Every Worker must
+accept its own GO/CELL tasks, produce separately verifiable and acceptable
+results, and be dependency-ready to start concurrently.
