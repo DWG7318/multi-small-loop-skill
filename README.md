@@ -27,6 +27,12 @@ Workers, stages, waves, or replacement threads. A Worker remains assigned to
 its Block across every dependency-authorized GO and executes one CELL at a
 time.
 
+Every Worker created in one MSLK must be able to receive its first CELL
+immediately. If one Worker must wait for another Worker's future output, they
+are not independent parallel Blocks: merge the dependent work, finish the
+shared prerequisite first, or launch the dependent loop later. MSLK never
+pre-creates idle Workers for future GO dependencies.
+
 Starting the skill also creates a heartbeat attached to the same Supervisor
 conversation. Its interval is selected from 15, 30, or 60 minutes according to
 project size and CELL duration. It never creates a new conversation, and it is
@@ -45,8 +51,8 @@ Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.2.0`.
+Current version: `1.2.1`.
 
-Version `1.2.0` formalizes Block -> persistent Worker/Checker -> GO -> CELL
-design, Worker/GO/CELL arithmetic validation, dependency-waiting supervision,
-and the canonical repository identity guard.
+Version `1.2.1` makes launch-time independence a hard gate: every Worker must
+be dependency-ready at launch, cross-Worker waiting is a plan defect, and
+future dependent Workers must not be pre-created.

@@ -1,4 +1,4 @@
 interface:
   display_name: "Multi Small Loop (MSLK)"
-  short_description: "Persistent Block workers with timed oversight"
-  default_prompt: "Use $multi-small-loop-skill (MSLK) to derive persistent Worker/Checker pairs from independent Blocks, assign one or more GO and bounded CELLs to each pair, and run timed Supervisor oversight with evidence-based acceptance."
+  short_description: "Dependency-ready parallel loops with oversight"
+  default_prompt: "Use $multi-small-loop-skill (MSLK) only for dependency-ready independent Blocks, create no idle future Workers, assign one or more GO and bounded CELLs to each persistent Checker/Worker pair, and run timed Supervisor oversight with evidence-based acceptance."

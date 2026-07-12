@@ -185,9 +185,11 @@ Never renumber GO/CELL after launch.
 4. Count Workers from Blocks, never from GO count, CELL count, schedules,
    dependency depth, phases, waves, or desired visual symmetry.
 5. Keep the same Worker when one assigned GO ends and the next assigned GO
-   becomes dependency-authorized.
-6. Treat a Worker waiting on another GO as `waiting_for_go_dependency`, not as
-   stopped, stalled, complete, or a reason to create a replacement Worker.
+   is an internal continuation owned by the same Block.
+6. At launch, every created Worker must have a dependency-ready first CELL
+   that can be dispatched immediately.
+7. If Worker B must wait for Worker A's future output, B is not an independent
+   Block at that time. Do not create B, its Checker, or an Overseer row yet.
 
 Do not invent stages or waves unless the Owner explicitly asks for them. GO
 dependencies are sufficient to determine when a Checker may dispatch a CELL.
@@ -247,6 +249,12 @@ Before launching a Block, provide:
 
 Use MSLK only when Blocks are materially independent.
 
+Independence is a launch-time execution property, not a future intention. All
+Blocks in one active MSLK must be dependency-ready and independently
+executable when the MSLK starts. A different write directory or business name
+does not make a Block independent if its first CELL still needs another active
+Worker's future output.
+
 For every Block:
 
 - Assign one unique business/module/write-domain owner.
@@ -260,6 +268,32 @@ For every Block:
 Do not run Workers concurrently against the same authoritative files without a
 declared serialization or merge policy. If a shared dependency blocks several
 Workers, the Supervisor resolves it once and authorizes the affected Checkers.
+
+Do not create idle Workers for later dependent work. Resolve cross-Block
+dependencies in exactly one of these ways:
+
+1. Merge the dependent GO into the same persistent Block and Worker.
+2. Complete and freeze the shared prerequisite with one loop before launching
+   the independent MSLK Blocks.
+3. Launch the dependent work later as a separate SLK or MSLK after its
+   prerequisites pass Supervisor acceptance.
+
+### Dependency-Waiting Anti-Pattern
+
+This is invalid:
+
+```text
+Worker A: starts GO-01 now
+Worker B: created now, waits for Worker A to finish GO-01
+Worker C: created now, waits for Worker B to finish
+```
+
+Only Worker A exists as executable work. B and C are future assignments, not
+parallel Blocks. Labeling them `waiting_for_go_dependency`, pre-creating their
+threads, or counting them in the current Worker total does not make the launch
+parallel. Stop the launch as `PLAN_DEFECT`, archive or revoke the premature
+pairs, finish/freeze the prerequisite, and recalculate Worker count from the
+Blocks that can start immediately.
 
 The number of GO and CELL does not need to be equal between Blocks. Allocate
 them according to ownership, complexity, risk, dependencies, and evidence.
@@ -332,17 +366,17 @@ Classify the Block as:
 - `active_checker`
 - `waiting_for_worker_delivery`
 - `waiting_for_checker_validation`
-- `waiting_for_go_dependency`
 - `blocked`
 - `stalled`
 - `complete`
 
 ### Wake Rule
 
-If the Block is not complete and neither role is genuinely active, first check
-whether its next GO/CELL dependency is satisfied. A dependency-waiting Block is
-healthy and must not be woken. Otherwise notify the Checker to continue. Do not
-tell the Worker to self-select work.
+If the Block is not complete and neither role is genuinely active, notify the
+Checker to continue unless a real blocker or plan defect is recorded. Do not
+tell the Worker to self-select work. Cross-Worker dependency waiting is not a
+healthy active state; it means the launch decomposition was invalid or the
+dependent Worker was created too early.
 
 Use the observed situation:
 
@@ -353,8 +387,8 @@ Use the observed situation:
   issue a bounded formal rework.
 - Receipt was lost: tell Checker to inspect Worker artifacts and perform a
   one-time routing repair.
-- GO dependency is unsatisfied: record `waiting_for_go_dependency`; do not
-  message either role and do not create another Worker.
+- Another Worker's future output is required: record `PLAN_DEFECT`, revoke the
+  premature pair, and redesign or defer that work; do not keep an idle loop.
 - A blocked record exists: Supervisor resolves the plan/Owner/shared-resource
   decision, then tells Checker how to resume.
 - A role is active: do not interrupt it.
@@ -428,6 +462,10 @@ No generated planning, log, queue, or coordination Markdown file may exceed
 Before launching multiple loops, the Supervisor confirms:
 
 - Each Block has complete solution/GO/CELL plans.
+- Every created Worker's first CELL is dependency-ready and can be dispatched
+  immediately in the launch turn.
+- No Block needs another active Block's future output to begin or continue its
+  current authorized work.
 - Ownership and write scopes do not collide.
 - Every Checker/Worker pair and receipt target is correct.
 - Method-log and final-queue paths are unique.
