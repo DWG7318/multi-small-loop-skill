@@ -1,6 +1,6 @@
 ---
 name: multi-small-loop-skill
-description: Run large projects as multiple independent small loops under one Supervisor. The official abbreviation is MSLK; use this skill when the user says MSLK or multi-small-loop-skill, or when work must be split into multiple disjoint streams with one Checker-Worker pair per stream, concurrent GO/CELL execution, periodic oversight, stalled Checker wakeups, completion queues, and reliable cross-thread receipts. Use SLK instead when the project needs exactly one Block and one Checker-Worker pair.
+description: Run large projects through multiple independent Workers under one Supervisor. The official abbreviation is MSLK; use this skill when the user says MSLK or multi-small-loop-skill, or when work needs multiple Workers, each paired with one Checker and owning one disjoint GO/CELL chain, with concurrent execution, periodic oversight, stalled Checker wakeups, completion queues, and reliable cross-thread receipts. Use SLK instead when the project needs exactly one Worker and one Checker.
 ---
 
 # Multi Small Loop Skill (MSLK)

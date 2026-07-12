@@ -32,7 +32,7 @@ Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.1.3`.
+Current version: `1.1.4`.
 
-Version `1.1.3` restores the canonical MSLK identity as part of the repository
-separation. SLK now lives in its own repository with a single-loop contract.
+Version `1.1.4` counts parallel work by Worker. Each Worker owns one disjoint
+GO/CELL chain and is paired with one Checker.
