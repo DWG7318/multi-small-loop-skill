@@ -51,9 +51,9 @@ Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.2.3`.
+Current version: `1.2.4`.
 
-Version `1.2.3` keeps Worker as the only decomposition unit. Every Worker must
-accept its own GO/CELL tasks, produce separately verifiable and acceptable
-results, and be dependency-ready to start concurrently. It also clarifies that
-SLK combines Supervisor and Checker around one Worker.
+Version `1.2.4` requires the Supervisor to prove multiple Workers are necessary,
+acceptance-independent, and immediately startable. Otherwise use SLK. New
+projects receive fresh Checker/Worker roles; only explicit upgrades or
+continuations of the same project identity and evidence chain may reuse them.

@@ -39,8 +39,43 @@ Project
 ```
 
 The number of independently acceptable and concurrently startable work units
-determines the Worker count and Checker count. GO and CELL counts do not
-determine how many Workers to create.
+determines the Worker count and Checker count. Both conditions are strict and
+must hold at the same time. GO and CELL counts, project size, or a desire for
+speed do not justify multiple Workers.
+
+## Mode Selection Gate
+
+The Supervisor must prove that multiple Workers are necessary during solution
+planning, before creating roles.
+
+For every candidate Worker, verify both:
+
+1. Acceptance independence: its result can be inspected and accepted without
+   another Worker's future output or evidence, and concurrent writes, state,
+   fixtures, tests, or external side effects cannot invalidate that acceptance.
+2. Launch independence: its first CELL can be dispatched immediately and does
+   not wait for another Worker's future output, decision, or mutation.
+
+These conditions are intentionally difficult. If fewer than two Workers pass
+both, do not launch MSLK. Return to SLK and keep using SLK until the project
+actually satisfies the MSLK gate.
+
+If an active plan no longer satisfies the gate, stop issuing new CELLs,
+preserve accepted evidence, record the mode change, and replan as SLK. If an
+SLK plan later proves that at least two necessary Workers satisfy both
+conditions, it may upgrade to MSLK after the same stop, evidence, and replan
+procedure. Never change modes silently inside an executable CELL.
+
+## Fresh Role Requirement
+
+Every new project must create fresh Worker and Checker agents. Do not reuse
+roles from another project, even when their scope looks similar; prior context
+can contaminate planning, execution, and acceptance.
+
+Treat "new project" narrowly: reuse is allowed only for an explicit upgrade or
+continuation of the same project identity, objective lineage, coordination
+records, and evidence chain. A renamed, copied, adjacent, or merely similar
+project is new and must receive fresh roles.
 
 ## Role Contract
 
@@ -177,7 +212,8 @@ Project -> independent Worker/Checker -> GO -> CELL
 A Worker is valid only when both conditions hold:
 
 1. Independence: it can receive its own GO/CELL tasks and produce results that
-   can be inspected and accepted without borrowing another Worker's evidence.
+   can be inspected and accepted without borrowing another Worker's evidence
+   or suffering acceptance interference from concurrent writes or side effects.
 2. Parallel start: its first CELL has no prerequisite on another Worker's
    future output, so all Workers in the active MSLK can start together.
 
@@ -199,6 +235,8 @@ Never renumber GO/CELL after launch.
    that can be dispatched immediately.
 8. If Worker B must wait for Worker A's future output, B is not a valid Worker
    in the current MSLK. Do not create B, its Checker, or an Overseer row yet.
+9. If only one candidate remains valid, switch to SLK instead of manufacturing
+   another Worker.
 
 Do not invent stages or waves unless the Owner explicitly asks for them. GO
 dependencies are sufficient to determine when a Checker may dispatch a CELL.

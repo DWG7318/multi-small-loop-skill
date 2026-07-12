@@ -1,4 +1,4 @@
 interface:
   display_name: "Multi Small Loop (MSLK)"
   short_description: "Dependency-ready parallel loops with oversight"
-  default_prompt: "Use $multi-small-loop-skill (MSLK) only for independent Workers that can start concurrently, receive their own GO/CELL tasks, and produce separately acceptable results; pair each Worker with one Checker and run timed Supervisor oversight."
+  default_prompt: "Use $multi-small-loop-skill (MSLK) only after proving multiple fresh Workers are necessary, acceptance-independent, and immediately startable; pair each Worker with one Checker, otherwise use SLK."
