@@ -1,6 +1,6 @@
 ---
 name: multi-small-loop-skill
-description: Run large projects through multiple independent, concurrently startable Workers under one Supervisor, with one persistent Checker paired to each Worker. The official abbreviation is MSLK; use this skill when the user says MSLK or multi-small-loop-skill, or when work can be divided into Workers that independently receive GO/CELL tasks, produce separately verifiable and acceptable results, and start without waiting for another Worker's future output. Use SLK instead when the project needs exactly one Worker and one Checker.
+description: Run large projects through multiple independent, concurrently startable Workers under one Supervisor, with one persistent Checker paired to each Worker. The official abbreviation is MSLK; use this skill when the user says MSLK or multi-small-loop-skill, or when work can be divided into Workers that independently receive GO/CELL tasks, produce separately verifiable and acceptable results, and start without waiting for another Worker's future output. Use SLK instead when the combined Supervisor/Checker needs exactly one Worker.
 ---
 
 # Multi Small Loop Skill (MSLK)
