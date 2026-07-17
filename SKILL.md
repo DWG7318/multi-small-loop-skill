@@ -171,7 +171,7 @@ The Supervisor owns the whole project, not the middle of ordinary cell work.
 - Maintain the supervisor board and final result queue.
 - Act as the mandatory Overseer (`监工`) through periodic quick inspections.
 - Resolve plan defects, Owner decisions, shared-resource conflicts, and genuine
-  blockers that a Checker cannot resolve inside its fixed plan.
+  blockers that a Checker cannot resolve inside its current authorized plan.
 - Perform final local acceptance after a Checker writes a passed result.
 
 The Supervisor must not be the normal relay for Checker/Worker messages and
@@ -181,7 +181,7 @@ must not silently take over a Worker's cell.
 
 One Checker controls exactly one Worker.
 
-- Read the complete fixed plan for its Worker.
+- Read the complete current versioned plan for its Worker.
 - Select and package one fixed CELL at a time.
 - Send formal tasks and rework directly to its paired Worker.
 - Inspect files, diffs, tests, scans, method logs, and boundaries locally.
@@ -192,8 +192,9 @@ One Checker controls exactly one Worker.
 - Write the Worker's final passed or blocked queue record.
 
 The Checker may internally perform planning and routing, but it remains one
-external role. It must not change GO/CELL scope or acceptance rules after
-launch; plan defects go to the Supervisor.
+external role. It must not change GO/CELL scope or acceptance rules ad hoc;
+after GO completion it may propose an evidence-driven revision to the
+Supervisor under the rule below.
 
 ## Checker Direct Repair Rule
 
@@ -286,7 +287,7 @@ Project -> independent Worker/Checker -> GO -> CELL
 
 - Worker: one persistent execution owner with an independent work domain.
 - Checker: the persistent planner, validator, and router paired to that Worker.
-- GO: a fixed outcome within the Worker, not a phase, wave, or thread.
+- GO: a verifiable outcome within the Worker, not a phase, wave, or thread.
 - CELL: the smallest inspectable work package inside one GO.
 - Round: `GO-01/CELL-01.01/R01`.
 
@@ -316,8 +317,8 @@ Never renumber GO/CELL after launch.
    that can be dispatched immediately.
 8. If Worker B must wait for Worker A's future output, B is not a valid Worker
    in the current MSLK. Do not create B, its Checker, or an Overseer row yet.
-9. If only one candidate remains valid, switch to SLK instead of manufacturing
-   another Worker.
+9. If only one candidate remains valid, record `METHOD_SELECTION_FAILED`, stop
+   MSLK launch, and return the method decision to the Owner.
 
 Do not invent stages or waves unless the Owner explicitly asks for them. GO
 dependencies are sufficient to determine when a Checker may dispatch a CELL.
@@ -345,8 +346,41 @@ Validate all of these:
 - Define GO as a verifiable outcome owned by one Worker.
 - Let one Worker own multiple related GO when they share the same write domain.
 - Express ordering as GO dependencies; do not create another project layer.
-- Keep GO fixed after launch; route plan defects to Supervisor.
+- Keep GO changes versioned and evidence-driven; route every revision through
+  the Supervisor.
 - Do not distribute GO evenly merely to make Worker totals look symmetrical.
+
+### Evidence-Driven GO Revision
+
+After every GO is completed and checked, its Checker reports the actual result
+to the Supervisor, including delivered scope, defects, residual risk, new
+dependencies, changed estimates, and incomplete outcomes.
+
+Based on that evidence, the Supervisor may:
+
+- adjust any subsequent GO that has not started;
+- add a supplementary GO for a historical GO when the completed result exposes
+  missing, corrective, or follow-up work;
+- revise affected CELL maps, dependencies, model assignments, and the Worker
+  assignment table.
+
+GO revision is append-only and versioned:
+
+- never rewrite the historical GO, its evidence, or its acceptance result;
+- retain existing identifiers and add a revision or supplement identifier such
+  as `GO-03-R1` or `GO-03-S1`;
+- keep a historical-GO supplement with the same owning Worker unless the Owner
+  explicitly authorizes a new project run;
+- do not create an extra Worker or Checker merely because a GO changed;
+- record the triggering evidence, reason, old/new scope, dependencies,
+  acceptance criteria, affected CELLs, and Owner decision when required;
+- preserve MSLK acceptance independence, parallel safety, method exclusivity,
+  visible-conversation rules, and existing safety gates.
+
+Before dispatching a revised or supplementary GO, run a no-side-effect delta
+simulation for every affected Checker/Worker pair and record
+`GO_REVISION_SIMULATION_PASS`. Without that record, the revision remains
+proposed and no formal CELL may start.
 
 ### Design CELL
 
@@ -598,6 +632,8 @@ Before launching multiple loops, the Supervisor confirms:
 - Every role conversation has work ready, and every no-work conversation is
   archived with an explicit unarchive path for later same-project work.
 - Each Worker has complete solution/GO/CELL plans.
+- The GO revision ledger is present; every completed GO has an evidence review,
+  and every revised or supplementary GO has `GO_REVISION_SIMULATION_PASS`.
 - Every created Worker's first CELL is dependency-ready and can be dispatched
   immediately in the launch turn.
 - No Worker needs another active Worker's future output to begin or continue its

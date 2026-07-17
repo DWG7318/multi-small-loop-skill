@@ -33,6 +33,12 @@ Before formal role launch or CELL execution, run a no-side-effect simulation of
 each pair's first assignment, delivery, validation, and routing cycle. Formal
 work is allowed only after the simulation records `SIMULATION_PASS`.
 
+After each GO, review the actual accepted result. That evidence may adjust
+unstarted subsequent GO or add an append-only supplementary GO for a historical
+GO. Preserve all historical evidence and identifiers, keep ownership and
+parallel independence intact, and require `GO_REVISION_SIMULATION_PASS` before
+executing the revised plan.
+
 ```text
 Project -> persistent Checker/Worker -> one or more GO -> CELL
 ```
@@ -66,8 +72,8 @@ Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.2.6`.
+Current version: `1.2.7`.
 
-Version `1.2.6` requires lifecycle-managed visible same-project conversations,
-makes MSLK and SLK strictly exclusive and non-repeatable, and adds the
-mandatory pre-work simulation gate.
+Version `1.2.7` adds evidence-driven, append-only GO revision after every GO,
+including adjustment of subsequent GO and supplementary work for historical
+GO with a mandatory delta simulation.
