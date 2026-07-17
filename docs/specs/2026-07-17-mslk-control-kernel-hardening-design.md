@@ -24,14 +24,64 @@ tests, role ownership, or commands.
   states, commands, transitions, errors, and audit fields.
 - `references/mslk-control-operations.md`: human instructions for Supervisor and
   paired Checkers, including inspection and wake behavior.
+- `evals/mslk-readiness-questions.json`: exactly 24 MSLK-only adversarial
+  comprehension questions with stable question and option IDs.
+- `evals/mslk-readiness-answer-key.json`: canonical answers, rationales,
+  governing rule anchors, and forbidden interpretations for all 24 questions.
+- `scripts/run_mslk_readiness_eval.py`: MSLK-only question presentation, seeded
+  ordering, exact grading, and receipt generation.
 - `SKILL.md`: concise mandatory summary and conditional reference link.
 - `tests/test_control_kernel.py`: model-based positive and negative scenarios
   loaded from the MSLK JSON contract.
+- `tests/test_readiness_eval.py`: question coverage, answer-key completeness,
+  fail-closed grading, stale-receipt, and bypass tests.
 - `tests/test_contract.py`: role, documentation, link, version, and line-budget
   contracts.
 
 No file in this list is shared with SLK. Similar behavior is intentionally
 defined and tested again under MSLK ownership.
+
+## Mandatory Readiness Eval
+
+Every visible role conversation in the exact frozen MSLK roster, including the
+Supervisor and every persistent Checker and Worker, must pass the MSLK readiness
+eval before any formal CELL is dispatched. Taking the eval is ready work, so
+creating roster conversations for this purpose does not create idle roles.
+Archive a role immediately after its eval if no next authorized work is ready;
+later resume that same conversation rather than replacing it.
+
+The 24 questions use exact multiple-select, ordering, and state-transition
+responses rather than free-form self-attestation. They cover all MSLK governance
+rules, with extra adversarial cases for:
+
+- MSLK/SLK mutual exclusion, frozen independent pairs, and visible-role
+  lifecycle;
+- Supervisor boundaries versus Checker-owned planning, checking, routing, and
+  repair, including the prohibition on returning repair to a Worker;
+- mandatory simulation, per-Checker GO revision, supplementary historical GO,
+  and project-wide progress denominator changes;
+- model assignment, device-sized CELLs versus project-sized GOs, optional Goal,
+  continuation blockers, Supervisor escalation, and weakened Overseer control;
+- GO-level Checker detection profiles used for every CELL, Markdown limits,
+  scoped commands, partial `ALL` outcomes, idempotency, and frozen-roster
+  evidence.
+
+The runner displays questions without answers and grades against the separate
+canonical key. A pass requires exactly `24/24`; partial credit, rounded scores,
+manual overrides, inherited receipts, and “understood in spirit” claims are
+invalid. One wrong, missing, extra, or misordered answer produces
+`MSLK_READINESS_EVAL_FAIL`. A retry requires rereading the cited governing rules,
+a new seed, and all 24 questions again; prior correct answers do not carry over.
+
+`MSLK_READINESS_EVAL_PASS` records skill version and commit, question-bank and
+answer-key hashes, candidate role, pair ID where applicable, conversation ID,
+model/reasoning level, seed, attempt number, per-question result, `24/24`, and
+timestamp. The receipt is stale after any skill/eval change, roster or candidate
+conversation replacement, pair reassignment, or model change. Standard answers
+remain committed and reviewable, but the candidate may not inspect the answer
+key or grading tests during an attempt; unverifiable ordering fails closed.
+`SIMULATION_PASS` covers the same frozen roster and is attempted only after every
+roster receipt is current; formal work requires both gates.
 
 ## Public Command Contract
 
@@ -57,9 +107,10 @@ MSLK CANCEL SCHEDULE PAIR <pair-id>
 
 `MSLK START` is the only initial-start command and is never scheduled. It is
 valid only when the complete frozen roster has at least two independent Workers,
-every first CELL is ready, plans and detection profiles are approved, and
-`SIMULATION_PASS` covers the same roster. It creates and dispatches all roster
-pairs in that launch turn.
+every roster role has a current `MSLK_READINESS_EVAL_PASS`, every first CELL is
+ready, plans and detection profiles are approved, and `SIMULATION_PASS` covers
+the same roster. It authorizes formal dispatch to all already-prepared roster
+pairs in that launch turn and creates no replacement pair.
 
 Timed commands apply only to existing pairs after project start:
 
@@ -87,8 +138,8 @@ Project states are `NOT_STARTED`, `RUNNING`, `PARTIALLY_PAUSED`, `PAUSED`,
 Key invariants:
 
 - `NOT_STARTED -> RUNNING` requires one manual `MSLK START` for the frozen roster.
-- Before start, every frozen pair is `PLANNED`; `MSLK START` moves the complete
-  roster to `RUNNING` in one launch turn.
+- Before start, every prepared frozen pair is `PLANNED`; `MSLK START` moves the
+  complete roster to `RUNNING` in one launch turn.
 - No pair may join the roster after start through the control kernel.
 - Active CELL work is never interrupted.
 - Each targeted Checker validates and repairs before pause becomes effective.
@@ -124,6 +175,8 @@ Rejection preserves that target's state, schedule, progress, and role visibility
 Tests load the JSON contract and verify at least:
 
 - valid manual start of the complete frozen roster;
+- rejection of start when any roster role's readiness receipt is missing or
+  stale;
 - rejection of timed initial start and late pair creation;
 - all-scope and one-pair safe pauses;
 - accepted-CELL threshold without overshoot;
@@ -160,6 +213,8 @@ pushed HEAD, and annotated `v1.8.0` tag.
 - All MSLK Markdown files are at most 1000 lines; target `SKILL.md` below 900.
 - No initial timed start or late pair creation remains.
 - Frozen roster, pair ownership, progress, and evidence remain stable.
+- Every exact-roster role passes an independent, current `24/24` MSLK eval before
+  simulation or formal dispatch.
 - Command and scenario tests pass independently of SLK.
 - Global install equals the repository by tracked-file hash.
 - Remote `main` and annotated `v1.8.0` identify the same release commit.
