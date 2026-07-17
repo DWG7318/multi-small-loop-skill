@@ -23,9 +23,10 @@ run; never load both skills, switch methods, repeat the invocation, or borrow
 SLK capabilities. If MSLK is not suitable, stop and return the method decision
 to the Owner instead of converting the active run.
 
-Common rules do not make the skills composable. MSLK implements all nine rules
-only through one distinct Supervisor and multiple persistent Checker/Worker
-pairs; it never imports SLK's combined role or single-Worker topology.
+Common rules do not make the skills composable. MSLK implements its governing
+rules only through one distinct Supervisor and multiple persistent
+Checker/Worker pairs; it never imports SLK's combined role or single-Worker
+topology.
 
 All roles must be visible Codex conversations under the same project. MSLK
 never uses subagents, background agents, hidden workers, or `delegate_task`.
@@ -33,9 +34,10 @@ Create or unarchive a role conversation only when formal work is ready; archive
 it immediately when that work finishes. Later same-project work should
 unarchive the existing conversation instead of creating a duplicate.
 
-Before formal role launch or CELL execution, run a no-side-effect simulation of
-each pair's first assignment, delivery, validation, and routing cycle. Formal
-work is allowed only after the simulation records `SIMULATION_PASS`.
+Before simulation, every role in the complete frozen roster must pass MSLK's
+independent 24-question readiness Eval with exactly `24/24`. Then run a
+no-side-effect simulation of each pair's first assignment, delivery, validation,
+and routing cycle. Formal work requires both gates for the same roster.
 
 After each GO, the paired Checker reviews the actual accepted result and may
 propose adjustments to unstarted GO or an append-only supplementary GO for
@@ -97,10 +99,9 @@ failure stops that Checker's Worker dispatch and reports evidence to the
 Supervisor. The Supervisor either requests specific Owner assistance or resolves
 the supervisory condition and wakes the same Checker for revalidation.
 
-The Owner may also configure the Overseer to start/resume or safely pause all
-loops or named Checker/Worker pairs at a specified time or accepted-CELL
-threshold. Pausing stops new dispatch at safe CELL boundaries; resuming preserves
-the same Checker/Worker ownership and revalidates prerequisites.
+Initial `MSLK START` is manual only for the complete frozen roster. The Owner may
+configure safe pause for all or named pairs at a specified time or accepted-CELL
+threshold and same-pair resume. Control never adds or replaces a pair.
 
 The Supervisor also provisions every Checker with a versioned detection skill
 and tool stack. Each Checker independently maintains CodeGraph impact baselines,
@@ -116,14 +117,16 @@ is allowed.
 
 Every Markdown work artifact has a hard 1000-physical-line maximum because Codex
 must be able to read and recover working context reliably. The Supervisor defines
-the project-wide semantic continuation map and `WORK_CONTINUATION_INDEX`; each
-Checker runs `markdown-line-budget` for every Markdown-writing CELL.
+the semantic continuation map and a current-state `WORK_CONTINUATION_INDEX`
+below 200 lines; each Checker runs `markdown-line-budget` for every
+Markdown-writing CELL.
 
 Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.7.0`.
+Current version: `1.8.0`.
 
-Version `1.7.0` adds the hard 1000-line Markdown context boundary, semantic work
-continuation, compaction recovery, and per-CELL line-budget evidence.
+Version `1.8.0` adds the independent frozen-roster 24/24 readiness Eval,
+MSLK-only scoped control kernel, manual-first-start rule, deployable receipts,
+and hardened context/release contracts.

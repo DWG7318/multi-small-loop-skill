@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 import unittest
 
 
@@ -9,12 +10,49 @@ PROMPT = (ROOT / "agents" / "openai.yaml").read_text(encoding="utf-8")
 DETECTION_REFERENCE = (ROOT / "references" / "checker-detection-catalog.md").read_text(
     encoding="utf-8"
 )
+CONTROL_REFERENCE = (ROOT / "references" / "mslk-control-operations.md").read_text(
+    encoding="utf-8"
+)
+CONTROL_CONTRACT = json.loads(
+    (ROOT / "contracts" / "mslk-control-kernel.json").read_text(encoding="utf-8")
+)
+VERSION = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
 ALL_TEXT = "\n".join((SKILL, README, PROMPT, DETECTION_REFERENCE))
 NORMALIZED_SKILL = " ".join(SKILL.split())
 NORMALIZED_DETECTION = " ".join((SKILL + "\n" + DETECTION_REFERENCE).split())
 
 
 class MultiSmallLoopContractTest(unittest.TestCase):
+    def test_release_identity_is_v1_8_0(self):
+        self.assertEqual(VERSION, "1.8.0")
+        self.assertIn("Current version: `1.8.0`", README)
+        self.assertIn("GitHub repository ID: `1298120736`", SKILL)
+        self.assertNotIn("all nine rules", README.lower())
+
+    def test_readiness_precedes_simulation_and_manual_frozen_start(self):
+        self.assertIn("## Mandatory Readiness Eval", SKILL)
+        self.assertIn("MSLK_READINESS_EVAL_PASS", SKILL)
+        self.assertIn("exactly `24/24`", SKILL)
+        self.assertIn("complete frozen roster", SKILL)
+        self.assertLess(
+            SKILL.index("## Mandatory Readiness Eval"),
+            SKILL.index("## Mandatory Simulation Gate"),
+        )
+        self.assertEqual(CONTROL_CONTRACT["initial_start"], "MSLK START")
+        self.assertTrue(CONTROL_CONTRACT["roster_frozen_after_start"])
+        self.assertNotIn("SCHEDULED_START", SKILL)
+        self.assertNotIn("create a not-yet-created pair", SKILL)
+
+    def test_continuation_index_is_bounded_current_state(self):
+        self.assertIn("bounded mutable current-state pointer", NORMALIZED_SKILL)
+        self.assertIn("below 200 physical lines", NORMALIZED_SKILL)
+        self.assertIn(
+            "Historical detail remains in linked semantic shards", NORMALIZED_SKILL
+        )
+
+    def test_main_skill_context_is_below_target(self):
+        self.assertLess(len(SKILL.splitlines()), 900)
+
     def test_mode_is_strictly_exclusive(self):
         self.assertIn("invoke MSLK exactly once", SKILL)
         self.assertIn("do not borrow SLK's combined Supervisor/Checker", SKILL)
@@ -80,24 +118,33 @@ class MultiSmallLoopContractTest(unittest.TestCase):
             with self.subTest(rule=rule):
                 self.assertIn(rule, NORMALIZED_SKILL)
 
-    def test_optional_overseer_schedule_controls_selected_loops_safely(self):
+    def test_control_commands_pause_and_resume_existing_pairs_safely(self):
+        normalized_control = " ".join((SKILL + "\n" + CONTROL_REFERENCE).split())
         required = (
-            "## Optional Overseer Control Schedule",
-            "The Owner may preconfigure one optional Overseer control schedule",
-            "accepted CELL threshold",
-            "target all loops or named Checker/Worker pairs",
-            "SCHEDULED_START",
-            "SCHEDULED_PAUSE",
-            "PAUSED_BY_POLICY",
-            "RESUMED_BY_POLICY",
+            "## MSLK Control Commands",
+            "`MSLK START` is manual only",
+            "MSLK PAUSE ALL AFTER <accepted-cell-count>",
+            "MSLK PAUSE PAIR <pair-id> AFTER <accepted-cell-count>",
+            "MSLK RESUME PAIR <pair-id> AT <RFC3339-time>",
+            "absolute project-wide accepted CELL count",
+            "`MSLK_CONTROL_RECEIPT`",
             "must not interrupt an active CELL",
-            "does not pre-create idle Workers",
             "wake the same Checker",
-            "A paused loop is not complete",
+            "A paused pair is not complete",
         )
         for rule in required:
             with self.subTest(rule=rule):
-                self.assertIn(rule, NORMALIZED_SKILL)
+                self.assertIn(rule, normalized_control)
+        self.assertNotIn("SCHEDULED_START", SKILL)
+
+    def test_quick_inspection_uses_the_single_control_reference(self):
+        self.assertIn("## Quick Inspection", CONTROL_REFERENCE)
+        self.assertIn("## Wake Rule", CONTROL_REFERENCE)
+        self.assertIn("## Overseer Record", CONTROL_REFERENCE)
+        self.assertIn(
+            "references/mslk-control-operations.md", CONTROL_CONTRACT["references"]
+        )
+        self.assertNotIn("overseer-inspection-and-wake.md", SKILL)
 
     def test_checker_detection_system_and_supervisor_capability_supply(self):
         required = (

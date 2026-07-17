@@ -97,8 +97,8 @@ under the same project. Hidden execution is forbidden.
 
 ### Visible Conversation Lifecycle
 
-- Create or unarchive a role conversation only when an authorized formal task
-  is ready for that role.
+- Create or unarchive a role conversation only when an authorized readiness Eval
+  or formal task is ready for that role.
 - Keep the conversation visible while that task is active.
 - Archive it immediately when its authorized work is complete and no formal
   task remains assigned.
@@ -108,12 +108,28 @@ under the same project. Hidden execution is forbidden.
   permit SLK activation.
 - An archived conversation performs no hidden or background work.
 
+## Mandatory Readiness Eval
+
+Before simulation or formal CELL dispatch, every visible role in the complete
+frozen roster must pass the MSLK-only readiness Eval through
+[`scripts/run_mslk_readiness_eval.py`](scripts/run_mslk_readiness_eval.py).
+This includes the Supervisor and every persistent Checker and Worker. Eval is
+authorized ready work; archive a role afterward when no next work is ready.
+
+Every role must score exactly `24/24`. One wrong, missing, extra, or misordered
+answer fails the entire attempt. Retry all 24 questions with a new seed after
+rereading the cited rules. Partial credit, manual override, inherited receipts,
+roster substitution, and answer-key access during an attempt are forbidden.
+`MSLK_READINESS_EVAL_PASS` binds release/content hashes, role, pair ID where
+applicable, conversation, model/reasoning, seed, attempt, and per-question result.
+Any changed identity or content makes it stale and fails closed.
+
 ## Mandatory Simulation Gate
 
-Run a no-side-effect simulation before formal work. Planning and simulation may
-inspect metadata, but must not edit project files, execute implementation
-commands, call external services, create formal role assignments, or start a
-CELL.
+Only after current readiness receipts cover the complete frozen roster, run a
+no-side-effect simulation before formal work. Planning and simulation may inspect
+metadata, but must not edit project files, execute implementation commands, call
+external services, create formal role assignments, or start a CELL.
 
 The simulation must:
 
@@ -131,8 +147,8 @@ The simulation must:
    and one focused-to-regression evidence route.
 
 Record either `SIMULATION_PASS` with the checked facts or `SIMULATION_FAIL` with
-the reason. Formal work may begin only after `SIMULATION_PASS`. A failed or
-missing simulation forbids role launch and CELL execution.
+the reason. Formal work requires both current exact-roster readiness receipts and
+`SIMULATION_PASS`. A failed or missing gate forbids CELL execution.
 
 ## Fresh Role Requirement
 
@@ -177,7 +193,7 @@ classification. Record the change before dispatch. Never assign a Worker below
 | CELL assignment, validation, repair, routing, progress display, and per-Worker queue | Its paired Checker |
 | Continuation-condition stop, evidence report, and resume validation | Its paired Checker |
 | Continuation-condition resolution and Owner-assistance decision | Supervisor |
-| Optional timed or accepted-CELL-threshold loop control | Supervisor |
+| Manual start and Owner-configured safe pause/resume control | Supervisor |
 | Checker capability, skill, and tool provisioning | Supervisor |
 | Detection-system design, execution, calibration, and evidence | Its paired Checker |
 | Optional Goal management, gap allocation, and final Goal validation | Supervisor |
@@ -198,7 +214,7 @@ The Supervisor owns the whole project, not the middle of ordinary cell work.
   Checker-owned plans.
 - Create one stable Checker for each Worker.
 - Maintain the supervisor board and final result queue.
-- Manage any Owner-configured optional Overseer start/resume/pause schedule.
+- Manage manual start and Owner-configured safe pause/same-pair resume control.
 - Provision every Checker with authorized skills, Checker-specific tool access,
   permissions, versions, configurations, and a device-safe execution budget.
 - Manage and independently validate the optional project Goal completion gate.
@@ -675,112 +691,26 @@ Workers that can start immediately.
 The number of GO and CELL does not need to be equal between Workers. Allocate
 them according to ownership, complexity, risk, dependencies, and evidence.
 
-## Mandatory Overseer Rule (`监工`)
+## Mandatory Overseer
 
-The Supervisor must periodically perform a quick inspection while any Worker
-has unfinished CELLs. This prevents a Checker or Worker from ending a turn and
-silently abandoning the loop.
+While any pair is unfinished, the Supervisor maintains one same-thread heartbeat
+at 15, 30, or 60 minutes according to project/CELL size. Each heartbeat performs
+one bounded inspection, wakes only the same stalled Checker when required,
+updates the board, and ends. It never creates a detached task or replacement
+role. Remove it only after final acceptance and any `GOAL_SATISFIED` requirement.
 
-### Cadence
+## MSLK Control Commands
 
-- Starting this skill requires creating one recurring Overseer task for the
-  current Supervisor thread. Monitoring is not optional while any loop remains
-  unfinished.
-- Select exactly one interval: 15, 30, or 60 minutes.
-- Use 15 minutes for small projects with few loops and short/light CELLs.
-- Use 30 minutes for medium projects or mixed device-safe CELL runtimes.
-- Use 60 minutes for large projects, many loops, or an inherently long
-  verification command that cannot be split safely.
-- Larger project coordination or unavoidable verification runtime uses the
-  longer interval; do not enlarge CELL workload merely to justify it.
-- If the Owner explicitly selects one of the three intervals, use it.
-- Create a heartbeat attached to the existing Supervisor thread. The heartbeat
-  may wake only that Supervisor; it must never create a new conversation,
-  detached task, worktree task, replacement loop, Checker, or Worker.
-- Record the heartbeat name/id and selected interval on the supervisor board.
-- A check is a short inspection pass, not active waiting or continuous polling.
-
-### Recurring Task Lifecycle
-
-At skill start:
-
-1. Estimate project size from Worker count, total remaining CELLs, average CELL
-   duration, evidence burden, and shared-resource risk.
-2. Select 15, 30, or 60 minutes using the cadence rules.
-3. Create one same-thread heartbeat whose task is the Quick Inspection and Wake
-   Rule below.
-4. Confirm the heartbeat is active before considering multi-loop supervision
-   started.
-
-At every heartbeat:
-
-1. Wake the existing Supervisor in the same conversation.
-2. Inspect all unfinished Workers once.
-3. Wake only stalled Checkers as required.
-4. Update the supervisor board and report a compact status.
-5. End the turn; do not wait for another interval.
-
-When every planned loop has a passed queue and the Supervisor's final audit has
-accepted every result, delete or disable the heartbeat in that same Supervisor
-turn only if no Goal is configured or `GOAL_SATISFIED` exists. An untested Goal
-or `GOAL_GAP` remains unfinished Supervisor work. Record when monitoring ends.
-Do not leave an orphan periodic task and do not let the completion check create
-a new conversation.
-
-If the environment cannot create a same-thread heartbeat, report the missing
-capability explicitly. Do not substitute a detached cron job or new task.
-
-## Optional Overseer Control Schedule
-
-The Owner may preconfigure one optional Overseer control schedule. Without an
-Owner-configured schedule, the heartbeat performs status inspection only and
-must not invent start, resume, pause, or close actions.
-
-The schedule must record:
-
-- action: start/resume or safe pause/close;
-- trigger: a timestamp with timezone, an accepted CELL threshold, or both;
-- scope: target all loops or named Checker/Worker pairs;
-- one-shot or recurring behavior;
-- each target's safe-boundary and resume conditions.
-
-Record future actions as `SCHEDULED_START` or `SCHEDULED_PAUSE`. A time trigger
-fires on the first Supervisor inspection at or after its timestamp. An accepted
-CELL threshold is checked after every CELL acceptance and by each Checker before
-every new Worker assignment, so reaching the threshold prevents another
-dispatch. The Supervisor board is the authoritative schedule and threshold
-source.
-
-For pause/close, each targeted Checker stops new dispatch and records
-pause-pending state. The Supervisor must not interrupt an active CELL. Let each
-Worker reach its normal receipt; its Checker validates and repairs the result
-before recording `PAUSED_BY_POLICY`. Archive the targeted Checker and Worker at
-the safe boundary and display their unchanged project progress snapshot, for
-example `已暂停：35/231`. A paused loop is not complete, does not satisfy a Goal,
-and retains all append-only evidence and progress. Unaffected independent loops
-may continue only when paused work cannot invalidate their acceptance.
-
-For start/resume, scheduled control does not pre-create idle Workers, repeat the
-MSLK invocation, combine SLK, or replace a persistent pair. At the trigger,
-create a not-yet-created pair only when its first formal CELL is ready and the
-MSLK selection and independence gates still pass; otherwise unarchive the same
-Checker and Worker. The Supervisor must wake the same Checker, which confirms
-the plan and simulation remain valid and passes the continuation-condition gate
-before dispatch. Then record `RESUMED_BY_POLICY`. If any prerequisite fails,
-record `CONDITION_BLOCKED` instead of starting.
-
-The same-thread Overseer remains active while any future control action exists.
-Owner changes or cancellation of the schedule are versioned on the Supervisor
-board. Scheduled control never bypasses Owner assistance, safety gates, Goal
-validation, Checker ownership, method exclusivity, or final acceptance.
-
-### Quick Inspection And Wake
-
-Before every heartbeat inspection, read and execute
-[`references/overseer-inspection-and-wake.md`](references/overseer-inspection-and-wake.md).
-Its MSLK-only classification, wake, and board-update rules are mandatory. The
-Supervisor remains the sole Overseer and never converts the reference into a
-detached task or hidden role.
+Before every inspection or control action, read
+[`references/mslk-control-operations.md`](references/mslk-control-operations.md)
+and its machine-readable
+[`contracts/mslk-control-kernel.json`](contracts/mslk-control-kernel.json).
+`MSLK START` is manual only and authorizes the complete prepared frozen roster.
+Timed control only pauses or resumes existing pairs at safe CELL boundaries; it
+never adds, replaces, or pre-creates a pair. A paused pair is not complete.
+Every command records an idempotent `MSLK_CONTROL_RECEIPT` with project-wide
+progress and explicit per-pair results. The Supervisor must not interrupt an
+active CELL and must wake the same Checker for resume revalidation.
 
 ## Optional Goal Gate
 
@@ -790,8 +720,8 @@ criteria, required evidence, and safety boundaries. The Supervisor must not
 invent, broaden, or silently change it. Owner-authorized Goal changes are
 versioned and append-only.
 
-If no Goal is configured, this section adds no completion gate and ordinary
-MSLK acceptance applies.
+If no Goal is configured, ordinary MSLK acceptance applies. An untested Goal or
+`GOAL_GAP` remains unfinished Supervisor work.
 
 Checker completion is provisional. Every controlling Checker must first accept
 the current PLAN/GO/CELL work and submit its passed queue. The Supervisor must
@@ -831,11 +761,11 @@ materially expanded by the loop. Existing read-only source or third-party Markdo
 governed until a Checker plan requires modifying it; then the Supervisor must
 authorize a semantic split or record `PLAN_DEFECT`/`CONDITION_BLOCKED`.
 
-During solution design, the Supervisor defines the project-wide Markdown artifact
-map, sharding policy, and `WORK_CONTINUATION_INDEX`. The index records objective,
-plan version, current Worker/GO/CELL, semantic shard sequence, accepted evidence
-references, invariants, unresolved decisions, and next action. It also stays
-within 1000 lines. Each Checker applies this policy to its own plan and artifacts.
+During solution design, the Supervisor defines the artifact map, sharding policy,
+and `WORK_CONTINUATION_INDEX`. The index is a bounded mutable current-state
+pointer below 200 physical lines, not append-only history. It records plan,
+active shard/pair/GO/CELL, invariants, blockers, latest evidence, and next action.
+Historical detail remains in linked semantic shards.
 
 Prefer multiple files that follow how work continues and split at a semantic
 work-continuation boundary such as a Worker domain, GO, coherent CELL group,
@@ -909,6 +839,8 @@ lines. Split rather than remove necessary detail.
 
 Before launching multiple loops, the Supervisor confirms:
 
+- Current `MSLK_READINESS_EVAL_PASS` receipts prove exactly `24/24` for every
+  role in the complete frozen roster.
 - `SIMULATION_PASS` exists for this exact plan and role roster.
 - MSLK is the sole method, was invoked once, and no SLK capability is present.
 - Every role is a visible conversation under the same project; no subagent,
@@ -916,8 +848,8 @@ Before launching multiple loops, the Supervisor confirms:
 - Every role conversation has work ready, and every no-work conversation is
   archived with an explicit unarchive path for later same-project work.
 - Each Worker has complete solution/GO/CELL plans.
-- The Supervisor-defined Markdown artifact map and `WORK_CONTINUATION_INDEX`
-  cover every Checker domain; every governed file is at most 1000 physical lines.
+- The artifact map and current-state `WORK_CONTINUATION_INDEX` below 200 physical
+  lines cover every Checker domain; every governed file is at most 1000 lines.
 - The GO revision ledger is present; every completed GO has an evidence review,
   and every revised or supplementary GO has `GO_REVISION_SIMULATION_PASS`.
 - Every created Worker's first CELL is dependency-ready and can be dispatched
@@ -953,9 +885,8 @@ Before launching multiple loops, the Supervisor confirms:
 - The optional Goal is either absent or explicitly defined; a configured Goal
   blocks project completion until the Supervisor records `GOAL_SATISFIED`.
 - The supervisor board lists every Worker and its persistent Checker.
-- Any optional Overseer control schedule is Owner-configured, versioned, and
-  includes target loops, action, trigger, timezone, safe boundaries, and resume
-  conditions.
+- Any safe pause or same-pair resume is Owner-configured, versioned, scoped, and
+  uses the MSLK command contract.
 - The 15/30/60-minute Overseer interval is selected from project/CELL size.
 - The same-thread heartbeat is active, recorded on the board, and configured to
   remove itself after all loops pass Supervisor acceptance.
@@ -963,6 +894,5 @@ Before launching multiple loops, the Supervisor confirms:
 - The role authority matrix is unchanged; no SLK combined role, single-Worker
   behavior, state, or message route has been borrowed.
 
-Then send each full Worker plan to its Checker. The Checker sends the first
-formal CELL to its Worker. The Supervisor begins periodic oversight and remains
-outside ordinary Checker/Worker traffic.
+Then record manual `MSLK START`; each Checker sends its first CELL. The Supervisor
+begins oversight and remains outside ordinary Checker/Worker traffic.
