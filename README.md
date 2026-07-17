@@ -64,16 +64,22 @@ removed automatically after every loop passes Supervisor acceptance.
 
 - Supervisor: project planning, decomposition, periodic oversight, blocker
   resolution, and final acceptance.
-- Checker: one stream's CELL planning, validation, bounded direct repair,
-  routing, and final queue. After repairing a Worker mistake, the Checker
+- Checker: one stream's CELL planning, validation, mandatory result repair,
+  routing, and final queue. Repair tasks never return to the Worker. After
+  repairing a Worker mistake, the Checker
   explains the fix inside the next formal CELL assignment.
 - Worker: one bounded CELL at a time with append-only evidence.
+
+The Supervisor and every Checker use `gpt-5.6-sol xhigh`. Workers range from
+`gpt-5.5 high` to `gpt-5.6-sol high`, selected by task type. GO scope follows
+project need and ignores device limits; CELLs are made smaller as needed for
+reliable execution on the current computer.
 
 Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.2.9`.
+Current version: `1.3.0`.
 
-Version `1.2.9` assigns evidence-driven GO revision directly to each Checker
-while retaining Supervisor boundary approval and adding no role.
+Version `1.3.0` makes Checker repair ownership mandatory, updates model tiers,
+and makes CELL sizing device-aware without constraining GO scope.

@@ -87,7 +87,7 @@ under the same project. Hidden execution is forbidden.
   context as a Supervisor, Checker, or Worker.
 - Confirm every role conversation belongs to the current project before
   assigning formal work.
-- Keep assignments, receipts, rework, routing, and completion messages in the
+- Keep assignments, receipts, repair records, routing, and completion messages in the
   visible project conversations.
 
 ### Visible Conversation Lifecycle
@@ -141,22 +141,23 @@ receive fresh roles.
 
 ## Model Policy
 
-Use `gpt-5.6-sol` with `xhigh` reasoning for the Supervisor and every Checker.
-This is the recommended controlling-role configuration.
+The Supervisor and every Checker must use `gpt-5.6-sol` with `xhigh` reasoning.
 
 Workers may use only:
 
-- `gpt-5.6-terra` with `medium` reasoning or higher;
-- `gpt-5.6-sol` with `medium` reasoning or higher.
+- `gpt-5.5` with `high` reasoning as the minimum;
+- `gpt-5.6-sol` with `high` reasoning as the maximum.
 
 During planning, assign a Worker model and reasoning level to every CELL based
-on its difficulty, risk, and validation burden. Record the assignment in the
-CELL plan before launch.
+on task type, difficulty, risk, tool burden, and validation burden. Prefer
+`gpt-5.5 high` for routine bounded implementation and `gpt-5.6-sol high` for
+complex integration, architecture-sensitive work, or difficult diagnosis.
+Record the assignment in the CELL plan before launch.
 
-The Supervisor or controlling Checker may raise or lower a Worker's model or
-reasoning level as execution evidence changes the difficulty estimate. Record
-the change before dispatch or rework. Never go below `medium`, use a model
-outside the two allowed 5.6 Worker models, or fall back to 5.5/5.4-era models.
+The controlling Checker may change the Worker model as evidence changes the task
+classification. Record the change before dispatch. Never assign a Worker below
+`gpt-5.5 high`, above `gpt-5.6-sol high`, or at a reasoning level other than
+`high`.
 
 ## Role Contract
 
@@ -185,10 +186,10 @@ One Checker controls exactly one Worker.
 - Own its Worker's evidence-driven GO review and revision proposals as part of
   the Checker's planning responsibility.
 - Select and package one fixed CELL at a time.
-- Send formal tasks and rework directly to its paired Worker.
+- Send formal tasks directly to its paired Worker.
 - Inspect files, diffs, tests, scans, method logs, and boundaries locally.
-- Directly repair a Worker-caused defect when the repair is bounded, safe, and
-  within the current CELL and the Checker's available authority.
+- Repair every defect found in its Worker's delivered result; never return a
+  repair task to the Worker.
 - Route `NEXT`, `REDO`, `COMPLETE`, `BLOCKED`, or `PLAN_DEFECT`.
 - Send the next CELL after accepting the current CELL.
 - Write the Worker's final passed or blocked queue record.
@@ -200,11 +201,10 @@ Supervisor under the rule below.
 
 ## Checker Direct Repair Rule
 
-When a Worker makes a concrete implementation or evidence mistake, the Checker
-may fix it directly instead of returning the same simple correction to the
-Worker.
+The Checker must repair every defect found in its Worker's delivered result and
+must not send a repair task back to the Worker.
 
-Use direct Checker repair only when:
+For Checker repair:
 
 - The defect is inside the current CELL's allowed scope.
 - The expected correction is unambiguous and small enough to inspect fully.
@@ -230,10 +230,13 @@ The combined repair update and next CELL assignment must be one message whose
 first line is the next `Formal task:` heading. Do not send a separate status
 message and then leave the Worker without work.
 
-If direct repair is unsafe, broad, ambiguous, outside the CELL, or changes the
-plan, the Checker must use formal rework or escalate to the Supervisor instead.
-If the repaired CELL was the final CELL, the Checker writes the final queue
-instead of inventing another task.
+If repair is broad or ambiguous, the Checker splits it into bounded
+Checker-owned repair steps. If safe repair exceeds the Checker's authority or
+changes the plan, it escalates to the Supervisor as `PLAN_DEFECT`, `BLOCKED`, or
+an Owner decision; it never returns the repair to the Worker. If no usable
+Worker result exists at all, the original CELL may be re-dispatched as an
+original task, not as a repair task. If the repaired CELL was the final CELL,
+the Checker writes the final queue instead of inventing another task.
 
 ### Worker
 
@@ -242,7 +245,7 @@ One Worker belongs to exactly one Checker.
 - Remain the persistent execution thread for the whole assigned work unit.
 - Execute every dependency-authorized GO/CELL assigned to that Worker; do not
   create or request a replacement Worker when a GO ends.
-- Execute only a formal task or formal rework from its controlling Checker.
+- Execute only a formal task from its controlling Checker.
 - Work on one CELL at a time and only within the allowed scope.
 - Preserve unrelated changes made by other loops or the Owner.
 - Maintain append-only method evidence.
@@ -257,14 +260,16 @@ The normal path is direct:
 Checker -> Worker -> Checker -> Worker -> ... -> final queue
 ```
 
-Worker tasks must start with one of:
+Worker tasks must start with:
 
 ```text
 Formal task: GO-01/CELL-01.01/R01
-Formal rework: GO-01/CELL-01.01/R02
 ```
 
-Messages without one of these headings are discussion, not executable work.
+Checker-owned repair evidence starts with `Repair record:` and is never a
+Worker assignment. `REDO` means the Checker repairs and revalidates the
+delivery; it does not send correction work back to the Worker. Messages without
+the formal task heading are discussion, not executable Worker work.
 
 After finishing a CELL, the Worker must directly send the controlling Checker:
 
@@ -347,6 +352,7 @@ Validate all of these:
 ### Design GO
 
 - Define GO as a verifiable outcome owned by one Worker.
+- GO scope follows project need and must not be reduced for device capacity.
 - Let one Worker own multiple related GO when they share the same write domain.
 - Express ordering as GO dependencies; do not create another project layer.
 - Keep GO changes versioned and evidence-driven; route every revision through
@@ -407,7 +413,11 @@ Every CELL must define:
 - completion criteria.
 
 Size CELLs by implementation risk, cross-owner impact, and evidence burden.
-Uneven CELL counts are expected. A Worker still executes one CELL at a time.
+CELL size must be kept modest enough for the current computer to execute and
+verify reliably. Reduce files touched, command fan-out, runtime, and evidence
+volume when device capacity is limited. Split the same GO into more CELLs rather
+than shrinking the GO or weakening acceptance. Uneven CELL counts are expected.
+A Worker still executes one CELL at a time.
 
 Before launching a Worker, provide:
 
@@ -484,10 +494,11 @@ silently abandoning the loop.
   unfinished.
 - Select exactly one interval: 15, 30, or 60 minutes.
 - Use 15 minutes for small projects with few loops and short/light CELLs.
-- Use 30 minutes for medium projects or mixed CELL sizes.
-- Use 60 minutes for large projects, many loops, or long/heavy CELLs.
-- Larger projects and larger CELL capacity use the longer interval because
-  normal work needs more time before a useful inspection.
+- Use 30 minutes for medium projects or mixed device-safe CELL runtimes.
+- Use 60 minutes for large projects, many loops, or an inherently long
+  verification command that cannot be split safely.
+- Larger project coordination or unavoidable verification runtime uses the
+  longer interval; do not enlarge CELL workload merely to justify it.
 - If the Owner explicitly selects one of the three intervals, use it.
 - Create a heartbeat attached to the existing Supervisor thread. The heartbeat
   may wake only that Supervisor; it must never create a new conversation,
@@ -530,7 +541,7 @@ For every unfinished Worker, inspect only what is needed:
 1. Supervisor board state and planned CELL total.
 2. Passed/blocked final queue records.
 3. Checker and Worker thread status and latest turn.
-4. Latest formal task, formal rework, or completion receipt.
+4. Latest formal task, repair record, or completion receipt.
 5. Method-log/artifact timestamp when thread state is ambiguous.
 
 Classify the Worker as:
@@ -556,8 +567,8 @@ Use the observed situation:
 - Worker delivered but Checker stopped: tell Checker to validate and route.
 - Checker accepted but did not send the next CELL: tell Checker to resume its
   planning/routing duty and send the next formal task.
-- Worker ended without delivery: tell Checker to inspect the partial work and
-  issue a bounded formal rework.
+- Worker ended without delivery: tell Checker to inspect and repair any usable
+  partial result; only if none exists may it re-dispatch the original task.
 - Receipt was lost: tell Checker to inspect Worker artifacts and perform a
   one-time routing repair.
 - Another Worker's future output is required: record `PLAN_DEFECT`, revoke the
@@ -620,8 +631,8 @@ No generated planning, log, queue, or coordination Markdown file may exceed
   creation failed.
 - Duplicate Checker: choose one controlling Checker, stop/archive the other,
   and ensure the Worker executes each CELL once.
-- Thread `systemError`: Checker inspects partial outputs and issues the same
-  CELL as a bounded rework; do not discard valid work.
+- Thread `systemError`: Checker inspects and repairs usable partial outputs; only
+  when none exist may it re-dispatch the original CELL unchanged.
 - Damaged method log: seal it, authorize a new shard, preserve the incident,
   and revalidate current artifacts without fabricating history.
 - Dynamic shared data: distinguish legitimate external drift from writes by
@@ -652,6 +663,10 @@ Before launching multiple loops, the Supervisor confirms:
 - Method-log and final-queue paths are unique.
 - Tests, scans, safety boundaries, and external-action gates are explicit.
 - Every CELL declares an allowed Worker model and reasoning level.
+- The Supervisor and every Checker are `gpt-5.6-sol xhigh`; every Worker is from
+  `gpt-5.5 high` through `gpt-5.6-sol high` according to task type.
+- GO scope follows project need; every CELL is sized for reliable execution on
+  the current computer without weakening GO acceptance.
 - The supervisor board lists every Worker and its persistent Checker.
 - The 15/30/60-minute Overseer interval is selected from project/CELL size.
 - The same-thread heartbeat is active, recorded on the board, and configured to

@@ -1,4 +1,4 @@
 interface:
   display_name: "Multi Small Loop (MSLK)"
   short_description: "Dependency-ready parallel loops with oversight"
-  default_prompt: "Use only $multi-small-loop-skill (MSLK), exactly once. Use visible same-project conversations, never subagents or SLK capabilities. Simulate before formal work, lifecycle-manage conversations, and after every GO have the paired Checker propose evidence-driven subsequent-GO adjustments or historical-GO supplements for Supervisor boundary approval before a delta simulation."
+  default_prompt: "Use only $multi-small-loop-skill (MSLK), exactly once. Use visible same-project conversations, never subagents or SLK capabilities. The Supervisor and every Checker use gpt-5.6-sol xhigh. Each Checker repairs its Worker's result defects and never returns repair tasks. Assign Workers from gpt-5.5 high through gpt-5.6-sol high by task type. Size GO by project need and CELL by current-computer capacity. Simulate before formal work and every evidence-driven GO revision."
