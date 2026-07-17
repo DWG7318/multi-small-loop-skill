@@ -110,11 +110,11 @@ under the same project. Hidden execution is forbidden.
 
 ## Mandatory Readiness Eval
 
-Before simulation or formal CELL dispatch, every visible role in the complete
-frozen roster must pass the MSLK-only readiness Eval through
-[`scripts/run_mslk_readiness_eval.py`](scripts/run_mslk_readiness_eval.py).
-This includes the Supervisor and every persistent Checker and Worker. Eval is
-authorized ready work; archive a role afterward when no next work is ready.
+Before simulation or formal CELL dispatch, the Supervisor and every persistent
+Checker/Worker in the complete frozen roster must pass the
+[MSLK question bank](evals/mslk-readiness-questions.json) through the
+[`MSLK Eval runner`](scripts/run_mslk_readiness_eval.py). Eval is authorized ready
+work; archive a role afterward when no next work is ready.
 
 Every role must score exactly `24/24`. One wrong, missing, extra, or misordered
 answer fails the entire attempt. Retry all 24 questions with a new seed after
