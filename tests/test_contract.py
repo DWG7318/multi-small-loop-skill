@@ -95,6 +95,44 @@ class MultiSmallLoopContractTest(unittest.TestCase):
             with self.subTest(rule=rule):
                 self.assertIn(rule, NORMALIZED_SKILL)
 
+    def test_checker_detection_system_and_supervisor_capability_supply(self):
+        required = (
+            "## Checker Detection System",
+            "Every Checker must maintain one evolving detection system",
+            "The Supervisor must provision every Checker",
+            "DETECTION_CAPABILITY_MANIFEST",
+            "mature detection skills",
+            "`superpowers:verification-before-completion`",
+            "`superpowers:systematic-debugging`",
+            "`superpowers:test-driven-development`",
+            "`security-best-practices`",
+            "`playwright`",
+            "skill source, version, and compatibility",
+            "Any skill that requires subagents is incompatible",
+            "CodeGraph is mandatory for code or repository work",
+            "layered detection stack",
+            "Semgrep or CodeQL",
+            "Gitleaks",
+            "OSV-Scanner or Trivy",
+            "Playwright",
+            "coverage and mutation testing",
+            "API or schema contract",
+            "tool version, configuration, and omission rationale",
+            "split or serialize the detection commands",
+            "not acceptance quality",
+            "structural and dependency baseline",
+            "acceptance matrix",
+            "false-positive",
+            "REGRESSION_EVIDENCE",
+            "CONDITION_BLOCKED",
+            "must not accept a CELL from Worker self-report alone",
+            "update the next CELL, GO revision, or supplementary GO",
+            "Checker-specific tool access",
+        )
+        for rule in required:
+            with self.subTest(rule=rule):
+                self.assertIn(rule, NORMALIZED_SKILL)
+
     def test_shared_rules_remain_inside_mslk(self):
         required = (
             "Never use a subagent",

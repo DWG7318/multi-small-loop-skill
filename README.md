@@ -102,11 +102,17 @@ loops or named Checker/Worker pairs at a specified time or accepted-CELL
 threshold. Pausing stops new dispatch at safe CELL boundaries; resuming preserves
 the same Checker/Worker ownership and revalidates prerequisites.
 
+The Supervisor also provisions every Checker with a versioned detection skill
+and tool stack. Each Checker independently maintains CodeGraph impact baselines,
+native checks, Semgrep/CodeQL, Gitleaks, OSV-Scanner/Trivy, and risk-appropriate
+runtime, coverage, mutation, or contract evidence for its Worker. Shared heavy
+scans may be serialized for device safety, but acceptance remains Checker-owned.
+
 Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.5.0`.
+Current version: `1.6.0`.
 
-Version `1.5.0` adds optional Owner-configured timed and CELL-threshold Overseer
-control for all or selected loops.
+Version `1.6.0` adds Supervisor-provisioned, CodeGraph-based layered Checker
+detection with mature inspection skills and per-Worker evidence calibration.
