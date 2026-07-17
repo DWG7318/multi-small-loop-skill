@@ -73,15 +73,18 @@ invalid. One wrong, missing, extra, or misordered answer produces
 `MSLK_READINESS_EVAL_FAIL`. A retry requires rereading the cited governing rules,
 a new seed, and all 24 questions again; prior correct answers do not carry over.
 
-`MSLK_READINESS_EVAL_PASS` records skill version and commit, question-bank and
-answer-key hashes, candidate role, pair ID where applicable, conversation ID,
-model/reasoning level, seed, attempt number, per-question result, `24/24`, and
-timestamp. The receipt is stale after any skill/eval change, roster or candidate
-conversation replacement, pair reassignment, or model change. Standard answers
-remain committed and reviewable, but the candidate may not inspect the answer
-key or grading tests during an attempt; unverifiable ordering fails closed.
-`SIMULATION_PASS` covers the same frozen roster and is attempted only after every
-roster receipt is current; formal work requires both gates.
+`MSLK_READINESS_EVAL_PASS` records skill version and release tag,
+tracked-content, question-bank, and answer-key hashes, candidate role, pair ID
+where applicable, conversation ID, model/reasoning level, seed, attempt number,
+per-question result, `24/24`, and timestamp. When Git metadata is available it
+also records the source commit; a global installation without `.git` remains
+verifiable from the release identity and content hashes. The receipt is stale
+after any skill/eval change, roster or candidate conversation replacement, pair
+reassignment, or model change. Standard answers remain committed and
+reviewable, but the candidate may not inspect the answer key or grading tests
+during an attempt; unverifiable ordering fails closed. `SIMULATION_PASS` covers
+the same frozen roster and is attempted only after every roster receipt is
+current; formal work requires both gates.
 
 ## Public Command Contract
 
