@@ -1,4 +1,4 @@
 interface:
   display_name: "Multi Small Loop (MSLK)"
   short_description: "Dependency-ready parallel loops with oversight"
-  default_prompt: "Use $multi-small-loop-skill (MSLK) with 5.6 Sol xhigh Supervisor and Checkers only after proving multiple fresh Workers are necessary, acceptance-independent, and immediately startable; assign each 5.6 Terra or Sol Worker at medium or higher per CELL, otherwise use SLK."
+  default_prompt: "Use only $multi-small-loop-skill (MSLK), exactly once. Use visible same-project Supervisor, Checker, and Worker conversations, never subagents or SLK capabilities. Run a no-side-effect simulation first; create or unarchive role conversations only for ready formal work, then archive them immediately when their work finishes."

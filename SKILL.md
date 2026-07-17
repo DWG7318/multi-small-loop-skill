@@ -1,6 +1,6 @@
 ---
 name: multi-small-loop-skill
-description: Run large projects through multiple independent, concurrently startable Workers under one Supervisor, with one persistent Checker paired to each Worker. The official abbreviation is MSLK; use this skill when the user says MSLK or multi-small-loop-skill, or when work can be divided into Workers that independently receive GO/CELL tasks, produce separately verifiable and acceptable results, and start without waiting for another Worker's future output. Use SLK instead when the combined Supervisor/Checker needs exactly one Worker.
+description: Use when the user says MSLK or multi-small-loop-skill, or when one project needs multiple independent, concurrently startable visible Worker conversations with one persistent visible Checker per Worker. Never trigger together with SLK.
 ---
 
 # Multi Small Loop Skill (MSLK)
@@ -57,25 +57,87 @@ For every candidate Worker, verify both:
    not wait for another Worker's future output, decision, or mutation.
 
 These conditions are intentionally difficult. If fewer than two Workers pass
-both, do not launch MSLK. Return to SLK and keep using SLK until the project
-actually satisfies the MSLK gate.
+both, record `METHOD_SELECTION_FAILED`, do not launch MSLK, and return the
+method decision to the Owner.
 
-If an active plan no longer satisfies the gate, stop issuing new CELLs,
-preserve accepted evidence, record the mode change, and replan as SLK. If an
-SLK plan later proves that at least two necessary Workers satisfy both
-conditions, it may upgrade to MSLK after the same stop, evidence, and replan
-procedure. Never change modes silently inside an executable CELL.
+## Exclusive Mode Lock
+
+Choose exactly one method before role creation: SLK or MSLK. Once MSLK is
+selected for a project run:
+
+- invoke MSLK exactly once;
+- do not load, invoke, nest, repeat, alternate with, or switch to SLK;
+- do not borrow SLK's combined Supervisor/Checker topology, single-Worker
+  behavior, or any other SLK capability;
+- do not present SLK and MSLK as interchangeable or generally combinable.
+
+If MSLK is the wrong method or an active plan stops satisfying its gate,
+preserve accepted evidence, record `METHOD_SELECTION_FAILED`, stop without new
+formal work, and ask the Owner to start a new, separate run with an explicit
+method choice. The current run never converts itself into SLK.
+
+## Visible Conversation Only
+
+Every Supervisor, Checker, and Worker role must be a visible Codex conversation
+under the same project. Hidden execution is forbidden.
+
+- Never use a subagent, sub-agent, background agent, hidden worker,
+  `delegate_task`, or any subagent-dispatch capability.
+- Never represent an internal tool call, background job, or invisible execution
+  context as a Supervisor, Checker, or Worker.
+- Confirm every role conversation belongs to the current project before
+  assigning formal work.
+- Keep assignments, receipts, rework, routing, and completion messages in the
+  visible project conversations.
+
+### Visible Conversation Lifecycle
+
+- Create or unarchive a role conversation only when an authorized formal task
+  is ready for that role.
+- Keep the conversation visible while that task is active.
+- Archive it immediately when its authorized work is complete and no formal
+  task remains assigned.
+- If later work is authorized for the same role in the same project, unarchive
+  the existing conversation instead of creating a duplicate.
+- Unarchiving a conversation does not repeat the MSLK invocation and does not
+  permit SLK activation.
+- An archived conversation performs no hidden or background work.
+
+## Mandatory Simulation Gate
+
+Run a no-side-effect simulation before formal work. Planning and simulation may
+inspect metadata, but must not edit project files, execute implementation
+commands, call external services, create formal role assignments, or start a
+CELL.
+
+The simulation must:
+
+1. confirm MSLK is the sole selected method and has not been invoked already;
+2. model one visible same-project Supervisor plus every visible Checker/Worker
+   pair;
+3. prove at least two Workers are acceptance-independent and can receive their
+   first CELL immediately;
+4. rehearse one assignment, delivery, Checker decision, and `NEXT`, `REDO`, or
+   `BLOCKED` route per pair;
+5. prove no subagent or SLK capability is used;
+6. validate ownership, write isolation, evidence paths, model assignments,
+   tests, safety gates, heartbeat behavior, and archive/unarchive lifecycle.
+
+Record either `SIMULATION_PASS` with the checked facts or `SIMULATION_FAIL` with
+the reason. Formal work may begin only after `SIMULATION_PASS`. A failed or
+missing simulation forbids role launch and CELL execution.
 
 ## Fresh Role Requirement
 
-Every new project must create fresh Worker and Checker agents. Do not reuse
-roles from another project, even when their scope looks similar; prior context
-can contaminate planning, execution, and acceptance.
+Every new project must create fresh visible Worker and Checker conversations
+under that same project. Do not reuse roles from another project, even when
+their scope looks similar; prior context can contaminate planning, execution,
+and acceptance.
 
-Treat "new project" narrowly: reuse is allowed only for an explicit upgrade or
-continuation of the same project identity, objective lineage, coordination
-records, and evidence chain. A renamed, copied, adjacent, or merely similar
-project is new and must receive fresh roles.
+Treat "new project" narrowly: reuse is allowed only for a continuation of the
+same project identity, objective lineage, coordination records, and evidence
+chain. A renamed, copied, adjacent, or merely similar project is new and must
+receive fresh roles.
 
 ## Model Policy
 
@@ -343,8 +405,8 @@ dependencies in exactly one of these ways:
 1. Merge the dependent GO into the same persistent Worker.
 2. Complete and freeze the shared prerequisite with one loop before launching
    the independent MSLK Workers.
-3. Launch the dependent work later as a separate SLK or MSLK after its
-   prerequisites pass Supervisor acceptance.
+3. Defer the dependent work until its prerequisites pass Supervisor acceptance;
+   the Owner must explicitly choose the method for a separate future run.
 
 ### Dependency-Waiting Anti-Pattern
 
@@ -529,6 +591,12 @@ No generated planning, log, queue, or coordination Markdown file may exceed
 
 Before launching multiple loops, the Supervisor confirms:
 
+- `SIMULATION_PASS` exists for this exact plan and role roster.
+- MSLK is the sole method, was invoked once, and no SLK capability is present.
+- Every role is a visible conversation under the same project; no subagent,
+  hidden worker, or background agent exists.
+- Every role conversation has work ready, and every no-work conversation is
+  archived with an explicit unarchive path for later same-project work.
 - Each Worker has complete solution/GO/CELL plans.
 - Every created Worker's first CELL is dependency-ready and can be dispatched
   immediately in the launch turn.

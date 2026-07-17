@@ -18,6 +18,21 @@ One Supervisor splits the project into independent Workers, pairs each Worker
 with one fixed Checker, periodically acts
 as Overseer (`监工`), wakes stalled Checkers, and performs final acceptance.
 
+MSLK and SLK are mutually exclusive. Select MSLK exactly once for a project
+run; never load both skills, switch methods, repeat the invocation, or borrow
+SLK capabilities. If MSLK is not suitable, stop and return the method decision
+to the Owner instead of converting the active run.
+
+All roles must be visible Codex conversations under the same project. MSLK
+never uses subagents, background agents, hidden workers, or `delegate_task`.
+Create or unarchive a role conversation only when formal work is ready; archive
+it immediately when that work finishes. Later same-project work should
+unarchive the existing conversation instead of creating a duplicate.
+
+Before formal role launch or CELL execution, run a no-side-effect simulation of
+each pair's first assignment, delivery, validation, and routing cycle. Formal
+work is allowed only after the simulation records `SIMULATION_PASS`.
+
 ```text
 Project -> persistent Checker/Worker -> one or more GO -> CELL
 ```
@@ -51,8 +66,8 @@ Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.2.5`.
+Current version: `1.2.6`.
 
-Version `1.2.5` adds CELL-level Worker model planning: Workers use only 5.6
-Terra or Sol at `medium` or higher, while Supervisor and Checkers are
-recommended to use 5.6 Sol at `xhigh`.
+Version `1.2.6` requires lifecycle-managed visible same-project conversations,
+makes MSLK and SLK strictly exclusive and non-repeatable, and adds the
+mandatory pre-work simulation gate.
