@@ -7,6 +7,7 @@ SKILL = (ROOT / "SKILL.md").read_text(encoding="utf-8")
 README = (ROOT / "README.md").read_text(encoding="utf-8")
 PROMPT = (ROOT / "agents" / "openai.yaml").read_text(encoding="utf-8")
 ALL_TEXT = "\n".join((SKILL, README, PROMPT))
+NORMALIZED_SKILL = " ".join(SKILL.split())
 
 
 class MultiSmallLoopContractTest(unittest.TestCase):
@@ -38,6 +39,24 @@ class MultiSmallLoopContractTest(unittest.TestCase):
         self.assertNotIn("fixed retry policy", SKILL)
         self.assertIn("Send formal tasks directly to its paired Worker", SKILL)
         self.assertIn("never subagents or a combined role", PROMPT)
+
+    def test_optional_goal_gate_preserves_checker_planning(self):
+        required = (
+            "## Optional Goal Gate",
+            "The Owner may define one optional Goal",
+            "Checker completion is provisional",
+            "The Supervisor must independently validate the Goal",
+            "GOAL_SATISFIED",
+            "GOAL_GAP",
+            "must not declare project completion",
+            "Each affected Checker designs its own PLAN/GO/CELL continuation",
+            "The Supervisor must not author those detailed Checker plans",
+            "If no Goal is configured",
+            "An untested Goal or `GOAL_GAP` remains unfinished Supervisor work",
+        )
+        for rule in required:
+            with self.subTest(rule=rule):
+                self.assertIn(rule, NORMALIZED_SKILL)
 
     def test_shared_rules_remain_inside_mslk(self):
         required = (

@@ -173,6 +173,7 @@ classification. Record the change before dispatch. Never assign a Worker below
 | Method gate, project decomposition, cross-Worker contracts, Supervisor board, and final audit | Supervisor |
 | Each Worker's initial solution, GO/CELL plan, and evidence-driven GO revision | Its paired Checker |
 | CELL assignment, validation, repair, routing, progress display, and per-Worker queue | Its paired Checker |
+| Optional Goal management, gap allocation, and final Goal validation | Supervisor |
 | CELL execution | Worker |
 
 MSLK has one distinct Supervisor plus multiple persistent Checker/Worker pairs.
@@ -190,6 +191,7 @@ The Supervisor owns the whole project, not the middle of ordinary cell work.
   Checker-owned plans.
 - Create one stable Checker for each Worker.
 - Maintain the supervisor board and final result queue.
+- Manage and independently validate the optional project Goal completion gate.
 - Act as the mandatory Overseer (`监工`) through periodic quick inspections.
 - Resolve plan defects, Owner decisions, shared-resource conflicts, and genuine
   blockers that a Checker cannot resolve inside its current authorized plan.
@@ -321,7 +323,8 @@ task evidence. The Supervisor remains the sole writer of the Supervisor board
 and reconciles those snapshots by CELL identifier. Concurrent Checkers may show
 the same point-in-time snapshot, but must never double-count a CELL. Continue
 displaying progress until all loops finish. When every CELL is accepted and no
-next task exists, the Supervisor's final queue must display:
+next task exists, the Supervisor's final queue may display the following only
+when no Goal is configured or the optional Goal has passed:
 
 ```text
 全部完成：231/231
@@ -584,8 +587,10 @@ At every heartbeat:
 
 When every planned loop has a passed queue and the Supervisor's final audit has
 accepted every result, delete or disable the heartbeat in that same Supervisor
-turn. Record that monitoring ended. Do not leave an orphan periodic task and do
-not let the completion check create a new conversation.
+turn only if no Goal is configured or `GOAL_SATISFIED` exists. An untested Goal
+or `GOAL_GAP` remains unfinished Supervisor work. Record when monitoring ends.
+Do not leave an orphan periodic task and do not let the completion check create
+a new conversation.
 
 If the environment cannot create a same-thread heartbeat, report the missing
 capability explicitly. Do not substitute a detached cron job or new task.
@@ -651,6 +656,42 @@ Update the supervisor board after each check:
 Report active Workers, repaired Workers, blockers, and the next expected signal
 to the Owner in a compact status update.
 
+## Optional Goal Gate
+
+The Owner may define one optional Goal. A Goal is active only when the Owner
+explicitly supplies or approves its identifier, objective, measurable success
+criteria, required evidence, and safety boundaries. The Supervisor must not
+invent, broaden, or silently change it. Owner-authorized Goal changes are
+versioned and append-only.
+
+If no Goal is configured, this section adds no completion gate and ordinary
+MSLK acceptance applies.
+
+Checker completion is provisional. Every controlling Checker must first accept
+the current PLAN/GO/CELL work and submit its passed queue. The Supervisor must
+independently validate the Goal against fresh project-wide evidence:
+
+- record `GOAL_SATISFIED` only when every Goal criterion is proven;
+- otherwise record `GOAL_GAP` with each unmet criterion, evidence, residual
+  risk, affected ownership domains, and required outcome;
+- while `GOAL_GAP` exists, the Supervisor must not declare project completion or
+  write the final passed queue.
+
+After `GOAL_GAP`, the Supervisor allocates each missing outcome to the existing
+independent ownership domains. Each affected Checker designs its own
+PLAN/GO/CELL continuation for its persistent Worker. The Supervisor must not
+author those detailed Checker plans; it approves only cross-Worker, acceptance,
+safety, and Owner-decision boundaries.
+Each Checker preserves accepted history, appends new identifiers, and obtains
+`GO_REVISION_SIMULATION_PASS` before dispatching new CELLs. Recompute the
+project-wide denominator, unarchive roles only when formal work is ready, and
+continue until the Supervisor records `GOAL_SATISFIED`.
+
+If the Goal gap cannot preserve MSLK acceptance and launch independence, or
+cannot proceed within Owner authority, safety gates, or available evidence,
+record `METHOD_SELECTION_FAILED`, `BLOCKED`, `PLAN_DEFECT`, or an Owner decision.
+Do not claim completion, combine SLK, or switch methods inside the current run.
+
 ## Evidence And Queue
 
 Use project-local coordination paths unless the project defines others:
@@ -675,7 +716,8 @@ MSLK_YYYYMMDD-HHMMSS_<worker>_<plan-version>_<result>.md
 
 Valid results are `passed`, `blocked`, `plan-defect`, `owner-decision`, and
 `stopped`. A Worker is complete only after the passed record exists and the
-Supervisor's final audit accepts it.
+Supervisor's final audit accepts it. Project completion with a configured Goal
+also requires `GOAL_SATISFIED`.
 
 No generated planning, log, queue, or coordination Markdown file may exceed
 999 lines. Split rather than remove necessary detail.
@@ -726,6 +768,8 @@ Before launching multiple loops, the Supervisor confirms:
   the current computer without weakening GO acceptance.
 - Every Checker task displays project-wide `正在完成 GO-NN：accepted/total`, and
   the Supervisor final queue displays `全部完成：total/total`.
+- The optional Goal is either absent or explicitly defined; a configured Goal
+  blocks project completion until the Supervisor records `GOAL_SATISFIED`.
 - The supervisor board lists every Worker and its persistent Checker.
 - The 15/30/60-minute Overseer interval is selected from project/CELL size.
 - The same-thread heartbeat is active, recorded on the board, and configured to

@@ -86,11 +86,17 @@ Every Checker assignment shows project-wide accepted CELL progress, for example
 every assignment and ends only when the Supervisor final queue shows
 `全部完成：231/231`.
 
+The Owner may optionally define a measurable project Goal. In that case,
+Checker completion is provisional until the Supervisor independently records
+`GOAL_SATISFIED`. A `GOAL_GAP` is allocated to the affected existing domains;
+their Checkers design append-only PLAN/GO/CELL continuations without transferring
+planning ownership to the Supervisor or importing SLK.
+
 Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.3.2`.
+Current version: `1.4.0`.
 
-Version `1.3.2` hardens strict MSLK/SLK isolation and assigns per-Worker planning
-exclusively to the paired Checker.
+Version `1.4.0` adds the optional Supervisor-managed project Goal gate while
+preserving Checker-owned continuation planning.
