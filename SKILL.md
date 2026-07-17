@@ -182,6 +182,8 @@ must not silently take over a Worker's cell.
 One Checker controls exactly one Worker.
 
 - Read the complete current versioned plan for its Worker.
+- Act as the persistent Planner for its Worker's evidence-driven GO review and
+  revision proposals.
 - Select and package one fixed CELL at a time.
 - Send formal tasks and rework directly to its paired Worker.
 - Inspect files, diffs, tests, scans, method logs, and boundaries locally.
@@ -352,17 +354,24 @@ Validate all of these:
 
 ### Evidence-Driven GO Revision
 
-After every GO is completed and checked, its Checker reports the actual result
-to the Supervisor, including delivered scope, defects, residual risk, new
-dependencies, changed estimates, and incomplete outcomes.
+After every GO is completed and checked, its Checker acts in its Planner
+capacity and compares the accepted plan with the actual result, including
+delivered scope, defects, residual risk, new dependencies, changed estimates,
+and incomplete outcomes.
 
-Based on that evidence, the Supervisor may:
+The Planner owns the resulting GO revision proposal and may:
 
 - adjust any subsequent GO that has not started;
 - add a supplementary GO for a historical GO when the completed result exposes
   missing, corrective, or follow-up work;
 - revise affected CELL maps, dependencies, model assignments, and the Worker
   assignment table.
+
+The Planner sends the proposal and evidence to the Supervisor. The Supervisor
+may approve, reject, or return it for revision based on cross-Worker dependency,
+ownership, acceptance, safety, or Owner-decision boundaries, but must not author
+ordinary GO revisions in place of the Planner. The Worker must not revise GO or
+CELL plans.
 
 GO revision is append-only and versioned:
 

@@ -33,11 +33,12 @@ Before formal role launch or CELL execution, run a no-side-effect simulation of
 each pair's first assignment, delivery, validation, and routing cycle. Formal
 work is allowed only after the simulation records `SIMULATION_PASS`.
 
-After each GO, review the actual accepted result. That evidence may adjust
-unstarted subsequent GO or add an append-only supplementary GO for a historical
-GO. Preserve all historical evidence and identifiers, keep ownership and
-parallel independence intact, and require `GO_REVISION_SIMULATION_PASS` before
-executing the revised plan.
+After each GO, the paired Checker acts as Planner and reviews the actual accepted
+result. The Planner may propose adjustments to unstarted GO or an append-only
+supplementary GO for historical work. The Supervisor gates cross-Worker and
+safety boundaries without taking over ordinary planning. Preserve all historical
+evidence and identifiers, keep ownership and parallel independence intact, and
+require `GO_REVISION_SIMULATION_PASS` before executing the revised plan.
 
 ```text
 Project -> persistent Checker/Worker -> one or more GO -> CELL
@@ -72,8 +73,7 @@ Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.2.7`.
+Current version: `1.2.8`.
 
-Version `1.2.7` adds evidence-driven, append-only GO revision after every GO,
-including adjustment of subsequent GO and supplementary work for historical
-GO with a mandatory delta simulation.
+Version `1.2.8` assigns evidence-driven GO revision explicitly to each Checker's
+Planner capacity while retaining Supervisor boundary approval.
