@@ -71,6 +71,11 @@ selected for a project run:
   behavior, or any other SLK capability;
 - do not present SLK and MSLK as interchangeable or generally combinable.
 
+Shared rules never transfer role ownership, topology, messages, state, or
+capabilities between MSLK and SLK. Implement every common requirement entirely
+inside the selected MSLK role structure. Mentioning SLK for prohibition does not
+load it or authorize any of its behavior.
+
 If MSLK is the wrong method or an active plan stops satisfying its gate,
 preserve accepted evidence, record `METHOD_SELECTION_FAILED`, stop without new
 formal work, and ask the Owner to start a new, separate run with an explicit
@@ -161,13 +166,28 @@ classification. Record the change before dispatch. Never assign a Worker below
 
 ## Role Contract
 
+### Role Authority Matrix
+
+| Responsibility | MSLK owner |
+| --- | --- |
+| Method gate, project decomposition, cross-Worker contracts, Supervisor board, and final audit | Supervisor |
+| Each Worker's initial solution, GO/CELL plan, and evidence-driven GO revision | Its paired Checker |
+| CELL assignment, validation, repair, routing, progress display, and per-Worker queue | Its paired Checker |
+| CELL execution | Worker |
+
+MSLK has one distinct Supervisor plus multiple persistent Checker/Worker pairs.
+It never combines Supervisor and Checker, never uses the SLK single-Worker
+topology, and never lets the Supervisor replace ordinary Checker work.
+
 ### Supervisor
 
 The Supervisor owns the whole project, not the middle of ordinary cell work.
 
 - Translate Owner intent into the overall solution and acceptance target.
 - Split the project into mutually independent, concurrently startable Workers.
-- Produce or approve each Worker's solution, GO map, and CELL plan.
+- Define Worker ownership boundaries and cross-Worker contracts; approve only
+  cross-Worker, acceptance, safety, and Owner-decision boundaries of
+  Checker-owned plans.
 - Create one stable Checker for each Worker.
 - Maintain the supervisor board and final result queue.
 - Act as the mandatory Overseer (`监工`) through periodic quick inspections.
@@ -182,6 +202,8 @@ must not silently take over a Worker's cell.
 
 One Checker controls exactly one Worker.
 
+- The Checker owns and maintains its Worker's initial solution, GO map, CELL plan,
+  and detailed CELL files.
 - Read the complete current versioned plan for its Worker.
 - Own its Worker's evidence-driven GO review and revision proposals as part of
   the Checker's planning responsibility.
@@ -453,7 +475,7 @@ volume when device capacity is limited. Split the same GO into more CELLs rather
 than shrinking the GO or weakening acceptance. Uneven CELL counts are expected.
 A Worker still executes one CELL at a time.
 
-Before launching a Worker, provide:
+Before launching a Worker, its Checker must provide:
 
 1. A solution file with objective, boundaries, architecture, risks, and
    acceptance.
@@ -672,8 +694,9 @@ No generated planning, log, queue, or coordination Markdown file may exceed
 - Dynamic shared data: distinguish legitimate external drift from writes by
   the current CELL through short-window semantic and writer-attribution checks;
   do not chase perpetual fixed hashes.
-- Repeated same defect: Checker follows the fixed retry policy and escalates a
-  real plan defect or blocker to the Supervisor.
+- Repeated same defect: Checker continues bounded Checker-owned repair and
+  escalates a real plan defect or blocker to the Supervisor; it never sends the
+  correction back to the Worker.
 
 ## Launch Checklist
 
@@ -708,6 +731,8 @@ Before launching multiple loops, the Supervisor confirms:
 - The same-thread heartbeat is active, recorded on the board, and configured to
   remove itself after all loops pass Supervisor acceptance.
 - No Worker relies on another Worker's passed record as its own evidence.
+- The role authority matrix is unchanged; no SLK combined role, single-Worker
+  behavior, state, or message route has been borrowed.
 
 Then send each full Worker plan to its Checker. The Checker sends the first
 formal CELL to its Worker. The Supervisor begins periodic oversight and remains

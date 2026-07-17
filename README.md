@@ -23,6 +23,10 @@ run; never load both skills, switch methods, repeat the invocation, or borrow
 SLK capabilities. If MSLK is not suitable, stop and return the method decision
 to the Owner instead of converting the active run.
 
+Common rules do not make the skills composable. MSLK implements all nine rules
+only through one distinct Supervisor and multiple persistent Checker/Worker
+pairs; it never imports SLK's combined role or single-Worker topology.
+
 All roles must be visible Codex conversations under the same project. MSLK
 never uses subagents, background agents, hidden workers, or `delegate_task`.
 Create or unarchive a role conversation only when formal work is ready; archive
@@ -63,9 +67,11 @@ removed automatically after every loop passes Supervisor acceptance.
 ## Roles
 
 - Supervisor: project planning, decomposition, periodic oversight, blocker
-  resolution, and final acceptance.
-- Checker: one stream's CELL planning, validation, mandatory result repair,
-  routing, and final queue. Repair tasks never return to the Worker. After
+  resolution, cross-Worker boundary approval, and final acceptance. It does not
+  replace ordinary Checker planning or routing.
+- Checker: one stream's initial GO/CELL planning and revision, validation,
+  mandatory result repair, routing, and final queue. Repair tasks never return
+  to the Worker. After
   repairing a Worker mistake, the Checker
   explains the fix inside the next formal CELL assignment.
 - Worker: one bounded CELL at a time with append-only evidence.
@@ -84,7 +90,7 @@ Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.3.1`.
+Current version: `1.3.2`.
 
-Version `1.3.1` adds mandatory project-wide accepted-CELL progress to every
-Checker assignment and the Supervisor final queue.
+Version `1.3.2` hardens strict MSLK/SLK isolation and assigns per-Worker planning
+exclusively to the paired Checker.
