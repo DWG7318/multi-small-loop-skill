@@ -92,11 +92,16 @@ Checker completion is provisional until the Supervisor independently records
 their Checkers design append-only PLAN/GO/CELL continuations without transferring
 planning ownership to the Supervisor or importing SLK.
 
+Before each assignment, every Checker verifies continuation conditions. A clear
+failure stops that Checker's Worker dispatch and reports evidence to the
+Supervisor. The Supervisor either requests specific Owner assistance or resolves
+the supervisory condition and wakes the same Checker for revalidation.
+
 Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.4.0`.
+Current version: `1.4.1`.
 
-Version `1.4.0` adds the optional Supervisor-managed project Goal gate while
-preserving Checker-owned continuation planning.
+Version `1.4.1` adds the continuation-condition stop, escalation, resolution,
+and verified-resume gate for every Checker/Worker pair.

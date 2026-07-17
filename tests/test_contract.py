@@ -58,6 +58,24 @@ class MultiSmallLoopContractTest(unittest.TestCase):
             with self.subTest(rule=rule):
                 self.assertIn(rule, NORMALIZED_SKILL)
 
+    def test_continuation_condition_gate_stops_checker_dispatch(self):
+        required = (
+            "## Continuation Condition Gate",
+            "The Checker must stop dispatching formal tasks",
+            "CONDITION_BLOCKED",
+            "report the condition to the Supervisor",
+            "The Supervisor decides whether Owner assistance is required",
+            "OWNER_ASSISTANCE_REQUIRED",
+            "OWNER_ASSISTANCE_RECEIVED",
+            "SUPERVISOR_RESOLVED",
+            "RESUME_AUTHORIZED",
+            "wake the same Checker",
+            "The Checker must revalidate every blocked condition before dispatching",
+        )
+        for rule in required:
+            with self.subTest(rule=rule):
+                self.assertIn(rule, NORMALIZED_SKILL)
+
     def test_shared_rules_remain_inside_mslk(self):
         required = (
             "Never use a subagent",
