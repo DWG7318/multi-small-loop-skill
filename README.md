@@ -108,11 +108,17 @@ native checks, Semgrep/CodeQL, Gitleaks, OSV-Scanner/Trivy, and risk-appropriate
 runtime, coverage, mutation, or contract evidence for its Worker. Shared heavy
 scans may be serialized for device safety, but acceptance remains Checker-owned.
 
+Allocation is explicit in each Worker's plan: every GO owns one
+`GO_DETECTION_PROFILE`, authored by its Checker and approved/provisioned by the
+Supervisor. The paired Checker executes every assigned skill and tool for every
+CELL and records `CELL_DETECTION_RECEIPT`; no CELL-level omission or replacement
+is allowed.
+
 Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.6.0`.
+Current version: `1.6.1`.
 
-Version `1.6.0` adds Supervisor-provisioned, CodeGraph-based layered Checker
-detection with mature inspection skills and per-Worker evidence calibration.
+Version `1.6.1` makes detection allocation GO-level plan data and requires each
+Checker to execute the complete assigned bundle for every CELL.

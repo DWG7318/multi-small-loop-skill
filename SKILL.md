@@ -246,23 +246,19 @@ acceptance. A shared tool license or installation does not transfer Checker
 authority to the Supervisor or another Checker.
 
 Before formal work, each Checker records `DETECTION_CAPABILITY_MANIFEST` with
-the selected layers, required skills, executable tools, tool version,
-configuration, and omission rationale, permissions, expected evidence, and
-compute constraints. The Supervisor board indexes every manifest and confirms
-cross-Worker compatibility, while each Checker owns its detailed configuration
+available layers, installed skills, executable tools, tool version,
+configuration, and omission rationale for unavailable catalog capabilities,
+permissions, supported evidence, and compute constraints. This is an availability
+inventory, not GO allocation. The Supervisor board indexes every manifest and
+confirms cross-Worker compatibility, while each Checker owns its detailed configuration
 and evidence. Revalidate the manifest after material tool, architecture,
 dependency, ownership, or acceptance changes.
 
-Provision mature detection skills for every applicable Checker:
-
-| Detection skill | Required use |
-| --- | --- |
-| `superpowers:verification-before-completion` | Fresh evidence gate before Checker acceptance or Supervisor completion claims |
-| `superpowers:systematic-debugging` | Root-cause investigation for failures, regressions, and contradictory evidence |
-| `superpowers:test-driven-development` | Test-first behavior for fixes and acceptance-sensitive changes |
-| `security-best-practices` | Language/framework security review when the changed surface is security-relevant |
-| `playwright` | Real browser/runtime inspection for applicable UI and end-to-end flows |
-| Trusted language or framework inspection skills | Official or established domain checks selected for each Worker's actual stack |
+Provision mature detection skills for every applicable Checker. The baseline
+catalog is `superpowers:verification-before-completion`,
+`superpowers:systematic-debugging`, `superpowers:test-driven-development`,
+`security-best-practices`, and `playwright`, plus trusted official or established
+language/framework inspection skills selected for each Worker's actual stack.
 
 Record each skill source, version, and compatibility with the Checker domain and
 current Codex environment. Confirm the skill is installed and readable before
@@ -280,28 +276,55 @@ acceptance. The Supervisor may inspect a read-only project graph for cross-Worke
 contracts, but it must not replace Checker validation. One Checker's graph or
 evidence never counts as another Worker's acceptance evidence.
 
-Each Checker builds a task-fit layered detection stack from mature tools:
+Each Checker builds a task-fit layered detection stack from mature tools: native
+compiler, type, lint, format, and test tools; CodeGraph; Semgrep or CodeQL;
+Gitleaks; OSV-Scanner or Trivy; focused/regression tests plus coverage and
+mutation testing; Playwright or an equivalent real runtime harness; and
+Spectral, Schemathesis, or another API or schema contract validator.
 
-| Layer | Preferred tools and evidence |
-| --- | --- |
-| Native correctness | The language compiler, type checker, formatter, linter, and native test runner |
-| Structure and impact | CodeGraph plus diff and ownership-boundary inspection |
-| Static and semantic security | Semgrep or CodeQL with pinned project rules |
-| Secret exposure | Gitleaks with reviewed allowlists |
-| Dependency and supply chain | OSV-Scanner or Trivy; add SBOM/container checks when relevant |
-| Behavioral confidence | Focused tests, broader regression, coverage and mutation testing when risk justifies them |
-| Runtime and user flow | Playwright for browser/TUI-adjacent web flows or an equivalent real runtime harness |
-| Interface contracts | Spectral, Schemathesis, or another API or schema contract validator |
+### GO Detection Profile Contract
 
-Not every optional layer runs for every CELL. The Supervisor requires layers
-from risk, technology, changed dependency closure, external surface, and
-acceptance burden; each Checker records any approved omission. Convenience,
-speed, or Worker confidence is not an omission rationale. Pin versions and
-configuration, cache immutable baselines, and use incremental or differential
-scans for CELL checks. Run broader regression at GO boundaries and every
-required full gate at final acceptance. If the computer cannot execute a
-required layer safely in one pass, split or serialize the detection commands
-and reduce CELL size or loop concurrency, not acceptance quality.
+Every GO plan must declare one `GO_DETECTION_PROFILE` before simulation or
+formal dispatch. The `DETECTION_CAPABILITY_MANIFEST` inventories what is truly
+available; the profile allocates what this GO must use. This means skills and
+tools are assigned to the GO, never ad hoc to a CELL.
+
+The profile records the GO/version, acceptance risks, every required skill and
+tool, skill source, tool version, configuration, and omission rationale for
+unselected catalog layers, owning Checker, per-CELL invocation template,
+expected result, evidence path, GO-boundary full gate, and device-safe execution
+order. The owning Checker writes the profile. The Supervisor provisions and
+approves it for capability availability, cross-Worker compatibility, safety,
+and resource scheduling. The paired Checker is the sole routine user of the
+assigned detection bundle.
+
+Every CELL in that GO must execute every required skill and tool after Worker
+delivery and before acceptance. Focused arguments and affected paths may narrow
+per CELL, but capability membership may not change. For each
+assigned capability it records `CELL_DETECTION_RECEIPT` with version,
+configuration, action or command, result, and evidence reference. A real clean,
+no-findings, or no-affected-target result after invocation is valid evidence;
+`not run`, inherited evidence, and `not applicable` are not.
+
+No required GO-level capability may be skipped. Worker-run checks do not satisfy
+this Checker obligation, Supervisor provisioning is not Checker execution, and
+another Checker's evidence cannot satisfy the receipt. If a capability is
+irrelevant to any CELL, redesign or split the GO before it starts so every CELL
+has one coherent detection profile.
+
+Changing the bundle requires a versioned GO plan revision, an updated profile,
+and `GO_REVISION_SIMULATION_PASS` before the next CELL is dispatched. The change
+applies to every remaining CELL and records whether accepted CELLs require
+retroactive revalidation. Never create a one-CELL capability override.
+
+Pin versions/configuration, cache immutable baselines, and use incremental or
+differential inputs inside the fixed bundle. Run the complete profile at every
+CELL, broader GO-scope inputs at GO acceptance, and every required full gate at
+final acceptance. If the computer cannot execute the bundle safely in one pass,
+split or serialize the detection commands and reduce CELL size or loop
+concurrency, not acceptance quality; complete every receipt before accepting the
+CELL. Shared heavy tools may be serialized, but each paired Checker must produce
+its own evidence.
 
 For each CELL, its Checker maintains an acceptance matrix mapping every invariant
 and criterion to an independent command, configuration, expected result, and
@@ -616,6 +639,7 @@ Every CELL must define:
 - evidence and append-only method log;
 - dependencies;
 - Worker model and reasoning assignment;
+- its GO detection-profile reference and `CELL_DETECTION_RECEIPT` path;
 - completion criteria.
 
 Size CELLs by implementation risk, cross-owner impact, and evidence burden.
@@ -632,6 +656,7 @@ Before launching a Worker, its Checker must provide:
 2. A GO file with outcomes and dependencies.
 3. A CELL index plus one detailed CELL file per GO.
 4. The Worker/Checker assignment and exact GO/CELL totals.
+5. One `GO_DETECTION_PROFILE` inside the plan for every GO.
 
 ## Multi-Worker Decomposition
 
@@ -955,10 +980,14 @@ Before launching multiple loops, the Supervisor confirms:
 - Tests, scans, safety boundaries, and external-action gates are explicit.
 - Every Checker has a versioned `DETECTION_CAPABILITY_MANIFEST`, mature detection
   skills, Checker-specific tool access, and an acceptance matrix for its domain.
+- Every GO has a Checker-authored, Supervisor-approved `GO_DETECTION_PROFILE`;
+  every CELL references it and requires that paired Checker's complete
+  `CELL_DETECTION_RECEIPT` before acceptance.
 - CodeGraph has produced each code/repository domain's current structural
   baseline; required native checks and task-relevant Semgrep/CodeQL, Gitleaks,
   OSV-Scanner/Trivy, Playwright, coverage/mutation, and API/schema layers are
-  provisioned or have an approved risk-based omission rationale.
+  assigned at GO level and provisioned, or are excluded from that GO with an
+  approved plan-level rationale before any CELL starts.
 - Every CELL declares an allowed Worker model and reasoning level.
 - The Supervisor and every Checker are `gpt-5.6-sol xhigh`; every Worker is from
   `gpt-5.5 high` through `gpt-5.6-sol high` according to task type.

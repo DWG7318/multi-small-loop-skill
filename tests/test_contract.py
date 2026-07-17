@@ -133,6 +133,27 @@ class MultiSmallLoopContractTest(unittest.TestCase):
             with self.subTest(rule=rule):
                 self.assertIn(rule, NORMALIZED_SKILL)
 
+    def test_go_detection_profile_is_planned_and_executed_for_every_cell(self):
+        required = (
+            "Every GO plan must declare one `GO_DETECTION_PROFILE`",
+            "skills and tools are assigned to the GO, never ad hoc to a CELL",
+            "The owning Checker writes the profile",
+            "The Supervisor provisions and approves it",
+            "The paired Checker is the sole routine user of the assigned detection bundle",
+            "Every CELL in that GO must execute every required skill and tool",
+            "CELL_DETECTION_RECEIPT",
+            "No required GO-level capability may be skipped",
+            "Worker-run checks do not satisfy this Checker obligation",
+            "If a capability is irrelevant to any CELL, redesign or split the GO",
+            "Changing the bundle requires a versioned GO plan revision",
+            "before the next CELL is dispatched",
+            "arguments and affected paths may narrow per CELL, but capability membership may not",
+        )
+        for rule in required:
+            with self.subTest(rule=rule):
+                self.assertIn(rule, NORMALIZED_SKILL)
+        self.assertNotIn("Not every optional layer runs for every CELL", SKILL)
+
     def test_shared_rules_remain_inside_mslk(self):
         required = (
             "Never use a subagent",
