@@ -97,11 +97,16 @@ failure stops that Checker's Worker dispatch and reports evidence to the
 Supervisor. The Supervisor either requests specific Owner assistance or resolves
 the supervisory condition and wakes the same Checker for revalidation.
 
+The Owner may also configure the Overseer to start/resume or safely pause all
+loops or named Checker/Worker pairs at a specified time or accepted-CELL
+threshold. Pausing stops new dispatch at safe CELL boundaries; resuming preserves
+the same Checker/Worker ownership and revalidates prerequisites.
+
 Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.4.1`.
+Current version: `1.5.0`.
 
-Version `1.4.1` adds the continuation-condition stop, escalation, resolution,
-and verified-resume gate for every Checker/Worker pair.
+Version `1.5.0` adds optional Owner-configured timed and CELL-threshold Overseer
+control for all or selected loops.

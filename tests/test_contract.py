@@ -76,6 +76,25 @@ class MultiSmallLoopContractTest(unittest.TestCase):
             with self.subTest(rule=rule):
                 self.assertIn(rule, NORMALIZED_SKILL)
 
+    def test_optional_overseer_schedule_controls_selected_loops_safely(self):
+        required = (
+            "## Optional Overseer Control Schedule",
+            "The Owner may preconfigure one optional Overseer control schedule",
+            "accepted CELL threshold",
+            "target all loops or named Checker/Worker pairs",
+            "SCHEDULED_START",
+            "SCHEDULED_PAUSE",
+            "PAUSED_BY_POLICY",
+            "RESUMED_BY_POLICY",
+            "must not interrupt an active CELL",
+            "does not pre-create idle Workers",
+            "wake the same Checker",
+            "A paused loop is not complete",
+        )
+        for rule in required:
+            with self.subTest(rule=rule):
+                self.assertIn(rule, NORMALIZED_SKILL)
+
     def test_shared_rules_remain_inside_mslk(self):
         required = (
             "Never use a subagent",

@@ -175,6 +175,7 @@ classification. Record the change before dispatch. Never assign a Worker below
 | CELL assignment, validation, repair, routing, progress display, and per-Worker queue | Its paired Checker |
 | Continuation-condition stop, evidence report, and resume validation | Its paired Checker |
 | Continuation-condition resolution and Owner-assistance decision | Supervisor |
+| Optional timed or accepted-CELL-threshold loop control | Supervisor |
 | Optional Goal management, gap allocation, and final Goal validation | Supervisor |
 | CELL execution | Worker |
 
@@ -193,6 +194,7 @@ The Supervisor owns the whole project, not the middle of ordinary cell work.
   Checker-owned plans.
 - Create one stable Checker for each Worker.
 - Maintain the supervisor board and final result queue.
+- Manage any Owner-configured optional Overseer start/resume/pause schedule.
 - Manage and independently validate the optional project Goal completion gate.
 - Act as the mandatory Overseer (`监工`) through periodic quick inspections.
 - Resolve plan defects, Owner decisions, shared-resource conflicts, and genuine
@@ -640,6 +642,50 @@ a new conversation.
 If the environment cannot create a same-thread heartbeat, report the missing
 capability explicitly. Do not substitute a detached cron job or new task.
 
+## Optional Overseer Control Schedule
+
+The Owner may preconfigure one optional Overseer control schedule. Without an
+Owner-configured schedule, the heartbeat performs status inspection only and
+must not invent start, resume, pause, or close actions.
+
+The schedule must record:
+
+- action: start/resume or safe pause/close;
+- trigger: a timestamp with timezone, an accepted CELL threshold, or both;
+- scope: target all loops or named Checker/Worker pairs;
+- one-shot or recurring behavior;
+- each target's safe-boundary and resume conditions.
+
+Record future actions as `SCHEDULED_START` or `SCHEDULED_PAUSE`. A time trigger
+fires on the first Supervisor inspection at or after its timestamp. An accepted
+CELL threshold is checked after every CELL acceptance and by each Checker before
+every new Worker assignment, so reaching the threshold prevents another
+dispatch. The Supervisor board is the authoritative schedule and threshold
+source.
+
+For pause/close, each targeted Checker stops new dispatch and records
+pause-pending state. The Supervisor must not interrupt an active CELL. Let each
+Worker reach its normal receipt; its Checker validates and repairs the result
+before recording `PAUSED_BY_POLICY`. Archive the targeted Checker and Worker at
+the safe boundary and display their unchanged project progress snapshot, for
+example `已暂停：35/231`. A paused loop is not complete, does not satisfy a Goal,
+and retains all append-only evidence and progress. Unaffected independent loops
+may continue only when paused work cannot invalidate their acceptance.
+
+For start/resume, scheduled control does not pre-create idle Workers, repeat the
+MSLK invocation, combine SLK, or replace a persistent pair. At the trigger,
+create a not-yet-created pair only when its first formal CELL is ready and the
+MSLK selection and independence gates still pass; otherwise unarchive the same
+Checker and Worker. The Supervisor must wake the same Checker, which confirms
+the plan and simulation remain valid and passes the continuation-condition gate
+before dispatch. Then record `RESUMED_BY_POLICY`. If any prerequisite fails,
+record `CONDITION_BLOCKED` instead of starting.
+
+The same-thread Overseer remains active while any future control action exists.
+Owner changes or cancellation of the schedule are versioned on the Supervisor
+board. Scheduled control never bypasses Owner assistance, safety gates, Goal
+validation, Checker ownership, method exclusivity, or final acceptance.
+
 ### Quick Inspection
 
 For every unfinished Worker, inspect only what is needed:
@@ -820,6 +866,9 @@ Before launching multiple loops, the Supervisor confirms:
 - The optional Goal is either absent or explicitly defined; a configured Goal
   blocks project completion until the Supervisor records `GOAL_SATISFIED`.
 - The supervisor board lists every Worker and its persistent Checker.
+- Any optional Overseer control schedule is Owner-configured, versioned, and
+  includes target loops, action, trigger, timezone, safe boundaries, and resume
+  conditions.
 - The 15/30/60-minute Overseer interval is selected from project/CELL size.
 - The same-thread heartbeat is active, recorded on the board, and configured to
   remove itself after all loops pass Supervisor acceptance.
