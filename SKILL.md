@@ -254,33 +254,11 @@ confirms cross-Worker compatibility, while each Checker owns its detailed config
 and evidence. Revalidate the manifest after material tool, architecture,
 dependency, ownership, or acceptance changes.
 
-Provision mature detection skills for every applicable Checker. The baseline
-catalog is `superpowers:verification-before-completion`,
-`superpowers:systematic-debugging`, `superpowers:test-driven-development`,
-`security-best-practices`, and `playwright`, plus trusted official or established
-language/framework inspection skills selected for each Worker's actual stack.
-
-Record each skill source, version, and compatibility with the Checker domain and
-current Codex environment. Confirm the skill is installed and readable before
-relying on it; never invent an unavailable skill. Any skill that requires
-subagents is incompatible with MSLK and must not be loaded, because Supervisor,
-Checker, and Worker must remain visible conversations. A skill guides a Checker
-but never becomes a hidden role or transfers acceptance authority.
-
-CodeGraph is mandatory for code or repository work when relevant source can be
-indexed. Each Checker uses it to establish the structural and dependency
-baseline, ownership boundary, entry points, call/dependency paths, and affected
-closure for its Worker before the first CELL. Refresh the changed graph slice
-after each accepted CELL and the broader domain baseline at GO and final
-acceptance. The Supervisor may inspect a read-only project graph for cross-Worker
-contracts, but it must not replace Checker validation. One Checker's graph or
-evidence never counts as another Worker's acceptance evidence.
-
-Each Checker builds a task-fit layered detection stack from mature tools: native
-compiler, type, lint, format, and test tools; CodeGraph; Semgrep or CodeQL;
-Gitleaks; OSV-Scanner or Trivy; focused/regression tests plus coverage and
-mutation testing; Playwright or an equivalent real runtime harness; and
-Spectral, Schemathesis, or another API or schema contract validator.
+Before defining a GO profile, each Checker reads
+[`references/checker-detection-catalog.md`](references/checker-detection-catalog.md)
+and verifies its skill/tool catalog against that Checker's manifest. CodeGraph is
+mandatory for code or repository work when relevant source can be indexed; the
+paired Checker owns its use and evidence.
 
 ### GO Detection Profile Contract
 
@@ -326,24 +304,9 @@ concurrency, not acceptance quality; complete every receipt before accepting the
 CELL. Shared heavy tools may be serialized, but each paired Checker must produce
 its own evidence.
 
-For each CELL, its Checker maintains an acceptance matrix mapping every invariant
-and criterion to an independent command, configuration, expected result, and
-evidence path. Maintain a false-positive register with reviewed suppressions and
-expiry/revisit conditions; never silence a finding only to make a scan green.
-Record focused, graph-impact, regression, security, and runtime results as
-`REGRESSION_EVIDENCE` linked to the CELL, Worker, and manifest version.
-
-A Checker must not accept a CELL from Worker self-report alone. It independently
-inspects authoritative artifacts and executes the required checks. Tool output
-is evidence, not the acceptance decision: reconcile conflicts, investigate
-unexpected omissions, and preserve raw summaries or stable references without
-leaking secrets or private paths.
-
-After every accepted CELL and GO, each Checker calibrates its detection system
-from escaped defects, noisy rules, new dependencies, and changed risk. Detection
-evidence may update the next CELL, GO revision, or supplementary GO under the
-existing append-only planning rules. It never authorizes silent scope,
-ownership, or acceptance changes.
+The reference defines acceptance-matrix, false-positive, `REGRESSION_EVIDENCE`,
+and calibration requirements. They remain mandatory for each paired Checker's
+independent acceptance.
 
 If CodeGraph or another required layer, skill, permission, or safe execution
 capacity is unavailable, the affected Checker records `CONDITION_BLOCKED`, stops
@@ -811,67 +774,13 @@ Owner changes or cancellation of the schedule are versioned on the Supervisor
 board. Scheduled control never bypasses Owner assistance, safety gates, Goal
 validation, Checker ownership, method exclusivity, or final acceptance.
 
-### Quick Inspection
+### Quick Inspection And Wake
 
-For every unfinished Worker, inspect only what is needed:
-
-1. Supervisor board state and planned CELL total.
-2. Passed/blocked final queue records.
-3. Checker and Worker thread status and latest turn.
-4. Latest formal task, repair record, or completion receipt.
-5. Method-log/artifact timestamp when thread state is ambiguous.
-
-Classify the Worker as:
-
-- `active_worker`
-- `active_checker`
-- `waiting_for_worker_delivery`
-- `waiting_for_checker_validation`
-- `blocked`
-- `stalled`
-- `complete`
-
-### Wake Rule
-
-If the Worker is not complete and neither role is genuinely active, notify the
-Checker to continue unless a real blocker or plan defect is recorded. Do not
-tell the Worker to self-select work. Cross-Worker dependency waiting is not a
-healthy active state; it means the launch decomposition was invalid or the
-dependent Worker was created too early.
-
-Use the observed situation:
-
-- Worker delivered but Checker stopped: tell Checker to validate and route.
-- Checker accepted but did not send the next CELL: tell Checker to resume its
-  planning/routing duty and send the next formal task.
-- Worker ended without delivery: tell Checker to inspect and repair any usable
-  partial result; only if none exists may it re-dispatch the original task.
-- Receipt was lost: tell Checker to inspect Worker artifacts and perform a
-  one-time routing repair.
-- Another Worker's future output is required: record `PLAN_DEFECT`, revoke the
-  premature pair, and redesign or defer that work; do not keep an idle loop.
-- A `CONDITION_BLOCKED` record exists: Supervisor performs the Owner-assistance
-  decision. After `SUPERVISOR_RESOLVED`, it sends `RESUME_AUTHORIZED` and wakes
-  the same Checker for prerequisite revalidation.
-- A role is active: do not interrupt it.
-- A passed queue exists and final acceptance succeeds: stop monitoring that
-  Worker.
-
-A wake message must be concise, name the current CELL, cite the observed stop,
-and require the Checker to send or validate exactly one next action. It must
-not become a replacement task package for the Worker.
-
-### Overseer Record
-
-Update the supervisor board after each check:
-
-```md
-| Worker | Checker | State | Current CELL | Final queue | Next signal |
-|---|---|---|---|---|---|
-```
-
-Report active Workers, repaired Workers, blockers, and the next expected signal
-to the Owner in a compact status update.
+Before every heartbeat inspection, read and execute
+[`references/overseer-inspection-and-wake.md`](references/overseer-inspection-and-wake.md).
+Its MSLK-only classification, wake, and board-update rules are mandatory. The
+Supervisor remains the sole Overseer and never converts the reference into a
+detached task or hidden role.
 
 ## Optional Goal Gate
 
@@ -909,6 +818,45 @@ cannot proceed within Owner authority, safety gates, or available evidence,
 record `METHOD_SELECTION_FAILED`, `BLOCKED`, `PLAN_DEFECT`, or an Owner decision.
 Do not claim completion, combine SLK, or switch methods inside the current run.
 
+## Markdown Context Boundary
+
+Every Markdown file governed by the loop has a hard maximum of 1000 physical
+lines, counting blank lines and fenced content. This is a Codex
+context-readability limit, not a device-capacity limit. A stronger computer,
+model, or context window does not waive it.
+
+Governed files include every solution, plan, GO, CELL, manifest, profile, index,
+log, receipt, evidence, queue, coordination file, and other Markdown created or
+materially expanded by the loop. Existing read-only source or third-party Markdown is not
+governed until a Checker plan requires modifying it; then the Supervisor must
+authorize a semantic split or record `PLAN_DEFECT`/`CONDITION_BLOCKED`.
+
+During solution design, the Supervisor defines the project-wide Markdown artifact
+map, sharding policy, and `WORK_CONTINUATION_INDEX`. The index records objective,
+plan version, current Worker/GO/CELL, semantic shard sequence, accepted evidence
+references, invariants, unresolved decisions, and next action. It also stays
+within 1000 lines. Each Checker applies this policy to its own plan and artifacts.
+
+Prefer multiple files that follow how work continues and split at a semantic
+work-continuation boundary such as a Worker domain, GO, coherent CELL group,
+completed decision, evidence batch, or execution phase. The split must not
+hard-cut a requirement, table, code block, acceptance record, or evidence chain.
+Each successor names its predecessor, continuation reason, carried invariants,
+owning Checker, and next action; update the index before continuing.
+
+Any GO that can write Markdown must assign `markdown-line-budget` in its
+`GO_DETECTION_PROFILE`. Every CELL acceptance checks all created or materially
+expanded Markdown files and records `MD_LINE_BUDGET_PASS` with paths and physical
+line counts. Before the next append would exceed 1000 lines, close the current
+file at the nearest semantic boundary and continue in a linked file. Never delete
+required detail or compress evidence merely to pass the limit.
+
+After context compaction or a shard transition, the Supervisor and affected
+Checker reload the `WORK_CONTINUATION_INDEX`, current semantic file, predecessor
+handoff, governing GO profile, and latest accepted evidence before routing work.
+If a valid split cannot be made within scope or format constraints, stop affected
+dispatch rather than accepting an unreadable or misleading Markdown artifact.
+
 ## Evidence And Queue
 
 Use project-local coordination paths unless the project defines others:
@@ -921,9 +869,9 @@ coordination/
   supervisor-board.md
 ```
 
-Method logs are append-only. Rotate to a new numbered shard before 999 lines or
-when an old shard must be sealed; never rewrite history to make evidence look
-clean. Every new shard cites the prior shard and its hash.
+Method logs are append-only. Rotate before the next append would exceed 1000
+lines or when an old shard must be sealed; never rewrite history to make evidence
+look clean. Every new shard cites the prior shard and its hash.
 
 Only the Checker writes a final Worker record:
 
@@ -936,8 +884,8 @@ Valid results are `passed`, `blocked`, `plan-defect`, `owner-decision`, and
 Supervisor's final audit accepts it. Project completion with a configured Goal
 also requires `GOAL_SATISFIED`.
 
-No generated planning, log, queue, or coordination Markdown file may exceed
-999 lines. Split rather than remove necessary detail.
+No governed planning, log, queue, or coordination Markdown file may exceed 1000
+lines. Split rather than remove necessary detail.
 
 ## Recovery Rules
 
@@ -968,6 +916,8 @@ Before launching multiple loops, the Supervisor confirms:
 - Every role conversation has work ready, and every no-work conversation is
   archived with an explicit unarchive path for later same-project work.
 - Each Worker has complete solution/GO/CELL plans.
+- The Supervisor-defined Markdown artifact map and `WORK_CONTINUATION_INDEX`
+  cover every Checker domain; every governed file is at most 1000 physical lines.
 - The GO revision ledger is present; every completed GO has an evidence review,
   and every revised or supplementary GO has `GO_REVISION_SIMULATION_PASS`.
 - Every created Worker's first CELL is dependency-ready and can be dispatched
@@ -983,6 +933,8 @@ Before launching multiple loops, the Supervisor confirms:
 - Every GO has a Checker-authored, Supervisor-approved `GO_DETECTION_PROFILE`;
   every CELL references it and requires that paired Checker's complete
   `CELL_DETECTION_RECEIPT` before acceptance.
+- Every GO that can write Markdown includes `markdown-line-budget`, and every
+  accepted CELL has paired-Checker `MD_LINE_BUDGET_PASS` evidence.
 - CodeGraph has produced each code/repository domain's current structural
   baseline; required native checks and task-relevant Semgrep/CodeQL, Gitleaks,
   OSV-Scanner/Trivy, Playwright, coverage/mutation, and API/schema layers are

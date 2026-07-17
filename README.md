@@ -114,11 +114,16 @@ Supervisor. The paired Checker executes every assigned skill and tool for every
 CELL and records `CELL_DETECTION_RECEIPT`; no CELL-level omission or replacement
 is allowed.
 
+Every Markdown work artifact has a hard 1000-physical-line maximum because Codex
+must be able to read and recover working context reliably. The Supervisor defines
+the project-wide semantic continuation map and `WORK_CONTINUATION_INDEX`; each
+Checker runs `markdown-line-budget` for every Markdown-writing CELL.
+
 Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.6.1`.
+Current version: `1.7.0`.
 
-Version `1.6.1` makes detection allocation GO-level plan data and requires each
-Checker to execute the complete assigned bundle for every CELL.
+Version `1.7.0` adds the hard 1000-line Markdown context boundary, semantic work
+continuation, compaction recovery, and per-CELL line-budget evidence.
