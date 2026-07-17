@@ -271,6 +271,40 @@ Worker assignment. `REDO` means the Checker repairs and revalidates the
 delivery; it does not send correction work back to the Worker. Messages without
 the formal task heading are discussion, not executable Worker work.
 
+## Mandatory Project Progress Display
+
+Every formal task assignment from a Checker to its Worker must include exactly
+one project-wide progress line after the task details:
+
+```text
+正在完成 GO-03：35/231
+```
+
+The GO identifier is the GO of the newly assigned CELL. The numerator counts
+accepted CELLs only across every Checker/Worker pair, after any required Checker
+repair and local validation. It is not a per-Worker subtotal. Assigned, running,
+delivered-but-unchecked, blocked, revoked, and duplicate CELLs do not count as
+complete. Count each accepted CELL identifier exactly once.
+
+The denominator is the total CELL count in the current versioned plan across all
+Workers and GO, including accepted historical CELLs and every active remaining
+CELL. After an approved GO revision or historical-GO supplement, recompute the
+denominator, record the old and new totals in the revision ledger and Supervisor
+board, and never reduce it below the accepted count. The numerator never
+decreases.
+
+Before every formal task assignment, the Checker recomputes the snapshot from
+the project plan and append-only accepted-CELL records and includes it in the
+task evidence. The Supervisor remains the sole writer of the Supervisor board
+and reconciles those snapshots by CELL identifier. Concurrent Checkers may show
+the same point-in-time snapshot, but must never double-count a CELL. Continue
+displaying progress until all loops finish. When every CELL is accepted and no
+next task exists, the Supervisor's final queue must display:
+
+```text
+全部完成：231/231
+```
+
 After finishing a CELL, the Worker must directly send the controlling Checker:
 
 ```text
@@ -667,6 +701,8 @@ Before launching multiple loops, the Supervisor confirms:
   `gpt-5.5 high` through `gpt-5.6-sol high` according to task type.
 - GO scope follows project need; every CELL is sized for reliable execution on
   the current computer without weakening GO acceptance.
+- Every Checker task displays project-wide `正在完成 GO-NN：accepted/total`, and
+  the Supervisor final queue displays `全部完成：total/total`.
 - The supervisor board lists every Worker and its persistent Checker.
 - The 15/30/60-minute Overseer interval is selected from project/CELL size.
 - The same-thread heartbeat is active, recorded on the board, and configured to

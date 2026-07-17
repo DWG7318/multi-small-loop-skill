@@ -75,11 +75,16 @@ The Supervisor and every Checker use `gpt-5.6-sol xhigh`. Workers range from
 project need and ignores device limits; CELLs are made smaller as needed for
 reliable execution on the current computer.
 
+Every Checker assignment shows project-wide accepted CELL progress, for example
+`正在完成 GO-03：35/231`, not a per-Worker subtotal. The count continues through
+every assignment and ends only when the Supervisor final queue shows
+`全部完成：231/231`.
+
 Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.3.0`.
+Current version: `1.3.1`.
 
-Version `1.3.0` makes Checker repair ownership mandatory, updates model tiers,
-and makes CELL sizing device-aware without constraining GO scope.
+Version `1.3.1` adds mandatory project-wide accepted-CELL progress to every
+Checker assignment and the Supervisor final queue.
