@@ -1,4 +1,4 @@
 interface:
   display_name: "Multi Small Loop (MSLK)"
   short_description: "Dependency-ready parallel loops with oversight"
-  default_prompt: "Use only $multi-small-loop-skill (MSLK), exactly once. Use visible same-project conversations, never subagents or SLK capabilities. Simulate before formal work, lifecycle-manage conversations, and after every GO have the paired Checker act as Planner to propose evidence-driven subsequent-GO adjustments or historical-GO supplements for Supervisor boundary approval before a delta simulation."
+  default_prompt: "Use only $multi-small-loop-skill (MSLK), exactly once. Use visible same-project conversations, never subagents or SLK capabilities. Simulate before formal work, lifecycle-manage conversations, and after every GO have the paired Checker propose evidence-driven subsequent-GO adjustments or historical-GO supplements for Supervisor boundary approval before a delta simulation."

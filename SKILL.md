@@ -182,8 +182,8 @@ must not silently take over a Worker's cell.
 One Checker controls exactly one Worker.
 
 - Read the complete current versioned plan for its Worker.
-- Act as the persistent Planner for its Worker's evidence-driven GO review and
-  revision proposals.
+- Own its Worker's evidence-driven GO review and revision proposals as part of
+  the Checker's planning responsibility.
 - Select and package one fixed CELL at a time.
 - Send formal tasks and rework directly to its paired Worker.
 - Inspect files, diffs, tests, scans, method logs, and boundaries locally.
@@ -288,7 +288,8 @@ Project -> independent Worker/Checker -> GO -> CELL
 ```
 
 - Worker: one persistent execution owner with an independent work domain.
-- Checker: the persistent planner, validator, and router paired to that Worker.
+- Checker: the persistent planning, validation, and routing role paired to that
+  Worker.
 - GO: a verifiable outcome within the Worker, not a phase, wave, or thread.
 - CELL: the smallest inspectable work package inside one GO.
 - Round: `GO-01/CELL-01.01/R01`.
@@ -354,12 +355,11 @@ Validate all of these:
 
 ### Evidence-Driven GO Revision
 
-After every GO is completed and checked, its Checker acts in its Planner
-capacity and compares the accepted plan with the actual result, including
-delivered scope, defects, residual risk, new dependencies, changed estimates,
-and incomplete outcomes.
+After every GO is completed and checked, its Checker compares the accepted plan
+with the actual result, including delivered scope, defects, residual risk, new
+dependencies, changed estimates, and incomplete outcomes.
 
-The Planner owns the resulting GO revision proposal and may:
+The Checker owns the resulting GO revision proposal and may:
 
 - adjust any subsequent GO that has not started;
 - add a supplementary GO for a historical GO when the completed result exposes
@@ -367,10 +367,10 @@ The Planner owns the resulting GO revision proposal and may:
 - revise affected CELL maps, dependencies, model assignments, and the Worker
   assignment table.
 
-The Planner sends the proposal and evidence to the Supervisor. The Supervisor
+The Checker sends the proposal and evidence to the Supervisor. The Supervisor
 may approve, reject, or return it for revision based on cross-Worker dependency,
 ownership, acceptance, safety, or Owner-decision boundaries, but must not author
-ordinary GO revisions in place of the Planner. The Worker must not revise GO or
+ordinary GO revisions in place of the Checker. The Worker must not revise GO or
 CELL plans.
 
 GO revision is append-only and versioned:
@@ -554,8 +554,8 @@ dependent Worker was created too early.
 Use the observed situation:
 
 - Worker delivered but Checker stopped: tell Checker to validate and route.
-- Checker accepted but did not send the next CELL: tell Checker to resume
-  planner/router duty and send the next formal task.
+- Checker accepted but did not send the next CELL: tell Checker to resume its
+  planning/routing duty and send the next formal task.
 - Worker ended without delivery: tell Checker to inspect the partial work and
   issue a bounded formal rework.
 - Receipt was lost: tell Checker to inspect Worker artifacts and perform a
