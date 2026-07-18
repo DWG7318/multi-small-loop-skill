@@ -14,6 +14,21 @@
     ],
     "checker_periodic_worker_inspection": false
   },
+  "worker_execution_gate": {
+    "dispatcher": "paired Checker",
+    "permission_provisioner": "Supervisor",
+    "workspace_binding_required": true,
+    "allowlist_preauthorized": true,
+    "owner_routine_approval_forbidden": true,
+    "unexpected_routine_approval_signal": "WORKER_EXECUTION_FAILURE",
+    "owner_only_categories": [
+      "credentials",
+      "external_side_effects",
+      "scope_or_acceptance_change",
+      "destructive_or_security_sensitive_operation",
+      "write_outside_allowlist"
+    ]
+  },
   "project_states": [
     "NOT_STARTED",
     "RUNNING",

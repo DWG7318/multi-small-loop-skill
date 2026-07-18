@@ -106,6 +106,24 @@ Classify each Worker as `active_worker`, `active_checker`,
 
 ## Wake Rule
 
+Before a paired Checker's final dispatch action, require
+`WORKER_EXECUTION_GATE_PASS`: the canonical assignment workspace equals that
+Worker's bound workspace, and every routine allowlisted edit and command is
+pre-authorized. A routine approval prompt is `WORKER_EXECUTION_FAILURE`, never
+an Owner click task.
+
+The Supervisor provisions a usable pair permission mechanism. The Checker
+verifies the canonical path without treating a sibling worktree, junction,
+symlink, or equivalent Git content as the bound workspace. The allowlist covers
+only declared file writes, evidence creation, local checks, and an explicitly
+authorized commit. It never expands CELL scope or weakens platform safety.
+
+If binding or permission cannot be proven, the Checker records
+`CONDITION_BLOCKED` and reports the exact gap; the Supervisor repairs it before
+dispatch. Credentials, external side effects, destructive or security-sensitive
+operations, out-of-allowlist writes, and scope, acceptance, or Goal changes stay
+behind the existing Owner-decision boundary.
+
 An offline Checker waiting on its Worker is healthy and must remain offline.
 Wake the same Checker only after `WORKER_COMPLETION_RECEIPT`,
 `WORKER_BLOCKER_RECEIPT`, or `WORKER_EXECUTION_FAILURE`. Never tell the Worker to

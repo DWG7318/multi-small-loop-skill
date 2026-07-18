@@ -70,9 +70,9 @@ class MultiSmallLoopContractTest(unittest.TestCase):
             )
         self.assertLess(len(SKILL.splitlines()), 900)
 
-    def test_release_identity_is_v1_8_1(self):
-        self.assertEqual(VERSION, "1.8.1")
-        self.assertIn("Current version: `1.8.1`", README)
+    def test_release_identity_is_v1_8_2(self):
+        self.assertEqual(VERSION, "1.8.2")
+        self.assertIn("Current version: `1.8.2`", README)
         self.assertIn("GitHub repository ID: `1298120736`", SKILL)
         self.assertNotIn("all nine rules", README.lower())
 
@@ -212,6 +212,31 @@ class MultiSmallLoopContractTest(unittest.TestCase):
             ],
         )
         self.assertFalse(boundary["checker_periodic_worker_inspection"])
+
+    def test_worker_execution_is_preauthorized_before_dispatch(self):
+        required = (
+            "## Pre-Authorized Worker Execution Gate",
+            "canonical workspace path",
+            "must exactly match the Worker's bound conversation workspace",
+            "pre-authorize every routine operation inside the CELL allowlist",
+            "must never be delegated to the Owner",
+            "WORKER_EXECUTION_FAILURE",
+            "Owner-only decision",
+        )
+        for rule in required:
+            with self.subTest(rule=rule):
+                self.assertIn(rule, NORMALIZED_SKILL)
+
+        gate = CONTROL_CONTRACT["worker_execution_gate"]
+        self.assertEqual(gate["dispatcher"], "paired Checker")
+        self.assertEqual(gate["permission_provisioner"], "Supervisor")
+        self.assertTrue(gate["workspace_binding_required"])
+        self.assertTrue(gate["allowlist_preauthorized"])
+        self.assertTrue(gate["owner_routine_approval_forbidden"])
+        self.assertEqual(
+            gate["unexpected_routine_approval_signal"],
+            "WORKER_EXECUTION_FAILURE",
+        )
 
     def test_quick_inspection_uses_the_single_control_reference(self):
         self.assertIn("## Quick Inspection", CONTROL_REFERENCE)

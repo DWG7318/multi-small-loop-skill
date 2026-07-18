@@ -125,8 +125,11 @@ Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.8.1`.
+Current version: `1.8.2`.
 
+Version `1.8.2` adds the pre-authorized Worker execution gate: exact conversation
+workspace binding, allowlist-scoped routine permission provisioning, and no
+Owner click-through for ordinary Worker edits or commands.
 Version `1.8.1` adds the Checker dispatch-then-offline boundary and 25/25 Eval.
 Version `1.8.0` added the independent frozen-roster readiness Eval,
 MSLK-only scoped control kernel, manual-first-start rule, deployable receipts,

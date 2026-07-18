@@ -260,7 +260,7 @@
     {
       "id": "MSLK-Q24",
       "type": "single_select",
-      "prompt": "VERSION says 1.8.1, but README, global mirror, remote main, or annotated tag differs. Is publication complete?",
+      "prompt": "VERSION says 1.8.2, but README, global mirror, remote main, or annotated tag differs. Is publication complete?",
       "options": [
         {"id": "A", "text": "No; every release identity and content check must align."},
         {"id": "B", "text": "Yes; VERSION alone is enough."},
@@ -270,13 +270,13 @@
     },
     {
       "id": "MSLK-Q25",
-      "type": "single_select",
-      "prompt": "A paired Checker sends its Worker a formal CELL after completing all pre-dispatch work. What happens next?",
+      "type": "ordering",
+      "prompt": "Order the valid MSLK pair boundary when a CELL will edit files and run local checks.",
       "options": [
-        {"id": "A", "text": "The Checker updates its pair log and then goes offline."},
-        {"id": "B", "text": "The Checker ends the turn immediately and stays offline until completion, blocker, or execution-failure signal."},
-        {"id": "C", "text": "The Supervisor periodically wakes the Checker to inspect Worker progress."},
-        {"id": "D", "text": "The Checker polls while the distinct Supervisor handles other pairs."}
+        {"id": "A", "text": "Verify the canonical assignment workspace exactly matches the paired Worker's bound conversation workspace."},
+        {"id": "B", "text": "Record WORKER_EXECUTION_GATE_PASS after pre-authorizing every routine allowlisted edit and command."},
+        {"id": "C", "text": "The paired Checker sends the formal assignment as its final online action."},
+        {"id": "D", "text": "That Checker enters OFFLINE_WAITING_WORKER_SIGNAL; an unexpected routine approval prompt is WORKER_EXECUTION_FAILURE, not an Owner click task."}
       ]
     }
   ]

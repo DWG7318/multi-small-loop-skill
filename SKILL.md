@@ -141,8 +141,7 @@ The simulation must:
 4. rehearse one assignment, delivery, Checker decision, and `NEXT`, `REDO`, or
    `BLOCKED` route per pair;
 5. prove no subagent or SLK capability is used;
-6. validate ownership, write isolation, evidence paths, model assignments,
-   tests, safety gates, dispatch-then-offline behavior, and role lifecycle;
+6. validate ownership, write isolation, canonical Worker workspace binding and pre-authorized CELL operations, evidence paths, model assignments, tests, safety gates, dispatch-then-offline behavior, and role lifecycle;
 7. rehearse every Checker's detection capability manifest, CodeGraph baseline,
    and one focused-to-regression evidence route.
 
@@ -690,6 +689,10 @@ Workers that can start immediately.
 
 The number of GO and CELL does not need to be equal between Workers. Allocate
 them according to ownership, complexity, risk, dependencies, and evidence.
+
+## Pre-Authorized Worker Execution Gate
+
+Before dispatch, the Supervisor provisions the pair and the Checker records `WORKER_EXECUTION_GATE_PASS`: the assignment's canonical workspace path must exactly match the Worker's bound conversation workspace, and the Checker must pre-authorize every routine operation inside the CELL allowlist. Routine approval must never be delegated to the Owner; an unexpected prompt is `WORKER_EXECUTION_FAILURE`. Credentials, external side effects, destructive or security-sensitive work, out-of-allowlist writes, and scope, acceptance, or Goal changes remain an Owner-only decision. Follow the detailed gate in [`references/mslk-control-operations.md`](references/mslk-control-operations.md).
 
 ## Dispatch-Then-Offline Boundary
 Before dispatch, the Checker completes every check, record, snapshot, and message. The formal Worker assignment is the Checker's final action and enters `OFFLINE_WAITING_WORKER_SIGNAL`.
