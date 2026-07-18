@@ -15,8 +15,8 @@ Checker <-> Worker
 ```
 
 One Supervisor splits the project into independent Workers, pairs each Worker
-with one fixed Checker, periodically acts
-as Overseer (`监工`), wakes stalled Checkers, and performs final acceptance.
+with one fixed Checker, oversees project boundaries without waking a Checker
+during Worker execution, and performs final acceptance.
 
 MSLK and SLK are mutually exclusive. Select MSLK exactly once for a project
 run; never load both skills, switch methods, repeat the invocation, or borrow
@@ -35,7 +35,7 @@ it immediately when that work finishes. Later same-project work should
 unarchive the existing conversation instead of creating a duplicate.
 
 Before simulation, every role in the complete frozen roster must pass MSLK's
-independent 24-question readiness Eval with exactly `24/24`. Then run a
+independent 25-question readiness Eval with exactly `25/25`. Then run a
 no-side-effect simulation of each pair's first assignment, delivery, validation,
 and routing cycle. Formal work requires both gates for the same roster.
 
@@ -61,10 +61,10 @@ are not independent parallel Workers: merge the dependent work, finish the
 shared prerequisite first, or launch the dependent loop later. MSLK never
 pre-creates idle Workers for future GO dependencies.
 
-Starting the skill also creates a heartbeat attached to the same Supervisor
-conversation. Its interval is selected from 15, 30, or 60 minutes according to
-project size and CELL duration. It never creates a new conversation, and it is
-removed automatically after every loop passes Supervisor acceptance.
+Project-level oversight may remain attached to the distinct Supervisor, but a
+paired Checker goes offline immediately after dispatch and cannot be woken for
+periodic Worker inspection. Completion, blocker, or execution-failure signals
+wake that Checker for validation or resolution.
 
 ## Roles
 
@@ -125,8 +125,9 @@ Install the `multi-small-loop-skill` folder under your Codex skills directory,
 then invoke `$multi-small-loop-skill` when a project should run through several
 parallel Checker/Worker loops.
 
-Current version: `1.8.0`.
+Current version: `1.8.1`.
 
-Version `1.8.0` adds the independent frozen-roster 24/24 readiness Eval,
+Version `1.8.1` adds the Checker dispatch-then-offline boundary and 25/25 Eval.
+Version `1.8.0` added the independent frozen-roster readiness Eval,
 MSLK-only scoped control kernel, manual-first-start rule, deployable receipts,
 and hardened context/release contracts.

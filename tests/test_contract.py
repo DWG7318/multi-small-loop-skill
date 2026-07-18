@@ -70,16 +70,16 @@ class MultiSmallLoopContractTest(unittest.TestCase):
             )
         self.assertLess(len(SKILL.splitlines()), 900)
 
-    def test_release_identity_is_v1_8_0(self):
-        self.assertEqual(VERSION, "1.8.0")
-        self.assertIn("Current version: `1.8.0`", README)
+    def test_release_identity_is_v1_8_1(self):
+        self.assertEqual(VERSION, "1.8.1")
+        self.assertIn("Current version: `1.8.1`", README)
         self.assertIn("GitHub repository ID: `1298120736`", SKILL)
         self.assertNotIn("all nine rules", README.lower())
 
     def test_readiness_precedes_simulation_and_manual_frozen_start(self):
         self.assertIn("## Mandatory Readiness Eval", SKILL)
         self.assertIn("MSLK_READINESS_EVAL_PASS", SKILL)
-        self.assertIn("exactly `24/24`", SKILL)
+        self.assertIn("exactly `25/25`", SKILL)
         self.assertIn("complete frozen roster", SKILL)
         self.assertLess(
             SKILL.index("## Mandatory Readiness Eval"),
@@ -183,6 +183,35 @@ class MultiSmallLoopContractTest(unittest.TestCase):
             with self.subTest(rule=rule):
                 self.assertIn(rule, normalized_control)
         self.assertNotIn("SCHEDULED_START", SKILL)
+
+    def test_dispatch_is_final_action_and_paired_checker_goes_offline(self):
+        required = (
+            "## Dispatch-Then-Offline Boundary",
+            "The formal Worker assignment is the Checker's final action",
+            "OFFLINE_WAITING_WORKER_SIGNAL",
+            "must immediately end its turn and go offline",
+            "must not poll, inspect, run status, perform oversight, or do more pair work",
+            "WORKER_COMPLETION_RECEIPT",
+            "WORKER_BLOCKER_RECEIPT",
+            "WORKER_EXECUTION_FAILURE",
+        )
+        for rule in required:
+            with self.subTest(rule=rule):
+                self.assertIn(rule, NORMALIZED_SKILL)
+
+        boundary = CONTROL_CONTRACT["dispatch_boundary"]
+        self.assertEqual(boundary["controller"], "paired Checker")
+        self.assertTrue(boundary["assignment_is_final_action"])
+        self.assertEqual(boundary["post_dispatch_state"], "OFFLINE_WAITING_WORKER_SIGNAL")
+        self.assertEqual(
+            boundary["wake_signals"],
+            [
+                "WORKER_COMPLETION_RECEIPT",
+                "WORKER_BLOCKER_RECEIPT",
+                "WORKER_EXECUTION_FAILURE",
+            ],
+        )
+        self.assertFalse(boundary["checker_periodic_worker_inspection"])
 
     def test_quick_inspection_uses_the_single_control_reference(self):
         self.assertIn("## Quick Inspection", CONTROL_REFERENCE)

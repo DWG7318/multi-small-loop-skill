@@ -42,11 +42,11 @@ class MslkReadinessEvalTest(unittest.TestCase):
         cls.questions, cls.key = cls.module.load_assets(ROOT)
         cls.answers = canonical_answers(cls.key)
 
-    def test_bank_and_key_have_24_unique_mslk_questions(self):
+    def test_bank_and_key_have_25_unique_mslk_questions(self):
         question_ids = [item["id"] for item in self.questions["questions"]]
         answer_ids = [item["question_id"] for item in self.key["answers"]]
-        self.assertEqual(question_ids, [f"MSLK-Q{i:02d}" for i in range(1, 25)])
-        self.assertEqual(len(set(question_ids)), 24)
+        self.assertEqual(question_ids, [f"MSLK-Q{i:02d}" for i in range(1, 26)])
+        self.assertEqual(len(set(question_ids)), 25)
         self.assertEqual(set(question_ids), set(answer_ids))
         self.assertEqual(self.questions["mode"], "MSLK")
         self.assertEqual(self.key["mode"], "MSLK")
@@ -54,12 +54,12 @@ class MslkReadinessEvalTest(unittest.TestCase):
     def test_question_output_hides_answer_material(self):
         payload = self.module.question_payload(seed=7318, root=ROOT)
         serialized = json.dumps(payload).lower()
-        self.assertEqual(len(payload["questions"]), 24)
+        self.assertEqual(len(payload["questions"]), 25)
         self.assertNotIn('"answer"', serialized)
         self.assertNotIn("rationale", serialized)
         self.assertNotIn("forbidden_interpretations", serialized)
 
-    def test_every_role_can_pass_only_with_24_correct(self):
+    def test_every_role_can_pass_only_with_25_correct(self):
         roles = (
             metadata("supervisor", "sup-1"),
             metadata("checker", "checker-a", pair_id="pair-a"),
@@ -71,7 +71,7 @@ class MslkReadinessEvalTest(unittest.TestCase):
                     self.answers, item, seed=7318, root=ROOT
                 )
                 self.assertEqual(receipt["result"], "MSLK_READINESS_EVAL_PASS")
-                self.assertEqual(receipt["score"], "24/24")
+                self.assertEqual(receipt["score"], "25/25")
 
     def test_one_wrong_answer_fails_entire_attempt(self):
         answers = dict(self.answers)
@@ -83,7 +83,7 @@ class MslkReadinessEvalTest(unittest.TestCase):
             root=ROOT,
         )
         self.assertEqual(receipt["result"], "MSLK_READINESS_EVAL_FAIL")
-        self.assertEqual(receipt["score"], "23/24")
+        self.assertEqual(receipt["score"], "24/25")
         self.assertEqual(receipt["review_question_ids"], ["MSLK-Q22"])
 
     def test_missing_extra_and_misordered_answers_fail(self):
@@ -187,7 +187,7 @@ class MslkReadinessEvalTest(unittest.TestCase):
             target = Path(directory) / "receipt.json"
             self.module.write_receipt(receipt, target, root=ROOT)
             self.assertEqual(
-                json.loads(target.read_text(encoding="utf-8"))["score"], "24/24"
+                json.loads(target.read_text(encoding="utf-8"))["score"], "25/25"
             )
             self.assertIsNone(self.module.source_commit(Path(directory)))
 

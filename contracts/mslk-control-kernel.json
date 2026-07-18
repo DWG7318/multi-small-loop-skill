@@ -3,6 +3,17 @@
   "mode": "MSLK",
   "initial_start": "MSLK START",
   "roster_frozen_after_start": true,
+  "dispatch_boundary": {
+    "controller": "paired Checker",
+    "assignment_is_final_action": true,
+    "post_dispatch_state": "OFFLINE_WAITING_WORKER_SIGNAL",
+    "wake_signals": [
+      "WORKER_COMPLETION_RECEIPT",
+      "WORKER_BLOCKER_RECEIPT",
+      "WORKER_EXECUTION_FAILURE"
+    ],
+    "checker_periodic_worker_inspection": false
+  },
   "project_states": [
     "NOT_STARTED",
     "RUNNING",

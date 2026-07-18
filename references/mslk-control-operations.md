@@ -90,7 +90,9 @@ transition or assignment.
 
 ## Quick Inspection
 
-For every unfinished Worker, inspect only what is needed:
+Quick inspection belongs to the distinct Supervisor. It never wakes or uses a
+Checker in `OFFLINE_WAITING_WORKER_SIGNAL` merely to inspect an active Worker.
+For every unfinished Worker, the Supervisor inspects only what is needed:
 
 1. Supervisor board state and planned CELL total.
 2. Passed/blocked final queue records.
@@ -104,14 +106,15 @@ Classify each Worker as `active_worker`, `active_checker`,
 
 ## Wake Rule
 
-If a Worker is incomplete and neither role is active, notify its same Checker to
-continue unless a real blocker or plan defect exists. Never tell the Worker to
+An offline Checker waiting on its Worker is healthy and must remain offline.
+Wake the same Checker only after `WORKER_COMPLETION_RECEIPT`,
+`WORKER_BLOCKER_RECEIPT`, or `WORKER_EXECUTION_FAILURE`. Never tell the Worker to
 self-select work. Cross-Worker dependency waiting means invalid decomposition or
 premature role creation, not a healthy active state.
 
 Route the observation:
 
-- Worker delivered but Checker stopped: wake that Checker to validate and route.
+- Worker delivered a formal receipt: wake that Checker to validate and route.
 - Checker accepted but sent no next CELL: wake it to send one formal task.
 - Worker ended without delivery: Checker inspects and repairs usable partial
   output; only with no usable result may it re-dispatch the original CELL.
@@ -121,7 +124,7 @@ Route the observation:
 - `CONDITION_BLOCKED` exists: Supervisor makes the Owner-assistance decision;
   after `SUPERVISOR_RESOLVED`, record `RESUME_AUTHORIZED` and wake the same
   Checker for prerequisite revalidation.
-- A role is active: do not interrupt it.
+- A Worker is active and its Checker is offline: do not wake the Checker.
 - A passed queue exists and final acceptance succeeds: stop monitoring it.
 
 A wake message names the current CELL, cites the observed stop, and requires the

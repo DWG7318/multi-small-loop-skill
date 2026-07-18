@@ -14,6 +14,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 QUESTION_PATH = Path("evals/mslk-readiness-questions.json")
 ANSWER_PATH = Path("evals/mslk-readiness-answer-key.json")
+QUESTION_COUNT = 25
 
 
 def canonical_bytes(value: Any) -> bytes:
@@ -42,11 +43,11 @@ def validate_assets(questions: dict[str, Any], key: dict[str, Any]) -> None:
     answers = key.get("answers", [])
     question_ids = [item["id"] for item in entries]
     answer_ids = [item["question_id"] for item in answers]
-    if questions.get("question_count") != 24 or len(entries) != 24:
+    if questions.get("question_count") != QUESTION_COUNT or len(entries) != QUESTION_COUNT:
         raise ValueError("question_count_mismatch")
-    if question_ids != [f"MSLK-Q{i:02d}" for i in range(1, 25)]:
+    if question_ids != [f"MSLK-Q{i:02d}" for i in range(1, QUESTION_COUNT + 1)]:
         raise ValueError("question_ids_invalid")
-    if len(answer_ids) != 24 or len(set(answer_ids)) != 24:
+    if len(answer_ids) != QUESTION_COUNT or len(set(answer_ids)) != QUESTION_COUNT:
         raise ValueError("answer_ids_invalid")
     if set(question_ids) != set(answer_ids):
         raise ValueError("answer_coverage_invalid")
@@ -76,7 +77,7 @@ def question_payload(seed: int, root: Path = ROOT) -> dict[str, Any]:
         "eval_id": questions["eval_id"],
         "mode": "MSLK",
         "seed": seed,
-        "question_count": 24,
+        "question_count": QUESTION_COUNT,
         "questions": rendered,
     }
 
@@ -198,7 +199,7 @@ def grade(
     review_ids.extend(sorted(candidate_ids - expected_ids))
     metadata_error = _metadata_error(metadata, seed)
     answer_set_error = candidate_ids != expected_ids
-    passed = correct_count == 24 and not answer_set_error and metadata_error is None
+    passed = correct_count == QUESTION_COUNT and not answer_set_error and metadata_error is None
     failure_reason = metadata_error
     if failure_reason is None and answer_set_error:
         failure_reason = "invalid_answer_set"
@@ -225,7 +226,7 @@ def grade(
         "answer_key_not_opened": metadata.get("answer_key_not_opened") is True,
         "seed": seed,
         "attempt": metadata.get("attempt"),
-        "score": f"{correct_count}/24",
+        "score": f"{correct_count}/{QUESTION_COUNT}",
         "question_results": results,
         "review_question_ids": sorted(set(review_ids)),
         "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -241,7 +242,7 @@ def verify_receipt(
     version = (root / "VERSION").read_text(encoding="utf-8").strip()
     checks = {
         "pass_result": receipt.get("result") == "MSLK_READINESS_EVAL_PASS",
-        "perfect_score": receipt.get("score") == "24/24",
+        "perfect_score": receipt.get("score") == f"{QUESTION_COUNT}/{QUESTION_COUNT}",
         "version": receipt.get("skill_version") == version,
         "release_tag": receipt.get("release_tag") == f"v{version}",
         "tree_hash": receipt.get("tracked_content_sha256") == tracked_content_hash(root),

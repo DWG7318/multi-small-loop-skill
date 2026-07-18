@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "eval_id": "mslk-readiness-v1",
   "mode": "MSLK",
-  "question_count": 24,
+  "question_count": 25,
   "questions": [
     {
       "id": "MSLK-Q01",
@@ -260,12 +260,23 @@
     {
       "id": "MSLK-Q24",
       "type": "single_select",
-      "prompt": "VERSION says 1.8.0, but README, global mirror, remote main, or annotated tag differs. Is publication complete?",
+      "prompt": "VERSION says 1.8.1, but README, global mirror, remote main, or annotated tag differs. Is publication complete?",
       "options": [
         {"id": "A", "text": "No; every release identity and content check must align."},
         {"id": "B", "text": "Yes; VERSION alone is enough."},
         {"id": "C", "text": "Yes; a lightweight tag is enough."},
         {"id": "D", "text": "Yes; the global mirror may lag."}
+      ]
+    },
+    {
+      "id": "MSLK-Q25",
+      "type": "single_select",
+      "prompt": "A paired Checker sends its Worker a formal CELL after completing all pre-dispatch work. What happens next?",
+      "options": [
+        {"id": "A", "text": "The Checker updates its pair log and then goes offline."},
+        {"id": "B", "text": "The Checker ends the turn immediately and stays offline until completion, blocker, or execution-failure signal."},
+        {"id": "C", "text": "The Supervisor periodically wakes the Checker to inspect Worker progress."},
+        {"id": "D", "text": "The Checker polls while the distinct Supervisor handles other pairs."}
       ]
     }
   ]

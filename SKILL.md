@@ -116,8 +116,8 @@ Checker/Worker in the complete frozen roster must pass the
 [`MSLK Eval runner`](scripts/run_mslk_readiness_eval.py). Eval is authorized ready
 work; archive a role afterward when no next work is ready.
 
-Every role must score exactly `24/24`. One wrong, missing, extra, or misordered
-answer fails the entire attempt. Retry all 24 questions with a new seed after
+Every role must score exactly `25/25`. One wrong, missing, extra, or misordered
+answer fails the entire attempt. Retry all 25 questions with a new seed after
 rereading the cited rules. Partial credit, manual override, inherited receipts,
 roster substitution, and answer-key access during an attempt are forbidden.
 `MSLK_READINESS_EVAL_PASS` binds release/content hashes, role, pair ID where
@@ -142,7 +142,7 @@ The simulation must:
    `BLOCKED` route per pair;
 5. prove no subagent or SLK capability is used;
 6. validate ownership, write isolation, evidence paths, model assignments,
-   tests, safety gates, heartbeat behavior, and archive/unarchive lifecycle;
+   tests, safety gates, dispatch-then-offline behavior, and role lifecycle;
 7. rehearse every Checker's detection capability manifest, CodeGraph baseline,
    and one focused-to-regression evidence route.
 
@@ -236,7 +236,7 @@ One Checker controls exactly one Worker.
 - Own its Worker's evidence-driven GO review and revision proposals as part of
   the Checker's planning responsibility.
 - Select and package one fixed CELL at a time.
-- Send formal tasks directly to its paired Worker.
+- Send formal tasks directly to its paired Worker as its final online action.
 - Stop dispatch and report to the Supervisor when continuation conditions are
   clearly unmet.
 - Maintain and execute its Worker's evolving Checker detection system.
@@ -691,13 +691,11 @@ Workers that can start immediately.
 The number of GO and CELL does not need to be equal between Workers. Allocate
 them according to ownership, complexity, risk, dependencies, and evidence.
 
-## Mandatory Overseer
-
-While any pair is unfinished, the Supervisor maintains one same-thread heartbeat
-at 15, 30, or 60 minutes according to project/CELL size. Each heartbeat performs
-one bounded inspection, wakes only the same stalled Checker when required,
-updates the board, and ends. It never creates a detached task or replacement
-role. Remove it only after final acceptance and any `GOAL_SATISFIED` requirement.
+## Dispatch-Then-Offline Boundary
+Before dispatch, the Checker completes every check, record, snapshot, and message. The formal Worker assignment is the Checker's final action and enters `OFFLINE_WAITING_WORKER_SIGNAL`.
+After sending it, the Checker must immediately end its turn and go offline. It must not poll, inspect, run status, perform oversight, or do more pair work while its Worker owns the CELL.
+Only `WORKER_COMPLETION_RECEIPT`, `WORKER_BLOCKER_RECEIPT`, or `WORKER_EXECUTION_FAILURE` may wake that Checker; its next assignment repeats the boundary.
+The distinct Supervisor may maintain bounded project-level oversight, but it must not wake or use an offline Checker for periodic Worker inspection before one of those signals.
 
 ## MSLK Control Commands
 
@@ -839,7 +837,7 @@ lines. Split rather than remove necessary detail.
 
 Before launching multiple loops, the Supervisor confirms:
 
-- Current `MSLK_READINESS_EVAL_PASS` receipts prove exactly `24/24` for every
+- Current `MSLK_READINESS_EVAL_PASS` receipts prove exactly `25/25` for every
   role in the complete frozen roster.
 - `SIMULATION_PASS` exists for this exact plan and role roster.
 - MSLK is the sole method, was invoked once, and no SLK capability is present.
@@ -887,12 +885,12 @@ Before launching multiple loops, the Supervisor confirms:
 - The supervisor board lists every Worker and its persistent Checker.
 - Any safe pause or same-pair resume is Owner-configured, versioned, scoped, and
   uses the MSLK command contract.
-- The 15/30/60-minute Overseer interval is selected from project/CELL size.
-- The same-thread heartbeat is active, recorded on the board, and configured to
-  remove itself after all loops pass Supervisor acceptance.
+- Every Checker assignment is its final online action and leaves that Checker in
+  `OFFLINE_WAITING_WORKER_SIGNAL` until a completion, blocker, or failure signal.
+- Supervisor oversight never wakes a Checker merely to inspect an active Worker.
 - No Worker relies on another Worker's passed record as its own evidence.
 - The role authority matrix is unchanged; no SLK combined role, single-Worker
   behavior, state, or message route has been borrowed.
 
-Then record manual `MSLK START`; each Checker sends its first CELL. The Supervisor
-begins oversight and remains outside ordinary Checker/Worker traffic.
+Then record manual `MSLK START`; each Checker sends its first CELL as its final
+online action. The Supervisor remains outside ordinary Checker/Worker traffic.
