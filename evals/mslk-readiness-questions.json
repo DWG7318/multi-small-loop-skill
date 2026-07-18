@@ -141,9 +141,9 @@
       "type": "ordering",
       "prompt": "Order the response when a pair's continuation condition is clearly absent.",
       "options": [
-        {"id": "A", "text": "The Checker stops dispatch and reports CONDITION_BLOCKED."},
+        {"id": "A", "text": "The Checker stops dispatch, records CONDITION_BLOCKED, and reports to the Supervisor without asking the Owner."},
         {"id": "B", "text": "The Supervisor decides whether Owner assistance is required."},
-        {"id": "C", "text": "The Owner assists or the Supervisor resolves within authority."},
+        {"id": "C", "text": "The Supervisor resolves within authority or makes one minimal Owner-exclusive request."},
         {"id": "D", "text": "The same Checker revalidates all conditions before resuming."}
       ]
     },
@@ -260,7 +260,7 @@
     {
       "id": "MSLK-Q24",
       "type": "single_select",
-      "prompt": "VERSION says 1.8.2, but README, global mirror, remote main, or annotated tag differs. Is publication complete?",
+      "prompt": "VERSION says 1.8.3, but README, global mirror, remote main, or annotated tag differs. Is publication complete?",
       "options": [
         {"id": "A", "text": "No; every release identity and content check must align."},
         {"id": "B", "text": "Yes; VERSION alone is enough."},
@@ -276,7 +276,7 @@
         {"id": "A", "text": "Verify the canonical assignment workspace exactly matches the paired Worker's bound conversation workspace."},
         {"id": "B", "text": "Record WORKER_EXECUTION_GATE_PASS after pre-authorizing every routine allowlisted edit and command."},
         {"id": "C", "text": "The paired Checker sends the formal assignment as its final online action."},
-        {"id": "D", "text": "That Checker enters OFFLINE_WAITING_WORKER_SIGNAL; an unexpected routine approval prompt is WORKER_EXECUTION_FAILURE, not an Owner click task."}
+        {"id": "D", "text": "That Checker enters OFFLINE_WAITING_WORKER_SIGNAL; Supervisor safeguard patrol may continue but never wakes a healthy Checker, and routine approval is never an Owner click task."}
       ]
     }
   ]

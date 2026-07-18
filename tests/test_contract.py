@@ -70,9 +70,9 @@ class MultiSmallLoopContractTest(unittest.TestCase):
             )
         self.assertLess(len(SKILL.splitlines()), 900)
 
-    def test_release_identity_is_v1_8_2(self):
-        self.assertEqual(VERSION, "1.8.2")
-        self.assertIn("Current version: `1.8.2`", README)
+    def test_release_identity_is_v1_8_3(self):
+        self.assertEqual(VERSION, "1.8.3")
+        self.assertIn("Current version: `1.8.3`", README)
         self.assertIn("GitHub repository ID: `1298120736`", SKILL)
         self.assertNotIn("all nine rules", README.lower())
 
@@ -212,6 +212,45 @@ class MultiSmallLoopContractTest(unittest.TestCase):
             ],
         )
         self.assertFalse(boundary["checker_periodic_worker_inspection"])
+
+    def test_only_supervisor_may_contact_owner(self):
+        required = (
+            "## Owner Assistance Authority",
+            "A Worker must never ask the Owner",
+            "A Checker must never ask the Owner",
+            "Only the Supervisor may contact the Owner",
+            "minimize Owner assistance",
+        )
+        for rule in required:
+            with self.subTest(rule=rule):
+                self.assertIn(rule, NORMALIZED_SKILL)
+
+        authority = CONTROL_CONTRACT["owner_assistance"]
+        self.assertFalse(authority["worker_may_contact_owner"])
+        self.assertFalse(authority["checker_may_contact_owner"])
+        self.assertEqual(authority["sole_contact_authority"], "Supervisor")
+
+    def test_supervisor_patrol_is_last_progress_guarantee(self):
+        required = (
+            "## Supervisor Safeguard Patrol",
+            "last guarantee that work continues",
+            "highest on-site decision authority",
+            "authorization repair",
+            "versioned plan revision",
+            "work-method improvement",
+        )
+        for rule in required:
+            with self.subTest(rule=rule):
+                self.assertIn(rule, NORMALIZED_SKILL)
+
+        patrol = CONTROL_CONTRACT["supervisor_patrol"]
+        self.assertEqual(patrol["actor"], "Supervisor")
+        self.assertTrue(patrol["highest_on_site_decision_authority"])
+        self.assertFalse(patrol["wake_healthy_offline_checker"])
+        self.assertEqual(
+            patrol["powers"],
+            ["authorization_repair", "versioned_plan_revision", "work_method_improvement"],
+        )
 
     def test_worker_execution_is_preauthorized_before_dispatch(self):
         required = (

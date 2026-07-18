@@ -88,6 +88,37 @@ action, aggregate result, post-state, schedule version, per-target results, and
 project-wide progress. Command IDs are idempotent and cannot duplicate a
 transition or assignment.
 
+## Owner Assistance Boundary
+
+A Worker never asks the Owner for confirmation or help. It solves within its
+CELL authority or sends a formal blocker to its paired Checker. A Checker also
+never asks the Owner; it resolves pair-local issues or reports a precise
+condition to the Supervisor. Only the Supervisor may contact the Owner, after
+exhausting safe authorization repair, provisioning, versioned plan repair, and
+work-method repair. Owner assistance is minimized and restricted to one specific
+Owner-exclusive decision, credential, consent, external action, scope or
+acceptance change, Goal change, or safety boundary.
+
+## Supervisor Safeguard Patrol
+
+The patrol is the last guarantee that work continues, not passive monitoring.
+Its actor is the distinct Supervisor, which has highest on-site decision
+authority inside the Owner objective, safety rules, MSLK topology, and external
+action boundaries. The Supervisor may:
+
+1. Inspect the minimum status and evidence needed to classify progress.
+2. Perform authorization repair or provision a missing approved capability.
+3. Approve or initiate a versioned plan revision and its required simulation.
+4. Improve the work method when evidence shows the current method stalls or
+   misroutes work.
+
+Patrol never executes an ordinary Worker CELL, performs Checker acceptance, or
+wakes a healthy Checker in `OFFLINE_WAITING_WORKER_SIGNAL`. When a Worker is
+genuinely active, record that fact and leave the pair untouched. When a real
+stall, blocker, lost receipt, permission defect, or plan defect exists, take the
+smallest authorized action that restores progress. Only an Owner-exclusive
+condition may cross the Owner Assistance Boundary.
+
 ## Quick Inspection
 
 Quick inspection belongs to the distinct Supervisor. It never wakes or uses a

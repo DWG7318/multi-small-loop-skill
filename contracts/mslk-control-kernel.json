@@ -14,6 +14,23 @@
     ],
     "checker_periodic_worker_inspection": false
   },
+  "owner_assistance": {
+    "worker_may_contact_owner": false,
+    "checker_may_contact_owner": false,
+    "sole_contact_authority": "Supervisor"
+  },
+  "supervisor_patrol": {
+    "actor": "Supervisor",
+    "highest_on_site_decision_authority": true,
+    "wake_healthy_offline_checker": false,
+    "powers": [
+      "authorization_repair",
+      "versioned_plan_revision",
+      "work_method_improvement"
+    ],
+    "routine_polling": false,
+    "execute_worker_cell": false
+  },
   "worker_execution_gate": {
     "dispatcher": "paired Checker",
     "permission_provisioner": "Supervisor",

@@ -198,9 +198,12 @@ classification. Record the change before dispatch. Never assign a Worker below
 | Optional Goal management, gap allocation, and final Goal validation | Supervisor |
 | CELL execution | Worker |
 
-MSLK has one distinct Supervisor plus multiple persistent Checker/Worker pairs.
-It never combines Supervisor and Checker, never uses the SLK single-Worker
-topology, and never lets the Supervisor replace ordinary Checker work.
+MSLK has one distinct Supervisor plus multiple persistent Checker/Worker pairs. It never combines Supervisor and Checker, uses SLK topology, or lets the Supervisor replace ordinary Checker work.
+
+## Owner Assistance Authority
+A Worker must never ask the Owner for confirmation, approval, credentials, troubleshooting, or execution help; it solves within authority or sends a formal blocker to its Checker. A Checker must never ask the Owner either; it solves within pair authority or reports a precise condition to the Supervisor. Only the Supervisor may contact the Owner, after exhausting safe authorization repair, provisioning, versioned plan repair, and work-method repair. The Supervisor must minimize Owner assistance and make one specific request only for an Owner-exclusive decision, credential, consent, external action, scope or acceptance change, Goal change, or safety boundary.
+## Supervisor Safeguard Patrol
+A configured periodic patrol is the last guarantee that work continues. It runs only as the distinct Supervisor and has the highest on-site decision authority within the Owner objective, safety rules, selected MSLK method, and external-action boundaries. It may perform bounded inspection, authorization repair, a versioned plan revision with required simulation, and work-method improvement; it must not execute an ordinary Worker CELL, take over Checker acceptance, or wake a healthy offline Checker merely to inspect an active Worker. Follow [`references/mslk-control-operations.md`](references/mslk-control-operations.md).
 
 ### Supervisor
 
@@ -222,8 +225,7 @@ The Supervisor owns the whole project, not the middle of ordinary cell work.
   blockers that a Checker cannot resolve inside its current authorized plan.
 - Perform final local acceptance after a Checker writes a passed result.
 
-The Supervisor must not be the normal relay for Checker/Worker messages and
-must not silently take over a Worker's cell.
+The Supervisor must not be the normal relay for Checker/Worker messages or silently take over a Worker's cell.
 
 ### Checker
 
@@ -695,10 +697,8 @@ them according to ownership, complexity, risk, dependencies, and evidence.
 Before dispatch, the Supervisor provisions the pair and the Checker records `WORKER_EXECUTION_GATE_PASS`: the assignment's canonical workspace path must exactly match the Worker's bound conversation workspace, and the Checker must pre-authorize every routine operation inside the CELL allowlist. Routine approval must never be delegated to the Owner; an unexpected prompt is `WORKER_EXECUTION_FAILURE`. Credentials, external side effects, destructive or security-sensitive work, out-of-allowlist writes, and scope, acceptance, or Goal changes remain an Owner-only decision. Follow the detailed gate in [`references/mslk-control-operations.md`](references/mslk-control-operations.md).
 
 ## Dispatch-Then-Offline Boundary
-Before dispatch, the Checker completes every check, record, snapshot, and message. The formal Worker assignment is the Checker's final action and enters `OFFLINE_WAITING_WORKER_SIGNAL`.
-After sending it, the Checker must immediately end its turn and go offline. It must not poll, inspect, run status, perform oversight, or do more pair work while its Worker owns the CELL.
-Only `WORKER_COMPLETION_RECEIPT`, `WORKER_BLOCKER_RECEIPT`, or `WORKER_EXECUTION_FAILURE` may wake that Checker; its next assignment repeats the boundary.
-The distinct Supervisor may maintain bounded project-level oversight, but it must not wake or use an offline Checker for periodic Worker inspection before one of those signals.
+Before dispatch, the Checker completes every check, record, snapshot, and message. The formal Worker assignment is the Checker's final action and enters `OFFLINE_WAITING_WORKER_SIGNAL`; the Checker must immediately end its turn and go offline, and must not poll, inspect, run status, perform oversight, or do more pair work while its Worker owns the CELL.
+Only `WORKER_COMPLETION_RECEIPT`, `WORKER_BLOCKER_RECEIPT`, or `WORKER_EXECUTION_FAILURE` may wake that Checker; its next assignment repeats the boundary. Distinct Supervisor safeguard patrol continues independently but never wakes or uses a healthy offline Checker merely to inspect an active Worker.
 
 ## MSLK Control Commands
 
