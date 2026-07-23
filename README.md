@@ -1,137 +1,95 @@
 # Multi Small Loop Skill (MSLK)
 
-A Codex skill for running large projects as multiple independent small loops.
+A Codex skill for running one project as fixed parallel Chains that advance through
+ordered, fully synchronized Levels.
 
 Canonical repository: `DWG7318/multi-small-loop-skill`
-GitHub repository ID: `1298120736`
+Current version: **1.9.0**
 
-The official abbreviation is **MSLK**. Use `MSLK` in conversation and
-documentation; use `$multi-small-loop-skill` as the Codex invocation name.
+## Definition first
 
-Each loop uses two working roles:
-
-```text
-Checker <-> Worker
-```
-
-One Supervisor splits the project into independent Workers, pairs each Worker
-with one fixed Checker, oversees project boundaries without waking a Checker
-during Worker execution, and performs final acceptance.
-
-MSLK and SLK are mutually exclusive. Select MSLK exactly once for a project
-run; never load both skills, switch methods, repeat the invocation, or borrow
-SLK capabilities. If MSLK is not suitable, stop and return the method decision
-to the Owner instead of converting the active run.
-
-Common rules do not make the skills composable. MSLK implements its governing
-rules only through one distinct Supervisor and multiple persistent
-Checker/Worker pairs; it never imports SLK's combined role or single-Worker
-topology.
-
-All roles must be visible Codex conversations under the same project. MSLK
-never uses subagents, background agents, hidden workers, or `delegate_task`.
-Create or unarchive a role conversation only when formal work is ready; archive
-it immediately when that work finishes. Later same-project work should
-unarchive the existing conversation instead of creating a duplicate.
-
-Before simulation, every role in the complete frozen roster must pass MSLK's
-independent 25-question readiness Eval with exactly `25/25`. Then run a
-no-side-effect simulation of each pair's first assignment, delivery, validation,
-and routing cycle. Formal work requires both gates for the same roster.
-
-After each GO, the paired Checker reviews the actual accepted result and may
-propose adjustments to unstarted GO or an append-only supplementary GO for
-historical work. The Supervisor gates cross-Worker and safety boundaries without
-taking over the Checker's planning responsibility. Preserve all historical
-evidence and identifiers, keep ownership and parallel independence intact, and
-require `GO_REVISION_SIMULATION_PASS` before executing the revised plan.
+Every run starts from a frozen full or Minimum Calabash:
 
 ```text
-Project -> persistent Checker/Worker -> one or more GO -> CELL
+Grandpa → Product Architecture → Ontology
 ```
 
-Worker count comes from independently acceptable work units that can all start
-together. GO and CELL counts never create Workers, stages, waves, or
-replacement threads. A Worker remains assigned across every
-dependency-authorized GO and executes one CELL at a time.
+If none exists, Supervisor establishes Minimum Calabash from authoritative Owner
+intent and project evidence before MSLK planning. Every GO traces to this baseline,
+and every Verification Contract is derived from that trace.
 
-Every Worker created in one MSLK must be able to receive its first CELL
-immediately. If one Worker must wait for another Worker's future output, they
-are not independent parallel Workers: merge the dependent work, finish the
-shared prerequisite first, or launch the dependent loop later. MSLK never
-pre-creates idle Workers for future GO dependencies.
+## Multi-chain topology
 
-Project-level oversight may remain attached to the distinct Supervisor, but a
-paired Checker goes offline immediately after dispatch and cannot be woken for
-periodic Worker inspection. Completion, blocker, or execution-failure signals
-wake that Checker for validation or resolution.
+```text
+              CHAIN-A      CHAIN-B      CHAIN-C      CHAIN-D
+LEVEL-01      GO-01-A      GO-01-B      GO-01-C      GO-01-D
+                 ↓            ↓            ↓            ↓
+             Verification Verification Verification Verification
+                 └────────── full Level barrier ──────────┘
+                                  ↓
+LEVEL-02      GO-02-A      GO-02-B      GO-02-C      GO-02-D
+```
+
+The number means “same synchronization Level”; the suffix identifies the persistent
+Chain. `GO-01-A` is a real GO. `GO-01` alone is not.
+
+Every GO in the current Level can start together and is independently verified. The
+next Level remains closed until every required current-Level GO is `GO_VERIFIED`.
 
 ## Roles
 
-- Supervisor: project planning, decomposition, periodic oversight, blocker
-  resolution, cross-Worker boundary approval, and final acceptance. It does not
-  replace ordinary Checker planning or routing.
-- Checker: one stream's initial GO/CELL planning and revision, validation,
-  mandatory result repair, routing, and final queue. Repair tasks never return
-  to the Worker. After
-  repairing a Worker mistake, the Checker
-  explains the fix inside the next formal CELL assignment.
-- Worker: one bounded CELL at a time with append-only evidence.
+- **Supervisor** — Calabash, method selection, fixed Chain/Level plan, provisioning,
+  autonomy envelope, deterministic Level barriers, Owner-exclusive escalation, and
+  final composition audit.
+- **Checker** — one Chain's GO/CELL planning, CELL validation, detection, routing,
+  and direct GO handoff.
+- **Worker** — one bounded CELL or product-rework round at a time.
+- **Verification** — one fresh isolated attempt for one immutable GO candidate; it
+  independently returns the GO evidence verdict.
 
-The Supervisor and every Checker use `gpt-5.6-sol xhigh`. Workers range from
-`gpt-5.5 high` to `gpt-5.6-sol high`, selected by task type. GO scope follows
-project need and ignores device limits; CELLs are made smaller as needed for
-reliable execution on the current computer.
+At Level activation, Supervisor establishes every GO's Verification before the
+first CELL. After all CELLs pass, Checker sends the frozen candidate directly to
+Verification. Verification sends its signed verdict directly to Checker and
+Supervisor; Supervisor is not a relay.
 
-Every Checker assignment shows project-wide accepted CELL progress, for example
-`正在完成 GO-03：35/231`, not a per-Worker subtotal. The count continues through
-every assignment and ends only when the Supervisor final queue shows
-`全部完成：231/231`.
+## Owner-free execution
 
-The Owner may optionally define a measurable project Goal. In that case,
-Checker completion is provisional until the Supervisor independently records
-`GOAL_SATISFIED`. A `GOAL_GAP` is allocated to the affected existing domains;
-their Checkers design append-only PLAN/GO/CELL continuations without transferring
-planning ownership to the Supervisor or importing SLK.
+A frozen `PROJECT_AUTONOMY_ENVELOPE` authorizes routine work without per-CELL,
+per-GO, or per-Level Owner confirmation. Only an irreducible Owner-exclusive
+product-definition, credential, legal, destructive, irreversible, materially
+costly, physical, or external-account matter may reach Owner.
 
-Before each assignment, every Checker verifies continuation conditions. A clear
-failure stops that Checker's Worker dispatch and reports evidence to the
-Supervisor. The Supervisor either requests specific Owner assistance or resolves
-the supervisory condition and wakes the same Checker for revalidation.
+## Key 1.9.0 changes
 
-Initial `MSLK START` is manual only for the complete frozen roster. The Owner may
-configure safe pause for all or named pairs at a specified time or accepted-CELL
-threshold and same-pair resume. Control never adds or replaces a pair.
+- Mandatory full/Minimum Calabash and `GO_CALABASH_TRACE`.
+- Fixed `LEVEL` and `CHAIN` structure with `GO-<LEVEL>-<CHAIN>` IDs.
+- Full Level barriers; no partial unlock.
+- Verification pre-binding, pre-establishment, direct Checker handoff, and direct
+  signed verdict.
+- Strong Checker/Verification environment and context isolation.
+- Worker-owned product rework; no Checker self-repair/self-acceptance.
+- No cross-GO CELL dependency or same-Level peer dependency.
+- Detection tiers: `CELL_ALWAYS`, `CELL_TRIGGERED`, `GO_BOUNDARY`, `PROJECT_FINAL`.
+- Routine Owner authorization forbidden inside the autonomy envelope.
+- Optional project objective renamed `PROJECT_GOAL`.
 
-The Supervisor also provisions every Checker with a versioned detection skill
-and tool stack. Each Checker independently maintains CodeGraph impact baselines,
-native checks, Semgrep/CodeQL, Gitleaks, OSV-Scanner/Trivy, and risk-appropriate
-runtime, coverage, mutation, or contract evidence for its Worker. Shared heavy
-scans may be serialized for device safety, but acceptance remains Checker-owned.
+## MSLK versus GLK
 
-Allocation is explicit in each Worker's plan: every GO owns one
-`GO_DETECTION_PROFILE`, authored by its Checker and approved/provisioned by the
-Supervisor. The paired Checker executes every assigned skill and tool for every
-CELL and records `CELL_DETECTION_RECEIPT`; no CELL-level omission or replacement
-is allowed.
+MSLK is staged, barrier-synchronized multi-chain execution. It does not implement
+conditional branches, partial downstream unlock, cycles, arbitrary runtime routing,
+dynamic Chains, or Grapher. Those capabilities belong to Graph Loop Skill (GLK).
 
-Every Markdown work artifact has a hard 1000-physical-line maximum because Codex
-must be able to read and recover working context reliably. The Supervisor defines
-the semantic continuation map and a current-state `WORK_CONTINUATION_INDEX`
-below 200 lines; each Checker runs `markdown-line-budget` for every
-Markdown-writing CELL.
+## Install
 
-Install the `multi-small-loop-skill` folder under your Codex skills directory,
-then invoke `$multi-small-loop-skill` when a project should run through several
-parallel Checker/Worker loops.
+Install `multi-small-loop-skill/` in the Codex skills directory and invoke:
 
-Current version: `1.8.3`.
+```text
+$multi-small-loop-skill
+```
 
-Version `1.8.3` forbids Worker/Checker Owner escalation, reserves minimal Owner
-assistance to the distinct Supervisor, and defines Supervisor safeguard patrol
-as the highest-authority progress backstop. Version `1.8.2` added the
-pre-authorized Worker execution gate.
-Version `1.8.1` adds the Checker dispatch-then-offline boundary and 25/25 Eval.
-Version `1.8.0` added the independent frozen-roster readiness Eval,
-MSLK-only scoped control kernel, manual-first-start rule, deployable receipts,
-and hardened context/release contracts.
+Formal work requires Calabash freeze, 25/25 role readiness, simulation, isolated
+environments, pre-established Verification, autonomy, evidence, and Level gates.
+
+## License
+
+MIT.
