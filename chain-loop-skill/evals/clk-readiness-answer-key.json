@@ -1,0 +1,30 @@
+{
+  "version": "2.0.0",
+  "answers": {
+    "Q01": "Chain Loop Skill；CLK；$chain-loop-skill；一种分层推进、完整屏障同步的多链执行方法；MSLK只作为历史迁移术语，新运行不得使用旧身份。",
+    "Q02": "必须；使用完整Calabash，或至少Grandpa、Product Architecture、Ontology组成的Minimum Calabash。",
+    "Q03": "Supervisor从权威Owner意图和项目证据建立，并在Worker分解、LEVEL/CHAIN规划、Verification Contract、角色启动、模拟或CELL执行前冻结。",
+    "Q04": "LEVEL是同时可开工的同步层；CHAIN是固定Checker/Worker责任链；GO-01-A是LEVEL-01中CHAIN-A的真实GO。",
+    "Q05": "表示同时开工的LEVEL-01，不是传统线性的GO-01；A/B/C/D才区分并行GO所属CHAIN。",
+    "Q06": "至少两个固定CHAIN能按有序LEVEL同时启动并完整屏障推进时用CLK；需要条件分支、部分解锁、循环、动态CHAIN或任意路由时记录METHOD_BOUNDARY_EXCEEDED并另用GLK。",
+    "Q07": "Supervisor、Checker、Worker、Verification。",
+    "Q08": "Supervisor、每条CHAIN的Checker和Worker持久；每个GO在计划时预绑定Verification，并在其LEVEL开工前创建全新attempt。",
+    "Q09": "Checker冻结中立GO候选并直接发送GO_READY_FOR_VERIFICATION给预设Verification；Supervisor不做中转、改写或总结。",
+    "Q10": "同时直接发给Checker和Supervisor；Verification只独立验证并签发一个verdict，不能规划、实施、修复、改标准或路由。",
+    "Q11": "不足；还必须隔离context、workspace、runtime state、database/fixture、port、browser profile、model binding、input、evidence和lifecycle。",
+    "Q12": "不需要；自治包络内的常规工作免Owner逐CELL、逐GO和逐LEVEL授权。",
+    "Q13": "仅不可约的Owner独占事项，如改变Grandpa/产品结果/范围/验收/安全、真实Calabash歧义、私密凭证、法律同意、破坏性不可逆高成本物理或外部账户动作。",
+    "Q14": "Worker；Checker和Verification不得修改产品候选后验收自己的修改。",
+    "Q15": "对应CHAIN的Checker。",
+    "Q16": "该GO的全新独立Verification attempt。",
+    "Q17": "使用CELL_REWORK让同一Worker以新Round返工；目标或计划需变更则PLAN_DEFECT；新工作不再使用REDO。",
+    "Q18": "所有必需CELL经Checker接受，冻结候选，并由全新Verification依据Calabash trace和GO_VERIFICATION_CONTRACT返回GO_VERIFIED。",
+    "Q19": "该LEVEL所有必需GO都GO_VERIFIED后记录LEVEL_VERIFIED；不允许部分开启下一LEVEL。",
+    "Q20": "不允许；跨GO CELL依赖是GO_BOUNDARY_VIOLATION。",
+    "Q21": "同LEVEL GO必须互相独立；跨LEVEL只能在前一LEVEL完整验证后，使用GO_VERIFIED前置GO的冻结输出。",
+    "Q22": "CELL_ALWAYS、CELL_TRIGGERED、GO_BOUNDARY、PROJECT_FINAL。",
+    "Q23": "使用不同conversation/context/workspace/runtime/capability/model_binding/evidence并独立生成证据；模型多样性只是额外防御。",
+    "Q24": "CLK只有固定CHAIN、有序LEVEL、完整屏障和确定下一LEVEL；条件路由、部分解锁、循环、动态CHAIN和Grapher属于GLK。",
+    "Q25": "所有必需CELL、GO和LEVEL完成，组合、安全和最终Evidence通过，无未解决阻塞，且配置的PROJECT_GOAL已满足。"
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "schema_version": "2.0.0",
+  "method": "CLK",
+  "method_shape": "staged_barrier_synchronized_multi_chain",
+  "calabash_gate": {
+    "required": true,
+    "minimum_layers": [
+      "GRANDPA",
+      "PRODUCT_ARCHITECTURE",
+      "ONTOLOGY"
+    ],
+    "supervisor_must_establish_when_missing": true,
+    "go_trace_required": true,
+    "verification_contract_requires_trace": true,
+    "blocked_state": "CALABASH_DEFINITION_BLOCKED"
+  },
+  "role_types": [
+    "SUPERVISOR",
+    "CHECKER",
+    "WORKER",
+    "VERIFICATION"
+  ],
+  "persistent_roles": [
+    "SUPERVISOR",
+    "CHECKER",
+    "WORKER"
+  ],
+  "multi_chain": {
+    "go_id_pattern": "GO-<LEVEL>-<CHAIN>",
+    "fixed_chain_roster": true,
+    "new_chain_after_level_01": false,
+    "one_go_per_chain_per_level": true,
+    "chain_gap_and_reentry": false,
+    "same_level_peer_dependency": false,
+    "all_level_members_launch_ready_together": true,
+    "full_level_barrier": true,
+    "partial_unlock": false,
+    "conditional_routing": false,
+    "cycles": false,
+    "grapher": false,
+    "method_boundary_for_dynamic_graph": "GLK"
+  },
+  "verification_policy": {
+    "binding_frozen_before_level": true,
+    "fresh_attempt_created_before_first_cell": true,
+    "scope": "one_go_candidate_attempt",
+    "reuse": false,
+    "visible_conversation_required": true,
+    "fresh_context_required": true,
+    "fresh_workspace_required": true,
+    "direct_checker_handoff": true,
+    "supervisor_relay": false,
+    "verdict_recipients": [
+      "CHECKER",
+      "SUPERVISOR"
+    ]
+  },
+  "autonomy": {
+    "project_autonomy_envelope_required": true,
+    "routine_owner_authorization_required": false,
+    "cell_owner_approval_required": false,
+    "go_owner_approval_required": false,
+    "level_owner_approval_required": false,
+    "owner_contact_authority": [
+      "SUPERVISOR"
+    ],
+    "routine_escalation_violation": "AUTONOMY_VIOLATION",
+    "platform_permission_block": "EXECUTION_PERMISSION_BLOCKED"
+  },
+  "cell_routes": [
+    "NEXT",
+    "CELL_REWORK",
+    "GO_ACCEPTANCE",
+    "BLOCKED",
+    "PLAN_DEFECT"
+  ],
+  "go_verdicts": [
+    "GO_VERIFIED",
+    "GO_EVIDENCE_GAP",
+    "GO_REWORK_REQUIRED",
+    "GO_DEFINITION_DEFECT",
+    "GO_BLOCKED"
+  ],
+  "level_states": [
+    "LEVEL_PLANNED",
+    "LEVEL_READY",
+    "LEVEL_ACTIVE",
+    "LEVEL_WAITING_VERIFICATION",
+    "LEVEL_VERIFIED",
+    "LEVEL_BLOCKED"
+  ],
+  "detection_tiers": [
+    "CELL_ALWAYS",
+    "CELL_TRIGGERED",
+    "GO_BOUNDARY",
+    "PROJECT_FINAL"
+  ],
+  "detection_results": [
+    "RUN_PASS",
+    "RUN_FAIL",
+    "NOT_TRIGGERED",
+    "BLOCKED"
+  ],
+  "forbidden_new_routes": [
+    "REDO"
+  ],
+  "product_write_authority": [
+    "WORKER"
+  ],
+  "cell_acceptance_authority": [
+    "CHECKER"
+  ],
+  "go_verdict_authority": [
+    "VERIFICATION"
+  ],
+  "level_barrier_authority": [
+    "SUPERVISOR"
+  ],
+  "mutable_control_artifacts": [
+    "WORK_CONTINUATION_INDEX",
+    "SUPERVISOR_BOARD_CURRENT_STATUS",
+    "EPHEMERAL_PROGRESS_CACHE"
+  ],
+  "cross_go_rule": {
+    "cell_to_cell_dependency_allowed": false,
+    "same_level_dependency_allowed": false,
+    "required_predecessor_state": "GO_VERIFIED",
+    "required_predecessor_level_state": "LEVEL_VERIFIED",
+    "frozen_outputs_required": true
+  },
+  "product_name": "Chain Loop Skill",
+  "version": "2.0.0",
+  "legacy_identity": {
+    "product_name": "Multi Small Loop Skill",
+    "abbreviation": "MSLK",
+    "invocation": "$multi-small-loop-skill",
+    "formal_new_runs_allowed": false
+  }
+}
