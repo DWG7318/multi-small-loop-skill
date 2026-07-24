@@ -1,8 +1,8 @@
-# MSLK Control Operations
+# CLK Control Operations
 
 ## Manual project start
 
-`MSLK START` authorizes the frozen Calabash baseline, persistent Chain roster,
+`CLK START` authorizes the frozen Calabash baseline, persistent Chain roster,
 ordered Level plan, autonomy envelope, and Level-01 activation preparation. It does
 not require Owner approval for each CELL, GO, Verification, or later Level.
 

@@ -1,4 +1,4 @@
-# MSLK Checker Detection Catalog
+# CLK Checker Detection Catalog
 
 ## Capability inventory versus allocation
 

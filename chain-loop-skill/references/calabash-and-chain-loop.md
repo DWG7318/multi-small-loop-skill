@@ -1,8 +1,8 @@
-# MSLK Calabash and Multi-Chain Reference
+# CLK Calabash and Multi-Chain Reference
 
 ## 1. Purpose
 
-MSLK does not begin from an ungrounded engineering plan. It begins from a frozen
+CLK does not begin from an ungrounded engineering plan. It begins from a frozen
 product-definition source, then turns that source into a restricted multi-chain
 execution plan.
 
@@ -26,7 +26,7 @@ Full Level barrier
 Next Level
 ```
 
-MSLK uses Calabash for definition and staged multi-chain execution for delivery. It
+CLK uses Calabash for definition and staged multi-chain execution for delivery. It
 does not import Grapher or free-form graph routing.
 
 ## 2. Calabash Gate
@@ -34,7 +34,7 @@ does not import Grapher or free-form graph routing.
 ### 2.1 Full Calabash
 
 Use the project's complete Calabash when it is current, authoritative, internally
-consistent, and applicable to the intended MSLK scope.
+consistent, and applicable to the intended CLK scope.
 
 ### 2.2 Minimum Calabash
 
@@ -143,7 +143,7 @@ would have no authoritative definition of success.
 
 ### 3.1 Two dimensions
 
-MSLK has two explicit dimensions:
+CLK has two explicit dimensions:
 
 ```text
 Horizontal: one Level's concurrently startable GOs
@@ -303,7 +303,7 @@ remains traceable to the same GO version or an explicit revision.
 
 ## 5. Owner-Free Autonomy
 
-MSLK freezes `PROJECT_AUTONOMY_ENVELOPE` before execution. It authorizes routine
+CLK freezes `PROJECT_AUTONOMY_ENVELOPE` before execution. It authorizes routine
 work without Owner checkpoints, including scoped implementation, local tests,
 scans, evidence collection, safe local service operations, temporary test data, and
 non-destructive repository operations declared by the plan.
@@ -321,9 +321,9 @@ Only Supervisor may request an action that is genuinely and irreducibly Owner-on
 Platform permission friction must first be solved by provisioning or preauthorization;
 it must not be presented as a product decision.
 
-## 6. MSLK Versus GLK
+## 6. CLK Versus GLK
 
-MSLK is a restricted layered structure:
+CLK is a restricted layered structure:
 
 - fixed Chains;
 - ordered Levels;
@@ -342,5 +342,5 @@ GLK is required when work needs:
 - path selection based on a verdict;
 - a Grapher that navigates the project graph.
 
-MSLK is therefore a multi-chain method with graph-like structure, but it is not a
+CLK is therefore a multi-chain method with graph-like structure, but it is not a
 free graph method.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run or grade the MSLK 1.9.0 readiness evaluation."""
+"""Run or grade the CLK 2.0.0 readiness evaluation."""
 
 from __future__ import annotations
 
@@ -43,14 +43,18 @@ def grade(
     bank: dict[str, Any],
     key: dict[str, Any],
     submitted: dict[str, Any],
+    expected_order: list[str],
 ) -> tuple[bool, list[dict[str, Any]]]:
     expected_ids = [item["id"] for item in bank["questions"]]
     supplied = submitted.get("answers")
     if not isinstance(supplied, list):
         raise SystemExit("answers file must contain an 'answers' list")
 
-    if [item.get("id") for item in supplied] != submitted.get("question_order"):
-        raise SystemExit("answers order must exactly match question_order")
+    if submitted.get("question_order") != expected_order:
+        raise SystemExit("question_order does not match the seeded evaluation order")
+
+    if [item.get("id") for item in supplied] != expected_order:
+        raise SystemExit("answers order must exactly match the seeded question_order")
 
     if sorted(item.get("id") for item in supplied) != sorted(expected_ids):
         raise SystemExit("answers must contain every question exactly once")
@@ -82,8 +86,8 @@ def main() -> int:
     args = parser.parse_args()
 
     base = Path(__file__).resolve().parents[1]
-    bank_path = base / "evals" / "mslk-readiness-questions.json"
-    key_path = base / "evals" / "mslk-readiness-answer-key.json"
+    bank_path = base / "evals" / "clk-readiness-questions.json"
+    key_path = base / "evals" / "clk-readiness-answer-key.json"
     bank = load_json(bank_path)
     key = load_json(key_path)
 
@@ -108,10 +112,10 @@ def main() -> int:
         raise SystemExit("provide --emit, --answers, or both")
 
     submitted = load_json(args.answers)
-    passed, per_question = grade(bank, key, submitted)
+    passed, per_question = grade(bank, key, submitted, [q["id"] for q in order])
 
     receipt = {
-        "receipt_type": "MSLK_READINESS_EVAL_PASS" if passed else "MSLK_READINESS_EVAL_FAIL",
+        "receipt_type": "CLK_READINESS_EVAL_PASS" if passed else "CLK_READINESS_EVAL_FAIL",
         "skill_version": bank["version"],
         "question_bank_hash": content_hash(bank_path),
         "answer_key_hash": content_hash(key_path),

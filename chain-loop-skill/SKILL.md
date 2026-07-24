@@ -1,30 +1,48 @@
 ---
-name: multi-small-loop-skill
-description: Use when the user says MSLK or multi-small-loop-skill, or when one project needs multiple materially independent, concurrently startable visible Worker conversations, one persistent visible Checker per Worker, and independent GO verification. Never trigger together with SLK or another loop method.
+name: chain-loop-skill
+description: Use when the user says CLK or Chain Loop Skill, or uses the legacy names MSLK or multi-small-loop-skill, or when one project needs fixed persistent Chains advancing through ordered fully synchronized Levels with fresh independent GO Verification. Legacy names normalize to CLK. Never trigger together with SLK, GLK, or another loop method.
 ---
 
-# Multi Small Loop Skill (MSLK)
+# Chain Loop Skill (CLK)
 
-Use `MSLK` as the official abbreviation. Keep `$multi-small-loop-skill` as the
-Codex invocation name.
-
+Use `CLK` as the official abbreviation and `$chain-loop-skill` as the Codex
+invocation name. `MSLK` and `$multi-small-loop-skill` are legacy migration terms,
+not canonical identities for new runs.
 ## Canonical Identity
 
-- Product name: `Multi Small Loop`.
-- Abbreviation: `MSLK`.
-- Canonical repository: `https://github.com/DWG7318/multi-small-loop-skill`.
+- Product name: `Chain Loop Skill`.
+- Abbreviation: `CLK`.
+- Canonical repository target: `https://github.com/DWG7318/chain-loop-skill`.
+- Legacy repository before rename: `https://github.com/DWG7318/multi-small-loop-skill`.
 - GitHub repository ID: `1298120736`.
 - Default branch: `main`.
 - Version source: repository `VERSION` file and matching `v*` tag.
-- Current specification version: `1.9.0`.
+- Current specification version: `2.0.0`.
 
 Before publishing, verify owner/name, repository ID, default branch, remote HEAD,
-tested installation, version file, and release tag. Never publish MSLK content to
+tested installation, version file, and release tag. Never publish CLK content to
 the SLK repository or another similarly named skill.
 
+## Legacy Name Migration
+
+`Chain Loop Skill (CLK)` replaces the former product identity `Multi Small Loop
+Skill (MSLK)`. The execution model remains staged, barrier-synchronized multi-chain
+work, but all new contracts, receipts, commands, files, installations, tags, and
+runs use `CLK`.
+
+- A user saying `MSLK` or `multi-small-loop-skill` is normalized to CLK for
+  explanation and migration.
+- Do not create a new formal run with an MSLK identity, receipt prefix, command, or
+  folder.
+- An active historical MSLK run remains bound to its original version and identity;
+  never rewrite its evidence.
+- Migration requires a new CLK plan/version, readiness receipts, simulation, role
+  bindings, and append-only mapping from old IDs.
+- Repository rename and skill-folder rename are release operations; GitHub URL
+  redirect does not rename an installed Codex skill automatically.
 ## Scope
 
-MSLK is a staged, barrier-synchronized multi-chain execution method.
+CLK is a staged, barrier-synchronized multi-chain execution method.
 
 ```text
 Calabash → frozen plan
@@ -45,15 +63,14 @@ Chain. `GO-01-A` is a real GO; `GO-01` alone is not.
 All GOs in one Level are launch-ready together and independently verified. The next
 Level opens only after every required current-Level GO is `GO_VERIFIED`.
 
-MSLK has fixed Chains, ordered Levels, and full barriers. It has no conditional
+CLK has fixed Chains, ordered Levels, and full barriers. It has no conditional
 branching, partial unlock, cycles, arbitrary runtime routing, or dynamic Chain
 creation; those belong to Graph Loop Skill (GLK).
 
 Role types are Supervisor, Checker, Worker, and GO-scoped Verification.
-
 ## Mandatory Calabash Definition Gate
 
-Every MSLK project requires a frozen `PROJECT_CALABASH_BASELINE`.
+Every CLK project requires a frozen `PROJECT_CALABASH_BASELINE`.
 
 Use full Calabash when available. Otherwise Minimum Calabash is mandatory:
 
@@ -74,12 +91,11 @@ concepts/states. Its `GO_VERIFICATION_CONTRACT` must derive from that trace; wit
 a current source, the GO is invalid.
 
 Read
-[`references/calabash-and-multi-chain.md`](references/calabash-and-multi-chain.md)
+[`references/calabash-and-chain-loop.md`](references/calabash-and-chain-loop.md)
 before planning.
-
 ## Twenty-Four Hard Rules
 
-1. Select MSLK exactly once for one project run; never combine or switch methods
+1. Select CLK exactly once for one project run; never combine or switch methods
    inside the active run.
 2. Freeze a full or Minimum Calabash before Level/Chain planning or formal role
    launch.
@@ -130,10 +146,9 @@ before planning.
     configured.
 
 Schedule, cost, or Owner urgency cannot waive these rules.
-
 ## Method Selection Gate
 
-Supervisor selects MSLK only when the project can be represented as two or more
+Supervisor selects CLK only when the project can be represented as two or more
 fixed Chains progressing through ordered synchronization Levels.
 
 For every GO in `LEVEL-01`, prove:
@@ -146,18 +161,17 @@ For every GO in `LEVEL-01`, prove:
    write domain and the later GOs on that Chain.
 
 If fewer than two Level-01 GOs satisfy all three conditions, record
-`METHOD_SELECTION_FAILED` and do not launch MSLK.
+`METHOD_SELECTION_FAILED` and do not launch CLK.
 
-A valid MSLK plan must also prove that later work can be expressed as ordered Levels
+A valid CLK plan must also prove that later work can be expressed as ordered Levels
 with full barriers. If it needs conditional branches, partial Level unlock, cycles,
 arbitrary GO-to-GO routing, dynamic Chain creation, or runtime path choice, record
 `METHOD_BOUNDARY_EXCEEDED`; preserve evidence and use a separate GLK run.
-
 ## Exclusive Mode Lock
 
-Choose exactly one method before role creation. Once MSLK is selected:
+Choose exactly one method before role creation. Once CLK is selected:
 
-- invoke MSLK exactly once;
+- invoke CLK exactly once;
 - do not load, nest, repeat, alternate with, or switch to SLK or another loop
   topology;
 - do not borrow another method's roles, routing, state, or capabilities;
@@ -165,7 +179,6 @@ Choose exactly one method before role creation. Once MSLK is selected:
 - stop new formal work rather than converting the active run.
 
 Shared engineering principles do not make methods composable.
-
 ## Visible Conversation Lifecycle
 
 Every role is a visible conversation under the same Codex project.
@@ -183,7 +196,6 @@ Every role is a visible conversation under the same Codex project.
 - Archive persistent roles while they have no authorized work; unarchive the same
   role for the next Level rather than creating duplicates.
 - No archived conversation performs hidden or background work.
-
 ## Role and Environment Isolation
 
 Read
@@ -214,14 +226,13 @@ defense, not a substitute.
 
 If required isolation is unavailable, record `ROLE_ISOLATION_BLOCKED` and fail
 closed.
-
 ## Mandatory Readiness Eval
 
 Before formal work, Supervisor and every persistent Checker/Worker in the execution
-roster must independently pass the MSLK readiness Eval with exactly `25/25`:
+roster must independently pass the CLK readiness Eval with exactly `25/25`:
 
 ```text
-scripts/run_mslk_readiness_eval.py
+scripts/run_clk_readiness_eval.py
 ```
 
 Every fresh Verification instance must also pass `25/25` before receiving a GO
@@ -232,7 +243,6 @@ answer-key access are forbidden.
 Each receipt binds skill/eval hashes, role and scope identity, conversation/context,
 model binding, seed, attempt, and per-question result. Any material change makes it
 stale.
-
 ## Mandatory Simulation Gates
 
 ### Project launch simulation
@@ -240,7 +250,7 @@ stale.
 After persistent-roster readiness and Calabash freeze, run a no-side-effect
 simulation proving:
 
-1. MSLK is the sole selected method.
+1. CLK is the sole selected method.
 2. `LEVEL-01` contains at least two acceptance-independent, launch-ready GOs.
 3. `GO-01-A` style identifiers map one GO to one Level and one Chain.
 4. Every Level-01 GO has a Calabash trace, Verification Contract, pre-bound direct
@@ -269,10 +279,9 @@ Before opening every Level, Supervisor records `LEVEL_START_GATE_PASS` proving:
   are available.
 
 A failed Level gate keeps the whole Level closed.
-
 ## Role Authority Matrix
 
-| Responsibility | Sole MSLK owner |
+| Responsibility | Sole CLK owner |
 |---|---|
 | Calabash establishment, normalization, freeze, and version governance | Supervisor |
 | Method gate, fixed Chain roster, ordered Level plan, cross-Chain contracts | Supervisor |
@@ -287,10 +296,9 @@ A failed Level gate keeps the whole Level closed.
 
 No role may silently exercise another role's authority. Supervisor's Level barrier is
 a deterministic completeness gate, not Grapher-style path selection.
-
 ## Autonomous Completion Rule
 
-MSLK completes authorized work without routine Owner authorization.
+CLK completes authorized work without routine Owner authorization.
 
 Before launch, Supervisor freezes a versioned `PROJECT_AUTONOMY_ENVELOPE` derived
 from Calabash, the plan, safety rules, tool capabilities, and external-action
@@ -320,7 +328,6 @@ A platform-enforced permission prompt does not automatically create Owner decisi
 authority. Supervisor must first provision or pre-authorize it. If the platform
 cannot proceed without a human action, record `EXECUTION_PERMISSION_BLOCKED` with
 exact evidence rather than disguising it as product confirmation.
-
 ## Supervisor Contract
 
 Supervisor owns project definition and deterministic multi-chain coordination, not
@@ -332,7 +339,7 @@ Supervisor:
 - derives the project solution, fixed Chain roster, ordered Level plan, and
   cross-Chain contracts;
 - freezes `PROJECT_AUTONOMY_ENVELOPE`;
-- proves MSLK method selection and freezes the persistent roster;
+- proves CLK method selection and freezes the persistent roster;
 - provisions conversations, model bindings, isolated workspaces, Verification
   templates/attempts, skills, tools, permissions, and device-safe budgets;
 - freezes every GO's Calabash trace, Verification Contract, and direct route before
@@ -349,7 +356,6 @@ Supervisor must not relay normal Checker/Verification messages, plan ordinary CE
 details, execute Worker work, validate a CELL, issue a GO verdict, ask Owner for
 routine authorization, add a Chain after launch, partially unlock a later Level, or
 perform GLK-style path routing.
-
 ## Checker Contract
 
 One persistent Checker controls one persistent Worker on one Chain.
@@ -374,7 +380,6 @@ Checker must not edit Worker-owned product artifacts and self-accept, ask Owner 
 routine confirmation, relay through Supervisor when the direct Verification route
 is healthy, include persuasive conclusions in the neutral package, declare a GO
 verified, change Level membership, or take another Chain's work.
-
 ## Worker Contract
 
 One Worker belongs to exactly one Checker and remains the persistent implementation
@@ -400,7 +405,6 @@ The Worker must not:
 - ask the Owner for confirmation or troubleshooting;
 - declare its own CELL, GO, stream, or project accepted;
 - reuse another Worker's evidence.
-
 ## Verification Contract
 
 Every planned GO has a frozen `GO_VERIFICATION_BINDING` before its Level opens. The
@@ -441,7 +445,6 @@ It never plans, implements, repairs, changes acceptance, chooses the next GO/Lev
 routes, or asks Owner. Any material candidate, contract, Calabash, dependency,
 environment, tool, or rule change invalidates the verdict and requires a fresh
 attempt.
-
 ## Worker, GO, and CELL
 
 Use this hierarchy:
@@ -475,10 +478,9 @@ The numeric GO component denotes the Level. The suffix denotes the Chain. At mos
 one GO from a Chain may exist in one Level. A Chain may terminate after a verified
 GO, but it cannot skip a Level and later reappear. No new Chain appears after
 `LEVEL-01`.
-
 ## Multi-Chain Level and Barrier Rule
 
-MSLK uses a frozen multi-chain Level table, not a free-form runtime graph.
+CLK uses a frozen multi-chain Level table, not a free-form runtime graph.
 
 ```text
 | Level | Chain A | Chain B | Chain C | Chain D |
@@ -517,7 +519,6 @@ all LEVEL-01 GOs GO_VERIFIED
 A cross-GO CELL dependency is `GO_BOUNDARY_VIOLATION`. Conditional branching,
 partial unlock, cycles, runtime GO routing, or new Chains are
 `METHOD_BOUNDARY_EXCEEDED` and require a separate GLK run.
-
 ## GO Design
 
 Every GO defines:
@@ -534,7 +535,6 @@ Every GO defines:
 - completion and failure semantics.
 
 A GO is not the Level itself, a phase label, a conversation, or an arbitrary batch.
-
 ## CELL Design
 
 Every CELL defines:
@@ -554,7 +554,6 @@ Every CELL defines:
 Size CELLs by implementation risk, cross-owner impact, and evidence burden. Reduce
 CELL size or concurrency for device safety; never shrink the GO outcome or weaken
 acceptance.
-
 ## CELL Protocol and Routes
 
 The normal stream is:
@@ -598,7 +597,6 @@ PLAN_DEFECT
 
 `REDO` is deprecated. Historical `REDO` records remain valid history but new work
 uses `CELL_REWORK` or `PLAN_DEFECT`.
-
 ## Product Rework Rule
 
 Product defects return to the Worker through a new formal round.
@@ -624,7 +622,6 @@ metadata. Such a repair must not alter the product candidate and must be fully
 recorded before validation restarts in a clean environment.
 
 Verification never repairs anything.
-
 ## Detection System
 
 Each Checker maintains a `DETECTION_CAPABILITY_MANIFEST`; every GO owns a
@@ -647,7 +644,6 @@ Profile changes require versioned revision and delta simulation. Device limits m
 serialize commands, reduce CELL size, or lower concurrency—not acceptance quality.
 See
 [`references/checker-detection-catalog.md`](references/checker-detection-catalog.md).
-
 ## GO Evidence Acceptance
 
 Every GO freezes its Calabash trace and `GO_VERIFICATION_CONTRACT` before Level
@@ -680,7 +676,6 @@ Handling:
 
 A changed candidate requires a new fresh Verification attempt. Only `GO_VERIFIED`
 completes a GO; only all required verified members complete a Level.
-
 ## Evidence-Driven GO Revision
 
 After every GO verdict, Checker compares plan and actual result: scope, defects,
@@ -707,7 +702,6 @@ new Chains, cycles, or arbitrary insertion is `METHOD_BOUNDARY_EXCEEDED`.
 Never rewrite historical GO, CELL, evidence, or verdict. Record old/new plan,
 trigger evidence, impact, and `GO_REVISION_SIMULATION_PASS` before dispatch. A
 changed candidate always requires a new fresh Verification attempt.
-
 ## Continuation Condition Gate
 
 Before every Worker assignment, Checker verifies:
@@ -730,7 +724,6 @@ proven Owner-exclusive item. Checker revalidates before resume.
 
 Other independent GOs in the active Level may continue when the block cannot
 invalidate them, but the next Level remains closed until the full barrier passes.
-
 ## Dispatch-Then-Offline Boundary
 
 Before dispatch, Checker completes every prerequisite check, record, progress
@@ -759,7 +752,6 @@ offline Checker merely to inspect an active Worker.
 Verification uses the same non-interference principle: after Checker sends the
 neutral package directly, Checker and Supervisor do not inject suggestions into the
 active Verification conversation.
-
 ## Pre-Authorized Worker Execution Gate
 
 Before dispatch, Supervisor provisions the pair under the frozen autonomy
@@ -770,7 +762,6 @@ authorization.
 Unexpected credentials, external side effects, destructive/security-sensitive
 actions, out-of-scope writes, and objective/acceptance changes route internally to
 Supervisor and only then to Owner when genuinely Owner-exclusive.
-
 ## Project Progress
 
 Every Worker assignment includes accepted CELL progress, for example:
@@ -792,7 +783,6 @@ LEVEL-01 GO验证：3/4
 The current Level remains active until every required member is `GO_VERIFIED`.
 Display `全部完成` only when every required CELL, GO, and Level is complete, final
 composition/safety/evidence pass, and configured `PROJECT_GOAL` is satisfied.
-
 ## Optional Project Goal Gate
 
 Use `PROJECT_GOAL`, never the ambiguous bare term `Goal`.
@@ -828,7 +818,6 @@ PROJECT_GOAL_GAP
 with unmet criteria, evidence, residual risk, affected domains, and required
 outcome. Affected Checkers author append-only continuations for their persistent
 Workers. Supervisor does not author ordinary local plans.
-
 ## Mutable State and Append-Only Evidence
 
 Append-only artifacts include:
@@ -851,7 +840,6 @@ ephemeral progress cache
 ```
 
 Mutable indexes point to history; they do not replace it.
-
 ## Markdown Context Boundary
 
 Every governed Markdown file has a hard maximum of 1000 physical lines. The
@@ -864,7 +852,6 @@ requirement, table, code block, acceptance record, or evidence chain.
 Every GO that can write Markdown assigns `markdown-line-budget` in its detection
 profile. Every accepted CELL records line-count evidence. Before the next append
 would exceed the limit, seal the current shard and continue in a linked successor.
-
 ## Evidence and Queue Paths
 
 Use project-local paths unless stricter ones exist:
@@ -882,7 +869,6 @@ workspace/model binding, environment fingerprint, evidence hash, and verdict.
 
 Only Checker writes its Worker stream queue. A stream is passed only after every
 assigned GO is `GO_VERIFIED` and Supervisor final audit accepts it.
-
 ## Recovery Rules
 
 - **Delayed conversation registration:** confirm the returned ID before creating a
@@ -906,7 +892,6 @@ assigned GO is `GO_VERIFIED` and Supervisor final audit accepts it.
 - **Unavailable role or environment:** fail closed; never substitute another role.
 
 Never auto-advance from silence or timeout.
-
 ## Final Project Composition Audit
 
 Supervisor closes the project only after:
@@ -923,7 +908,6 @@ Supervisor closes the project only after:
 
 Supervisor final audit is not a second CELL check and not a substitute for
 Verification.
-
 ## Launch Checklist
 
 Before project launch, Supervisor confirms:
@@ -948,28 +932,16 @@ frozen, and all first CELLs ready together.
 Before each GO verdict, require all CELLs accepted, immutable candidate/contract,
 fresh isolated Verification, neutral direct package, and no downstream Level work
 from provisional output.
+## Migration
 
-## Migration From 1.8.3
-
-Version `1.9.0` changes project structure, role topology, autonomy, and GO acceptance.
-
-- Active `1.8.3` runs remain bound to `1.8.3` unless formally migrated.
-- Never silently reinterpret historical GO numbering, `REDO`, Checker repair,
-  acceptance, or Goal records.
-- Migration requires a frozen Calabash baseline, new Level/Chain table, new
-  `GO-<LEVEL>-<CHAIN>` identifiers for future work, `PROJECT_AUTONOMY_ENVELOPE`,
-  new readiness receipts, environment bindings, simulation, GO Calabash traces,
-  Verification Contracts/bindings, and fresh Verification attempts.
-- Preserve all historical identifiers/evidence and map them append-only to the new
-  plan.
-- If unfinished work cannot be converted to fixed barrier-synchronized Chains,
-  record `METHOD_BOUNDARY_EXCEEDED` and start a separate GLK run.
-
+Version `2.0.0` is a breaking identity and topology release. Active 1.8.3 MSLK
+runs remain bound to their historical specification. Preserve old receipts and read
+[`../MIGRATION-MSLK-TO-CLK.md`](../MIGRATION-MSLK-TO-CLK.md) before migrating or
+renaming the repository. If unfinished work cannot be represented as fixed Chains,
+ordered Levels, and full barriers, record `METHOD_BOUNDARY_EXCEEDED` and use GLK.
 ## Version Note
 
-Version `1.9.0` adds mandatory Calabash, fixed Level/Chain semantics, pre-bound
-direct GO Verification, full Level barriers, an Owner-free autonomy envelope,
-Worker-owned product rework, GO-boundary independence, tiered detection, and strict
-environment isolation. Grapher, conditional routing, partial unlock, cycles, and
-dynamic Chains remain GLK capabilities.
-
+CLK 2.0.0 establishes mandatory Calabash, Chain/Level semantics, direct fresh GO
+Verification, Owner-free routine autonomy, Worker-owned rework, GO-boundary
+independence, tiered detection, and strict isolation. Dynamic graph behavior remains
+GLK-only.

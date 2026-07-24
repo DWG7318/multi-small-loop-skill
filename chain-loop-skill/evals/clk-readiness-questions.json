@@ -1,0 +1,105 @@
+{
+  "version": "2.0.0",
+  "questions": [
+    {
+      "id": "Q01",
+      "prompt": "CLK的正式产品名称、缩写、调用名和结构定位是什么？旧MSLK名称如何处理？"
+    },
+    {
+      "id": "Q02",
+      "prompt": "CLK启动前是否必须有Calabash？最小Calabash包含什么？"
+    },
+    {
+      "id": "Q03",
+      "prompt": "项目没有Calabash时谁负责建立？什么时候必须完成？"
+    },
+    {
+      "id": "Q04",
+      "prompt": "LEVEL、CHAIN和GO-01-A分别表示什么？"
+    },
+    {
+      "id": "Q05",
+      "prompt": "GO-01-A/B/C/D中的01表示传统GO顺序还是同时开工层？"
+    },
+    {
+      "id": "Q06",
+      "prompt": "什么时候可以选择CLK，什么时候应记录METHOD_BOUNDARY_EXCEEDED并使用GLK？"
+    },
+    {
+      "id": "Q07",
+      "prompt": "CLK有哪些外部角色类型？"
+    },
+    {
+      "id": "Q08",
+      "prompt": "哪些角色持久，Verification何时预绑定、何时实例化？"
+    },
+    {
+      "id": "Q09",
+      "prompt": "所有CELL通过后，GO候选如何送到Verification？Supervisor是否中转？"
+    },
+    {
+      "id": "Q10",
+      "prompt": "Verification判决发给谁？它可以规划、修复或路由吗？"
+    },
+    {
+      "id": "Q11",
+      "prompt": "不同对话是否足以隔离Checker和Verification？"
+    },
+    {
+      "id": "Q12",
+      "prompt": "PROJECT_AUTONOMY_ENVELOPE意味着是否还需要逐CELL、逐GO、逐LEVEL请求Owner授权？"
+    },
+    {
+      "id": "Q13",
+      "prompt": "哪些情况才允许Supervisor联系Owner？"
+    },
+    {
+      "id": "Q14",
+      "prompt": "谁拥有产品实施和产品返工权？"
+    },
+    {
+      "id": "Q15",
+      "prompt": "谁拥有CELL验收与CELL路由权？"
+    },
+    {
+      "id": "Q16",
+      "prompt": "谁拥有GO最终Evidence判决权？"
+    },
+    {
+      "id": "Q17",
+      "prompt": "发现产品缺陷时使用什么路由，REDO是否继续使用？"
+    },
+    {
+      "id": "Q18",
+      "prompt": "一个GO何时完成？"
+    },
+    {
+      "id": "Q19",
+      "prompt": "一个LEVEL何时完成，是否允许部分开启下一LEVEL？"
+    },
+    {
+      "id": "Q20",
+      "prompt": "允许一个GO的CELL依赖另一个GO未完成CELL吗？"
+    },
+    {
+      "id": "Q21",
+      "prompt": "同一LEVEL中的GO可以互相依赖吗？跨LEVEL输入如何合法传递？"
+    },
+    {
+      "id": "Q22",
+      "prompt": "检测能力的四个层级是什么？"
+    },
+    {
+      "id": "Q23",
+      "prompt": "Checker与Verification使用相同高模型时怎样保持独立？"
+    },
+    {
+      "id": "Q24",
+      "prompt": "CLK与GLK最关键的边界是什么？"
+    },
+    {
+      "id": "Q25",
+      "prompt": "项目何时可以宣布全部完成？"
+    }
+  ]
+}

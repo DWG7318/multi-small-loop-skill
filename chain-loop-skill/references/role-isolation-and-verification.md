@@ -1,10 +1,10 @@
-# MSLK Role Isolation and Verification
+# CLK Role Isolation and Verification
 
 ## Purpose
 
 Different Codex conversations reduce direct chat-history sharing, but do not alone
 isolate workspaces, mutable runtime state, tools, evidence, or anchoring conclusions.
-MSLK therefore requires procedural and environmental isolation.
+CLK therefore requires procedural and environmental isolation.
 
 ## Required isolation layers
 

@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.9.0",
-  "method": "MSLK",
+  "schema_version": "2.0.0",
+  "method": "CLK",
   "method_shape": "staged_barrier_synchronized_multi_chain",
   "calabash_gate": {
     "required": true,
@@ -127,5 +127,13 @@
     "required_predecessor_state": "GO_VERIFIED",
     "required_predecessor_level_state": "LEVEL_VERIFIED",
     "frozen_outputs_required": true
+  },
+  "product_name": "Chain Loop Skill",
+  "version": "2.0.0",
+  "legacy_identity": {
+    "product_name": "Multi Small Loop Skill",
+    "abbreviation": "MSLK",
+    "invocation": "$multi-small-loop-skill",
+    "formal_new_runs_allowed": false
   }
 }
