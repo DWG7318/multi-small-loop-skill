@@ -1,0 +1,975 @@
+---
+name: multi-small-loop-skill
+description: Use when the user says MSLK or multi-small-loop-skill, or when one project needs multiple materially independent, concurrently startable visible Worker conversations, one persistent visible Checker per Worker, and independent GO verification. Never trigger together with SLK or another loop method.
+---
+
+# Multi Small Loop Skill (MSLK)
+
+Use `MSLK` as the official abbreviation. Keep `$multi-small-loop-skill` as the
+Codex invocation name.
+
+## Canonical Identity
+
+- Product name: `Multi Small Loop`.
+- Abbreviation: `MSLK`.
+- Canonical repository: `https://github.com/DWG7318/multi-small-loop-skill`.
+- GitHub repository ID: `1298120736`.
+- Default branch: `main`.
+- Version source: repository `VERSION` file and matching `v*` tag.
+- Current specification version: `1.9.0`.
+
+Before publishing, verify owner/name, repository ID, default branch, remote HEAD,
+tested installation, version file, and release tag. Never publish MSLK content to
+the SLK repository or another similarly named skill.
+
+## Scope
+
+MSLK is a staged, barrier-synchronized multi-chain execution method.
+
+```text
+Calabash → frozen plan
+             ↓
+LEVEL-01: GO-01-A  GO-01-B  GO-01-C  GO-01-D
+              ↓        ↓        ↓        ↓
+            Pair A   Pair B   Pair C   Pair D
+              ↓        ↓        ↓        ↓
+             Verification per GO candidate
+              └──────── full Level barrier ────────┘
+                              ↓
+LEVEL-02: GO-02-A  GO-02-B  GO-02-C  GO-02-D
+```
+
+The number identifies a synchronization Level; the suffix identifies a persistent
+Chain. `GO-01-A` is a real GO; `GO-01` alone is not.
+
+All GOs in one Level are launch-ready together and independently verified. The next
+Level opens only after every required current-Level GO is `GO_VERIFIED`.
+
+MSLK has fixed Chains, ordered Levels, and full barriers. It has no conditional
+branching, partial unlock, cycles, arbitrary runtime routing, or dynamic Chain
+creation; those belong to Graph Loop Skill (GLK).
+
+Role types are Supervisor, Checker, Worker, and GO-scoped Verification.
+
+## Mandatory Calabash Definition Gate
+
+Every MSLK project requires a frozen `PROJECT_CALABASH_BASELINE`.
+
+Use full Calabash when available. Otherwise Minimum Calabash is mandatory:
+
+```text
+Grandpa → Product Architecture → Ontology
+```
+
+If none exists, Supervisor derives it from authoritative Owner statements and
+project evidence before Worker decomposition, Level/Chain planning, Verification
+Contract creation, role launch, simulation, or CELL execution. Supervisor may
+normalize uniquely supported definitions but must not invent Owner intent.
+Irreducible product-definition ambiguity is `CALABASH_DEFINITION_BLOCKED` and is an
+Owner-exclusive matter.
+
+Every GO records a versioned `GO_CALABASH_TRACE` linking its outcome to Grandpa,
+the relevant Product Architecture journey/module/outcome, and owned Ontology
+concepts/states. Its `GO_VERIFICATION_CONTRACT` must derive from that trace; without
+a current source, the GO is invalid.
+
+Read
+[`references/calabash-and-multi-chain.md`](references/calabash-and-multi-chain.md)
+before planning.
+
+## Twenty-Four Hard Rules
+
+1. Select MSLK exactly once for one project run; never combine or switch methods
+   inside the active run.
+2. Freeze a full or Minimum Calabash before Level/Chain planning or formal role
+   launch.
+3. Freeze one ordered Level plan and one fixed Chain roster before execution.
+4. Use `GO-<LEVEL>-<CHAIN>` identifiers; the numeric part means “same start Level,”
+   not a traditional sequential GO number.
+5. Every GO in an opened Level must be independently acceptable and launch-ready;
+   the next Level remains closed until the current Level is fully verified.
+6. Use one persistent Checker/Worker pair per Chain. Do not add or replace Chains
+   during the active run.
+7. Keep every role as a visible Codex conversation under the same project; hidden
+   agents, subagents, background roles, and `delegate_task` are forbidden.
+8. Bind every role to separate context, capability, model, evidence, lifecycle,
+   and authorized workspace identities; a different title alone is not isolation.
+9. Before a GO's first CELL is dispatched, its Verification Contract, direct route,
+   model binding, environment template, and fresh attempt instance must be ready.
+10. Checker sends a frozen GO candidate directly to its pre-established
+    Verification; Supervisor is not a relay.
+11. Worker owns product implementation and product rework. Checker and Verification
+    never edit product artifacts and accept their own edit.
+12. Checker is the sole CELL acceptance and CELL routing authority for its Chain.
+13. Verification is the sole GO evidence verdict authority and never plans,
+    implements, repairs, routes, or asks Owner.
+14. Supervisor owns Calabash, project decomposition, fixed Level/Chain planning,
+    deterministic Level barriers, provisioning, Owner-exclusive escalation, and
+    final composition audit.
+15. All routine work inside the frozen `PROJECT_AUTONOMY_ENVELOPE` proceeds without
+    Owner confirmation or per-action authorization.
+16. Only an irreducible Owner-exclusive objective, product-definition, credential,
+    legal, destructive, irreversible, materially costly, physical, or external
+    account matter may reach Owner.
+17. Every CELL requires Worker evidence and independent Checker validation against
+    the exact immutable CELL candidate.
+18. Every GO requires a frozen `GO_VERIFICATION_CONTRACT`, a
+    `GO_CALABASH_TRACE`, and fresh independent Verification after all CELLs pass.
+19. A CELL in one GO may never wait for or depend on another GO's unfinished CELL,
+    mutable intermediate state, or provisional evidence.
+20. Cross-GO input is valid only from a `GO_VERIFIED` predecessor and frozen output;
+    peer GOs in the same Level cannot depend on one another.
+21. Detection is tiered as `CELL_ALWAYS`, `CELL_TRIGGERED`, `GO_BOUNDARY`, and
+    `PROJECT_FINAL`.
+22. Plans, receipts, evidence, verdicts, and historical decisions are append-only;
+    only declared current-state indexes are mutable.
+23. Missing roles, unavailable environments, stale evidence, silence, timeout,
+    partial artifacts, or green Worker tests never imply acceptance.
+24. Completion requires every required GO and Level verified, composition and
+    safety gates passed, final evidence present, and `PROJECT_GOAL` satisfied when
+    configured.
+
+Schedule, cost, or Owner urgency cannot waive these rules.
+
+## Method Selection Gate
+
+Supervisor selects MSLK only when the project can be represented as two or more
+fixed Chains progressing through ordered synchronization Levels.
+
+For every GO in `LEVEL-01`, prove:
+
+1. **Acceptance independence:** it can be verified without another Level-01 GO's
+   unfinished result or evidence, and concurrent writes/state cannot invalidate it.
+2. **Level launch independence:** its first CELL can be dispatched in the same Level
+   activation cycle without waiting for another GO's future output or decision.
+3. **Stable Chain ownership:** one persistent Checker/Worker pair can own the GO's
+   write domain and the later GOs on that Chain.
+
+If fewer than two Level-01 GOs satisfy all three conditions, record
+`METHOD_SELECTION_FAILED` and do not launch MSLK.
+
+A valid MSLK plan must also prove that later work can be expressed as ordered Levels
+with full barriers. If it needs conditional branches, partial Level unlock, cycles,
+arbitrary GO-to-GO routing, dynamic Chain creation, or runtime path choice, record
+`METHOD_BOUNDARY_EXCEEDED`; preserve evidence and use a separate GLK run.
+
+## Exclusive Mode Lock
+
+Choose exactly one method before role creation. Once MSLK is selected:
+
+- invoke MSLK exactly once;
+- do not load, nest, repeat, alternate with, or switch to SLK or another loop
+  topology;
+- do not borrow another method's roles, routing, state, or capabilities;
+- preserve accepted evidence if method selection later fails;
+- stop new formal work rather than converting the active run.
+
+Shared engineering principles do not make methods composable.
+
+## Visible Conversation Lifecycle
+
+Every role is a visible conversation under the same Codex project.
+
+- Supervisor, Checker, and Worker identities are persistent for the active run.
+- Each Chain owns one persistent Checker and one persistent Worker.
+- At project-plan freeze, Supervisor records a Verification binding for every
+  planned GO.
+- At each Level activation, Supervisor creates the fresh Verification attempt for
+  every GO in that Level before any first CELL is dispatched.
+- Checker sends `GO_READY_FOR_VERIFICATION` directly to that instance.
+- Verification sends its signed verdict directly to both Checker and Supervisor.
+- Archive a Verification instance immediately after verdict. Any materially changed
+  candidate requires a new attempt and new context/environment.
+- Archive persistent roles while they have no authorized work; unarchive the same
+  role for the next Level rather than creating duplicates.
+- No archived conversation performs hidden or background work.
+
+## Role and Environment Isolation
+
+Read
+[`references/role-isolation-and-verification.md`](references/role-isolation-and-verification.md)
+before role launch.
+
+Every role records:
+
+```text
+role_id / role_type / conversation_id / context_id / workspace_id
+capability_profile_id / model_binding_id / evidence_path / lifecycle_state
+```
+
+Worker implements in its isolated workspace. Checker validates an immutable CELL
+candidate in a different clean workspace. Every GO uses a fresh Verification
+conversation and workspace created from the immutable GO candidate.
+
+When relevant, Worker, Checker, and Verification must also separate environment
+files, database/fixture namespaces, ports, processes, temp paths, browser profiles,
+mutable caches, logs, and evidence. Read-only or content-addressed caches may be
+shared.
+
+Verification must not inherit Worker/Checker conversations, prior Verification
+context, subjective Checker conclusions, hidden reasoning, or mutable Checker state.
+Same-model use is permitted only with different bindings, contexts, workspaces,
+permissions, and independently generated evidence. Model diversity is an extra
+defense, not a substitute.
+
+If required isolation is unavailable, record `ROLE_ISOLATION_BLOCKED` and fail
+closed.
+
+## Mandatory Readiness Eval
+
+Before formal work, Supervisor and every persistent Checker/Worker in the execution
+roster must independently pass the MSLK readiness Eval with exactly `25/25`:
+
+```text
+scripts/run_mslk_readiness_eval.py
+```
+
+Every fresh Verification instance must also pass `25/25` before receiving a GO
+candidate. One wrong, missing, extra, or misordered answer fails the attempt.
+Partial credit, manual override, inherited receipts, role substitution, and
+answer-key access are forbidden.
+
+Each receipt binds skill/eval hashes, role and scope identity, conversation/context,
+model binding, seed, attempt, and per-question result. Any material change makes it
+stale.
+
+## Mandatory Simulation Gates
+
+### Project launch simulation
+
+After persistent-roster readiness and Calabash freeze, run a no-side-effect
+simulation proving:
+
+1. MSLK is the sole selected method.
+2. `LEVEL-01` contains at least two acceptance-independent, launch-ready GOs.
+3. `GO-01-A` style identifiers map one GO to one Level and one Chain.
+4. Every Level-01 GO has a Calabash trace, Verification Contract, pre-bound direct
+   route, and isolated Verification environment template.
+5. One assignment, delivery, clean Checker validation, and route works per Chain.
+6. One Checker directly hands a neutral frozen GO package to Verification without
+   Supervisor relay.
+7. Verification returns a signed verdict to Checker and Supervisor.
+8. The full Level barrier remains closed until all Level members are verified.
+9. Routine work proceeds inside the autonomy envelope without Owner authorization.
+10. No hidden role, cross-GO CELL dependency, or GLK routing capability is used.
+
+Record `SIMULATION_PASS` or `SIMULATION_FAIL`.
+
+### Level activation gate
+
+Before opening every Level, Supervisor records `LEVEL_START_GATE_PASS` proving:
+
+- every listed GO is ready together;
+- every required predecessor Level is `LEVEL_VERIFIED`;
+- all frozen upstream GO outputs exist;
+- no peer GO dependency exists inside the Level;
+- each active Chain has at most one GO in the Level;
+- every GO's fresh Verification attempt already passed readiness and preflight;
+- all role environments, direct routes, contracts, tools, and autonomy permissions
+  are available.
+
+A failed Level gate keeps the whole Level closed.
+
+## Role Authority Matrix
+
+| Responsibility | Sole MSLK owner |
+|---|---|
+| Calabash establishment, normalization, freeze, and version governance | Supervisor |
+| Method gate, fixed Chain roster, ordered Level plan, cross-Chain contracts | Supervisor |
+| Level start gate, full Level barrier, provisioning, and final composition audit | Supervisor |
+| Owner-exclusive assistance and project autonomy envelope | Supervisor |
+| Local Chain solution, GO/CELL plan, and evidence-driven local revision | Paired Checker |
+| CELL assignment, validation, detection, routing, and local queue | Paired Checker |
+| Product implementation and product rework | Worker |
+| Independent GO evidence verdict | Fresh Verification attempt for that GO |
+| `PROJECT_GOAL` approval | Owner |
+| `PROJECT_GOAL` management and final decision | Supervisor using fresh evidence |
+
+No role may silently exercise another role's authority. Supervisor's Level barrier is
+a deterministic completeness gate, not Grapher-style path selection.
+
+## Autonomous Completion Rule
+
+MSLK completes authorized work without routine Owner authorization.
+
+Before launch, Supervisor freezes a versioned `PROJECT_AUTONOMY_ENVELOPE` derived
+from Calabash, the plan, safety rules, tool capabilities, and external-action
+boundaries. It pre-authorizes routine work such as scoped file edits, local builds,
+tests, scans, non-destructive git operations, temporary test data, approved local
+services, and declared verification commands.
+
+Worker, Checker, and Verification must not ask Owner to confirm ordinary
+implementation, continuation, code, logs, tests, evidence, recoverable defects,
+technically equivalent choices, or actions already inside the autonomy envelope.
+No per-CELL, per-GO, or per-Level Owner approval is required.
+
+Uncertainty triggers investigation, independent validation, Worker rework,
+Supervisor provisioning, plan repair, or safe recovery—not “please confirm.”
+
+Only Supervisor may contact Owner, and only for one irreducible Owner-exclusive
+item: changing Grandpa/product outcome/scope/acceptance/safety, resolving genuine
+Calabash ambiguity, supplying inaccessible credentials or legal consent, or
+approving destructive, irreversible, materially costly, physical, or external
+account action.
+
+A request must contain one item, proof of Owner exclusivity, the consequence of no
+action, and the safest choices. Routine escalation is `AUTONOMY_VIOLATION` and
+returns to the responsible internal role.
+
+A platform-enforced permission prompt does not automatically create Owner decision
+authority. Supervisor must first provision or pre-authorize it. If the platform
+cannot proceed without a human action, record `EXECUTION_PERMISSION_BLOCKED` with
+exact evidence rather than disguising it as product confirmation.
+
+## Supervisor Contract
+
+Supervisor owns project definition and deterministic multi-chain coordination, not
+ordinary CELL traffic.
+
+Supervisor:
+
+- establishes and freezes full or Minimum Calabash;
+- derives the project solution, fixed Chain roster, ordered Level plan, and
+  cross-Chain contracts;
+- freezes `PROJECT_AUTONOMY_ENVELOPE`;
+- proves MSLK method selection and freezes the persistent roster;
+- provisions conversations, model bindings, isolated workspaces, Verification
+  templates/attempts, skills, tools, permissions, and device-safe budgets;
+- freezes every GO's Calabash trace, Verification Contract, and direct route before
+  its Level opens;
+- records `LEVEL_START_GATE_PASS`, opens all Level members together, and records
+  `LEVEL_VERIFIED` only after every required GO verdict is `GO_VERIFIED`;
+- maintains the Supervisor board and project-wide progress;
+- resolves cross-Chain conflicts, shared prerequisites, safety conditions, plan
+  defects, and genuine blockers;
+- manages safe pause/resume, safeguard patrol, `PROJECT_GOAL`, and final composition
+  audit.
+
+Supervisor must not relay normal Checker/Verification messages, plan ordinary CELL
+details, execute Worker work, validate a CELL, issue a GO verdict, ask Owner for
+routine authorization, add a Chain after launch, partially unlock a later Level, or
+perform GLK-style path routing.
+
+## Checker Contract
+
+One persistent Checker controls one persistent Worker on one Chain.
+
+Checker:
+
+- owns its Chain's local solution and the GO/CELL plans assigned by Level;
+- writes each GO's Calabash trace, Verification Contract, and tiered detection
+  profile inside frozen project boundaries;
+- checks Level/GO/CELL continuation conditions;
+- packages and sends one CELL at a time, then goes offline;
+- validates the immutable CELL candidate in a clean isolated environment;
+- records receipts and routes `NEXT`, `CELL_REWORK`, `GO_ACCEPTANCE`, `BLOCKED`, or
+  `PLAN_DEFECT`;
+- designs Worker-owned rework when product defects are found;
+- after all CELLs pass, freezes the complete GO candidate and neutral package;
+- sends `GO_READY_FOR_VERIFICATION` directly to the pre-established Verification;
+- receives the signed verdict directly, acts on it without changing it, and reports
+  local queue/progress.
+
+Checker must not edit Worker-owned product artifacts and self-accept, ask Owner for
+routine confirmation, relay through Supervisor when the direct Verification route
+is healthy, include persuasive conclusions in the neutral package, declare a GO
+verified, change Level membership, or take another Chain's work.
+
+## Worker Contract
+
+One Worker belongs to exactly one Checker and remains the persistent implementation
+owner for its domain.
+
+The Worker:
+
+- executes only one formal CELL or rework assignment at a time;
+- writes only inside the authorized scope;
+- preserves unrelated changes;
+- maintains append-only method evidence;
+- runs required implementation-side checks;
+- returns an immutable candidate identity and evidence;
+- reports blockers precisely;
+- receives later dependency-ready GOs from the same Checker;
+- performs every product correction through a new formal round.
+
+The Worker must not:
+
+- self-select the next CELL;
+- broaden scope;
+- change acceptance;
+- ask the Owner for confirmation or troubleshooting;
+- declare its own CELL, GO, stream, or project accepted;
+- reuse another Worker's evidence.
+
+## Verification Contract
+
+Every planned GO has a frozen `GO_VERIFICATION_BINDING` before its Level opens. The
+binding records role identity, GO/version, contract hash, model binding, fresh
+context/environment policy, evidence path, and direct Checker-to-Verification route.
+
+At Level activation, Supervisor instantiates one fresh visible Verification attempt
+per GO before any first CELL dispatch. It remains idle and uncontaminated until the
+Checker sends the candidate directly.
+
+The neutral package contains:
+
+```text
+LEVEL_ID / CHAIN_ID / GO_ID / GO_VERSION
+PROJECT_CALABASH_BASELINE_HASH / GO_CALABASH_TRACE_HASH
+GO_VERIFICATION_CONTRACT_HASH / PROJECT_PLAN_VERSION
+IMMUTABLE_GO_ARTIFACT_ID / FROZEN_REQUIRED_OUTPUTS
+AUTHORIZED_VERIFICATION_COMMANDS / ENVIRONMENT_DEFINITION
+NEUTRAL_EVIDENCE_INDEX / SAFETY_BOUNDARIES
+```
+
+It initially excludes Checker recommendations, confidence, Worker/Checker
+transcripts, hidden reasoning, prior verdicts, and mutable state.
+
+Verification independently reproduces the contract in its isolated environment,
+executes `GO_BOUNDARY` checks, searches for counter-evidence, and sends one signed
+verdict directly to Checker and Supervisor:
+
+```text
+GO_VERIFIED
+GO_EVIDENCE_GAP
+GO_REWORK_REQUIRED
+GO_DEFINITION_DEFECT
+GO_BLOCKED
+```
+
+It never plans, implements, repairs, changes acceptance, chooses the next GO/Level,
+routes, or asks Owner. Any material candidate, contract, Calabash, dependency,
+environment, tool, or rule change invalidates the verdict and requires a fresh
+attempt.
+
+## Worker, GO, and CELL
+
+Use this hierarchy:
+
+```text
+Project
+  -> ordered LEVEL
+      -> one GO per active CHAIN
+          -> one or more CELL
+              -> ROUND
+          -> fresh Verification attempt
+```
+
+- **LEVEL:** one synchronization set whose GOs become executable together.
+- **CHAIN:** one persistent ownership stream represented by one Checker/Worker pair.
+- **GO:** one independently verifiable outcome identified by Level and Chain.
+- **CELL:** the smallest inspectable implementation package inside one GO.
+- **ROUND:** one immutable attempt, e.g. `GO-01-A/CELL-01-A.01/R02`.
+- **Verification:** one fresh independent verdict attempt for one GO candidate.
+
+Canonical identifiers:
+
+```text
+LEVEL-01
+CHAIN-A
+GO-01-A
+CELL-01-A.01
+```
+
+The numeric GO component denotes the Level. The suffix denotes the Chain. At most
+one GO from a Chain may exist in one Level. A Chain may terminate after a verified
+GO, but it cannot skip a Level and later reappear. No new Chain appears after
+`LEVEL-01`.
+
+## Multi-Chain Level and Barrier Rule
+
+MSLK uses a frozen multi-chain Level table, not a free-form runtime graph.
+
+```text
+| Level | Chain A | Chain B | Chain C | Chain D |
+|---|---|---|---|---|
+| 01 | GO-01-A | GO-01-B | GO-01-C | GO-01-D |
+| 02 | GO-02-A | GO-02-B | GO-02-C | GO-02-D |
+```
+
+When `LEVEL-01` opens, every listed GO can start in the same activation cycle. They
+may finish at different times, but `LEVEL-02` remains closed until all Level-01 GOs
+have signed `GO_VERIFIED` verdicts. Verified early members freeze their outputs and
+wait; only the failed or incomplete Chain continues rework.
+
+Peer GOs in one Level are independent and cannot consume each other's results.
+Cross-GO input is allowed only across a completed barrier from a verified predecessor
+GO and frozen output.
+
+Forbidden:
+
+```text
+GO-01-A/CELL-x -> GO-01-B/CELL-y
+GO-01-A/CELL-x -> GO-02-B/CELL-y
+GO-01-A verified -> open only part of LEVEL-02
+```
+
+Allowed:
+
+```text
+all LEVEL-01 GOs GO_VERIFIED
+-> LEVEL-01_VERIFIED
+-> frozen outputs available
+-> LEVEL-02_START_GATE_PASS
+-> all LEVEL-02 GOs start together
+```
+
+A cross-GO CELL dependency is `GO_BOUNDARY_VIOLATION`. Conditional branching,
+partial unlock, cycles, runtime GO routing, or new Chains are
+`METHOD_BOUNDARY_EXCEEDED` and require a separate GLK run.
+
+## GO Design
+
+Every GO defines:
+
+- `LEVEL_ID`, `CHAIN_ID`, canonical GO ID, and owner;
+- `GO_CALABASH_TRACE`;
+- outcome, scope, forbidden scope, and same-Level independence proof;
+- prior-Level verified inputs and frozen output references;
+- output artifacts/contracts for future Levels;
+- `GO_VERIFICATION_CONTRACT` and pre-bound Verification route;
+- tiered `GO_DETECTION_PROFILE`;
+- CELL map, risk, safety, and autonomy-envelope references;
+- candidate/output freeze method;
+- completion and failure semantics.
+
+A GO is not the Level itself, a phase label, a conversation, or an arbitrary batch.
+
+## CELL Design
+
+Every CELL defines:
+
+- objective;
+- authoritative inputs;
+- allowed and forbidden write scope;
+- output artifacts;
+- dependencies inside the same GO;
+- implementation-side checks;
+- Checker detection references;
+- immutable candidate method;
+- Worker model binding;
+- evidence and method-log paths;
+- completion criteria.
+
+Size CELLs by implementation risk, cross-owner impact, and evidence burden. Reduce
+CELL size or concurrency for device safety; never shrink the GO outcome or weaken
+acceptance.
+
+## CELL Protocol and Routes
+
+The normal stream is:
+
+```text
+Checker -> Worker -> Checker -> Worker -> ...
+```
+
+A formal task starts with:
+
+```text
+Formal task: GO-01-A/CELL-01-A.01/R01
+```
+
+After delivery, the Worker sends:
+
+```text
+完成，请检验
+```
+
+This means only “ready for Checker validation.”
+
+Checker routes:
+
+```text
+NEXT
+CELL_REWORK
+GO_ACCEPTANCE
+BLOCKED
+PLAN_DEFECT
+```
+
+- `NEXT`: CELL accepted; dispatch the next ready CELL in the same GO.
+- `CELL_REWORK`: product result failed but the frozen CELL objective remains valid;
+  issue a new round to the same Worker.
+- `GO_ACCEPTANCE`: all required CELLs accepted; freeze the GO candidate and begin
+  fresh Verification.
+- `BLOCKED`: an authorized prerequisite or capability is unavailable.
+- `PLAN_DEFECT`: objective, architecture ownership, dependencies, scope, or
+  acceptance must change.
+
+`REDO` is deprecated. Historical `REDO` records remain valid history but new work
+uses `CELL_REWORK` or `PLAN_DEFECT`.
+
+## Product Rework Rule
+
+Product defects return to the Worker through a new formal round.
+
+Checker records:
+
+```text
+CELL_REWORK_RECORD
+```
+
+with:
+
+- failed candidate identity;
+- defect and evidence;
+- unchanged frozen objective;
+- required outcome;
+- permitted scope;
+- mandatory regression checks;
+- new round ID.
+
+The Checker may repair only Checker-owned validation infrastructure or coordination
+metadata. Such a repair must not alter the product candidate and must be fully
+recorded before validation restarts in a clean environment.
+
+Verification never repairs anything.
+
+## Detection System
+
+Each Checker maintains a `DETECTION_CAPABILITY_MANIFEST`; every GO owns a
+Checker-authored, Supervisor-provisioned `GO_DETECTION_PROFILE`.
+
+Capabilities belong to one tier:
+
+- `CELL_ALWAYS`: Checker runs after every Worker delivery.
+- `CELL_TRIGGERED`: Checker runs when a frozen impact predicate is true.
+- `GO_BOUNDARY`: fresh Verification runs against the immutable GO candidate.
+- `PROJECT_FINAL`: fresh project-final Verification runs when cross-GO technical
+  checks are required.
+
+Valid receipts are `RUN_PASS`, `RUN_FAIL`, `NOT_TRIGGERED`, and `BLOCKED`.
+`NOT_TRIGGERED` must record the predicate and evidence. Worker checks do not replace
+Checker checks; Checker checks do not replace Verification; another domain's
+receipt is invalid.
+
+Profile changes require versioned revision and delta simulation. Device limits may
+serialize commands, reduce CELL size, or lower concurrency—not acceptance quality.
+See
+[`references/checker-detection-catalog.md`](references/checker-detection-catalog.md).
+
+## GO Evidence Acceptance
+
+Every GO freezes its Calabash trace and `GO_VERIFICATION_CONTRACT` before Level
+activation. The Contract defines the claim, observable outcomes, evidence,
+reproducibility, counter-evidence, pass/fail rules, GO-boundary checks, downstream
+outputs, safety, version, and hash.
+
+Before the GO's first CELL, its fresh Verification attempt is already provisioned,
+ready, isolated, and directly addressable by Checker.
+
+After all required CELLs pass:
+
+1. Checker freezes the GO candidate and neutral package.
+2. Checker sends `GO_READY_FOR_VERIFICATION` directly to Verification.
+3. Verification independently validates and sends a signed verdict directly to
+   Checker and Supervisor.
+4. Supervisor updates only project/Level state; it does not relay or rewrite the
+   verdict.
+
+Handling:
+
+- `GO_VERIFIED`: Checker closes GO and freezes outputs; Supervisor marks that Level
+  member verified.
+- `GO_EVIDENCE_GAP`: Checker adds bounded evidence work inside the same GO or records
+  a plan defect.
+- `GO_REWORK_REQUIRED`: Checker issues Worker-owned rework.
+- `GO_DEFINITION_DEFECT`: Checker proposes a versioned GO/Contract revision;
+  Supervisor governs Calabash, Level, cross-Chain, safety, and Owner boundaries.
+- `GO_BLOCKED`: Supervisor resolves the condition within authority.
+
+A changed candidate requires a new fresh Verification attempt. Only `GO_VERIFIED`
+completes a GO; only all required verified members complete a Level.
+
+## Evidence-Driven GO Revision
+
+After every GO verdict, Checker compares plan and actual result: scope, defects,
+residual risk, dependencies, estimates, and incomplete outcomes.
+
+Before `GO_VERIFIED`, Checker may revise CELLs, evidence work, detection allocation,
+or model assignment inside the same frozen GO outcome. A changed outcome, Calabash
+trace, scope, acceptance, or ownership is `PLAN_DEFECT`.
+
+For unstarted future work, Checker may propose changed GO detail in its own Chain.
+Supervisor may approve only when the versioned amendment preserves:
+
+- the fixed Chain roster;
+- ordered Levels and full barriers;
+- one GO per active Chain per Level;
+- no same-Level dependency;
+- no cross-GO CELL dependency;
+- Calabash traceability and autonomy/safety boundaries.
+
+Missing historical work may be placed in an append-only supplementary future Level
+when it remains a deterministic barrier plan. Conditional routing, partial unlock,
+new Chains, cycles, or arbitrary insertion is `METHOD_BOUNDARY_EXCEEDED`.
+
+Never rewrite historical GO, CELL, evidence, or verdict. Record old/new plan,
+trigger evidence, impact, and `GO_REVISION_SIMULATION_PASS` before dispatch. A
+changed candidate always requires a new fresh Verification attempt.
+
+## Continuation Condition Gate
+
+Before every Worker assignment, Checker verifies:
+
+- current `LEVEL_START_GATE_PASS` and active Level membership;
+- authoritative inputs and same-GO CELL dependencies;
+- every required prior Level is `LEVEL_VERIFIED`;
+- upstream GO outputs are verified and frozen;
+- no peer GO in the same Level is an input;
+- allowed scope, tools, credentials, safety, and acceptance;
+- the action is inside `PROJECT_AUTONOMY_ENVELOPE` or has an authorized internal
+  resolution.
+
+If a condition clearly fails, stop dispatch and record `CONDITION_BLOCKED` with
+evidence. Checker never sends filler, speculative, or waiting work.
+
+Supervisor resolves the condition under existing authority and records
+`RESUME_AUTHORIZED`, or emits one precise `OWNER_ASSISTANCE_REQUIRED` only for a
+proven Owner-exclusive item. Checker revalidates before resume.
+
+Other independent GOs in the active Level may continue when the block cannot
+invalidate them, but the next Level remains closed until the full barrier passes.
+
+## Dispatch-Then-Offline Boundary
+
+Before dispatch, Checker completes every prerequisite check, record, progress
+snapshot, and formal message.
+
+Sending the Worker task is Checker's final action. Checker enters:
+
+```text
+OFFLINE_WAITING_WORKER_SIGNAL
+```
+
+and does not poll, inspect, run status, or perform pair work while Worker owns the
+CELL.
+
+Only these signals wake Checker:
+
+```text
+WORKER_COMPLETION_RECEIPT
+WORKER_BLOCKER_RECEIPT
+WORKER_EXECUTION_FAILURE
+```
+
+Supervisor safeguard patrol continues independently but does not wake a healthy
+offline Checker merely to inspect an active Worker.
+
+Verification uses the same non-interference principle: after Checker sends the
+neutral package directly, Checker and Supervisor do not inject suggestions into the
+active Verification conversation.
+
+## Pre-Authorized Worker Execution Gate
+
+Before dispatch, Supervisor provisions the pair under the frozen autonomy
+envelope; Checker binds the canonical Worker workspace, confirms the CELL allowlist,
+and records `WORKER_EXECUTION_GATE_PASS`. Routine execution requires no Owner
+authorization.
+
+Unexpected credentials, external side effects, destructive/security-sensitive
+actions, out-of-scope writes, and objective/acceptance changes route internally to
+Supervisor and only then to Owner when genuinely Owner-exclusive.
+
+## Project Progress
+
+Every Worker assignment includes accepted CELL progress, for example:
+
+```text
+正在完成 LEVEL-01 / GO-01-C：35/231 CELL
+```
+
+Count each accepted CELL once. Assigned, active, unchecked, rework-pending, blocked,
+revoked, and duplicate attempts do not count.
+
+Supervisor also displays:
+
+```text
+LEVEL-01 GO验证：3/4
+项目LEVEL完成：1/3
+```
+
+The current Level remains active until every required member is `GO_VERIFIED`.
+Display `全部完成` only when every required CELL, GO, and Level is complete, final
+composition/safety/evidence pass, and configured `PROJECT_GOAL` is satisfied.
+
+## Optional Project Goal Gate
+
+Use `PROJECT_GOAL`, never the ambiguous bare term `Goal`.
+
+The Owner may explicitly define one versioned `PROJECT_GOAL` with:
+
+- identifier;
+- objective;
+- measurable success criteria;
+- required project-wide evidence;
+- safety boundaries.
+
+Supervisor must not invent, broaden, or silently change it.
+
+Checker stream completion remains provisional until all required GOs are verified.
+Supervisor independently evaluates the `PROJECT_GOAL` against fresh project-wide
+evidence and project-final Verification verdicts when configured.
+
+Record:
+
+```text
+PROJECT_GOAL_SATISFIED
+```
+
+only when every criterion is proved.
+
+Otherwise record:
+
+```text
+PROJECT_GOAL_GAP
+```
+
+with unmet criteria, evidence, residual risk, affected domains, and required
+outcome. Affected Checkers author append-only continuations for their persistent
+Workers. Supervisor does not author ordinary local plans.
+
+## Mutable State and Append-Only Evidence
+
+Append-only artifacts include:
+
+- accepted and superseded plans;
+- GO/CELL files and revisions;
+- Worker method logs;
+- Checker receipts;
+- Verification packages, evidence, and verdicts;
+- queues;
+- control receipts;
+- incident and recovery records.
+
+Explicitly mutable current-state artifacts are limited to:
+
+```text
+WORK_CONTINUATION_INDEX
+Supervisor board current-status section
+ephemeral progress cache
+```
+
+Mutable indexes point to history; they do not replace it.
+
+## Markdown Context Boundary
+
+Every governed Markdown file has a hard maximum of 1000 physical lines. The
+`WORK_CONTINUATION_INDEX` remains below 200 physical lines.
+
+Split at semantic boundaries such as Worker domain, GO, coherent CELL group,
+verification package, evidence batch, or completed decision. Never hard-cut a
+requirement, table, code block, acceptance record, or evidence chain.
+
+Every GO that can write Markdown assigns `markdown-line-budget` in its detection
+profile. Every accepted CELL records line-count evidence. Before the next append
+would exceed the limit, seal the current shard and continue in a linked successor.
+
+## Evidence and Queue Paths
+
+Use project-local paths unless stricter ones exist:
+
+```text
+coordination/
+  plans/ checker-messages/ worker-method-logs/
+  checker-evidence/ verification-packages/ verification-evidence/
+  queues/ supervisor-board.md work-continuation-index.md
+```
+
+Worker, Checker, and Verification evidence remain separate. A verdict binds GO and
+contract versions, immutable artifact, Verification role/conversation/context/
+workspace/model binding, environment fingerprint, evidence hash, and verdict.
+
+Only Checker writes its Worker stream queue. A stream is passed only after every
+assigned GO is `GO_VERIFIED` and Supervisor final audit accepts it.
+
+## Recovery Rules
+
+- **Delayed conversation registration:** confirm the returned ID before creating a
+  replacement.
+- **Duplicate Checker or Worker:** choose one authoritative pair, stop/archive the
+  duplicate, and execute each CELL once.
+- **Duplicate Verification:** invalidate both if either saw the other's conclusion;
+  launch one fresh clean Verification.
+- **Lost Verification context:** discard the incomplete verdict and launch a fresh
+  Verification from the same immutable candidate.
+- **Contaminated Verification input:** record
+  `VERIFICATION_ISOLATION_VIOLATION`; no verdict is valid.
+- **Worker system error:** Checker inspects usable immutable output; if none exists,
+  re-dispatch the original CELL as a new round.
+- **Damaged method log:** seal it, preserve the incident, create a linked shard, and
+  revalidate current artifacts.
+- **Repeated product defect:** issue bounded Worker rework; escalate only a real
+  plan defect or blocker.
+- **Dynamic external data:** distinguish legitimate drift from current-CELL writes
+  through semantic and writer-attribution evidence.
+- **Unavailable role or environment:** fail closed; never substitute another role.
+
+Never auto-advance from silence or timeout.
+
+## Final Project Composition Audit
+
+Supervisor closes the project only after:
+
+- every required Worker stream has a passed queue;
+- every required GO has a current `GO_VERIFIED` verdict;
+- every verdict binds the final artifact and contract identities;
+- cross-Worker contracts and frozen outputs compose correctly;
+- required `PROJECT_FINAL` checks pass;
+- hard brakes and safety conditions are clear;
+- no unresolved blocker, plan defect, evidence gap, or isolation violation exists;
+- the optional `PROJECT_GOAL` is satisfied;
+- the final candidate handoff, evidence index, and queue record exist.
+
+Supervisor final audit is not a second CELL check and not a substitute for
+Verification.
+
+## Launch Checklist
+
+Before project launch, Supervisor confirms:
+
+- frozen full/Minimum Calabash and no unresolved definition block;
+- sole-method selection and a fixed roster of at least two Chains;
+- ordered Level table using `GO-<LEVEL>-<CHAIN>` identifiers;
+- every Level-01 GO is independent and launch-ready;
+- no conditional branch, partial unlock, cycle, dynamic Chain, or GLK capability;
+- current `25/25` readiness and project `SIMULATION_PASS`;
+- visible persistent roles with isolated identities/environments;
+- `PROJECT_AUTONOMY_ENVELOPE` covers routine work without Owner authorization;
+- every GO has Calabash trace, Verification Contract/binding, CELL plan, and tiered
+  detection profile;
+- cross-GO inputs exist only at verified Level boundaries;
+- append-only/mutable boundaries, Markdown limits, recovery, and final audit exist.
+
+Before each Level opens, require `LEVEL_START_GATE_PASS`, fresh Verification
+attempts and direct routes for every GO, all prior Levels verified, all inputs
+frozen, and all first CELLs ready together.
+
+Before each GO verdict, require all CELLs accepted, immutable candidate/contract,
+fresh isolated Verification, neutral direct package, and no downstream Level work
+from provisional output.
+
+## Migration From 1.8.3
+
+Version `1.9.0` changes project structure, role topology, autonomy, and GO acceptance.
+
+- Active `1.8.3` runs remain bound to `1.8.3` unless formally migrated.
+- Never silently reinterpret historical GO numbering, `REDO`, Checker repair,
+  acceptance, or Goal records.
+- Migration requires a frozen Calabash baseline, new Level/Chain table, new
+  `GO-<LEVEL>-<CHAIN>` identifiers for future work, `PROJECT_AUTONOMY_ENVELOPE`,
+  new readiness receipts, environment bindings, simulation, GO Calabash traces,
+  Verification Contracts/bindings, and fresh Verification attempts.
+- Preserve all historical identifiers/evidence and map them append-only to the new
+  plan.
+- If unfinished work cannot be converted to fixed barrier-synchronized Chains,
+  record `METHOD_BOUNDARY_EXCEEDED` and start a separate GLK run.
+
+## Version Note
+
+Version `1.9.0` adds mandatory Calabash, fixed Level/Chain semantics, pre-bound
+direct GO Verification, full Level barriers, an Owner-free autonomy envelope,
+Worker-owned product rework, GO-boundary independence, tiered detection, and strict
+environment isolation. Grapher, conditional routing, partial unlock, cycles, and
+dynamic Chains remain GLK capabilities.
+
